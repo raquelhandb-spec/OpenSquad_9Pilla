@@ -28,12 +28,12 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Edit",
+        "matcher": "Edit(file:*CLAUDE.md)",
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "O arquivo é CLAUDE.md? Se sim, avise que é uma instrução crítica da 9Pilla. Use $ARGUMENTS para verificar o caminho do arquivo.",
-            "statusMessage": "Verificando se está editando CLAUDE.md..."
+            "prompt": "⚠️ ATENÇÃO: Você está editando CLAUDE.md! Este arquivo contém instruções críticas da 9Pilla e deve ser tratado com cuidado. Tem certeza que quer continuar?",
+            "statusMessage": "Verificando edição de CLAUDE.md..."
           }
         ]
       }
