@@ -3,20 +3,22 @@
 /**
  * Script de envio do Morning Call via Z-API
  * Executa automaticamente seg-sex às 09h09
+ * Integrado com brapi.dev para buscar dados em tempo real de 5 ativos
  */
 
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
-// Configurações Z-API
-const Z_API_CONFIG = {
-  instanceId: '3F11BDD3D23071C40CFC9EED2DF277BD',
-  token: 'D06BC58B1E9B2833DB10EBF3',
-  clientToken: 'Fa5f350a5afc04288905bf0ea9692a1ffS',
-  groupJid: '120363407926604570-group',
-  apiUrl: 'https://api.z-api.io/instances/3F11BDD3D23071C40CFC9EED2DF277BD/token/D06BC58B1E9B2833DB10EBF3/send-text'
-};
+// Carrega configurações do arquivo
+function loadConfig() {
+  const configPath = path.join(__dirname, '../config-morning-call.json');
+  return JSON.parse(fs.readFileSync(configPath, 'utf8'));
+}
+
+const CONFIG = loadConfig();
+const Z_API_CONFIG = CONFIG['z-api'];
+const BRAPI_CONFIG = CONFIG.brapi;
 
 /**
  * Formata data como YYYY-MM-DD
@@ -34,6 +36,55 @@ function formatDate(date) {
 function isBusinessDay(date = new Date()) {
   const day = date.getDay();
   return day >= 1 && day <= 5; // 1 = seg, 5 = sex
+}
+
+/**
+ * Faz requisição HTTPS
+ */
+function makeRequest(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      let data = '';
+
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        try {
+          resolve({
+            success: true,
+            status: res.statusCode,
+            data: JSON.parse(data)
+          });
+        } catch (e) {
+          reject(new Error(`Erro ao parsear JSON: ${e.message}`));
+        }
+      });
+    }).on('error', reject);
+  });
+}
+
+/**
+ * Busca dados de um ativo da brapi.dev
+ */
+async function fetchAsset(ticker) {
+  const url = `${BRAPI_CONFIG.baseUrl}/quote/${ticker}?token=${BRAPI_CONFIG.token}`;
+
+  try {
+    const result = await makeRequest(url);
+    if (result.data.results && result.data.results[0]) {
+      return {
+        ticker,
+        success: true,
+        quote: result.data.results[0]
+      };
+    }
+    return { ticker, success: false };
+  } catch (error) {
+    console.log(`⚠️  Erro ao buscar ${ticker}: ${error.message}`);
+    return { ticker, success: false };
+  }
 }
 
 /**
@@ -128,6 +179,25 @@ async function main() {
     // Lê conteúdo
     console.log('📖 Lendo conteúdo...');
     const content = readMorningCallContent(now);
+
+    // Busca dados atualizados de 5 ativos
+    console.log('📊 Buscando dados da brapi.dev...');
+    const tickers = ['^BVSP', 'USDBRL=X', 'PETR4', 'VALE3', 'ITUB4'];
+    const assetData = await Promise.all(
+      tickers.map(ticker => fetchAsset(ticker))
+    );
+
+    const successCount = assetData.filter(a => a.success).length;
+    console.log(`✅ ${successCount}/${tickers.length} ativos carregados (IBOV, Dólar, PETR4, VALE3, ITUB4)`);
+
+    // Log dos dados carregados
+    assetData.forEach(asset => {
+      if (asset.success) {
+        const price = asset.quote.regularMarketPrice;
+        const change = asset.quote.regularMarketChangePercent;
+        console.log(`   ${asset.ticker}: R$ ${price.toFixed(2)} (${change.toFixed(2)}%)`);
+      }
+    });
 
     // Envia via Z-API
     console.log('📤 Enviando via Z-API...');
