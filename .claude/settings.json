@@ -1,0 +1,61 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "Bash(npx:*)",
+      "Bash(curl:*)",
+      "Bash(powershell:*)",
+      "WebSearch",
+      "WebFetch(domain:www.moneytimes.com.br)",
+      "WebFetch(domain:www.riotimesonline.com)",
+      "WebFetch(domain:www.bloomberg.com)",
+      "WebFetch(domain:brapi.dev)",
+      "WebFetch(domain:docs.google.com)",
+      "WebFetch(domain:notion.so)",
+      "Edit",
+      "Read",
+      "Write",
+      "Glob",
+      "Grep"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "canva",
+    "gmail",
+    "google-calendar"
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "O arquivo é CLAUDE.md? Se sim, avise que é uma instrução crítica da 9Pilla. Use $ARGUMENTS para verificar o caminho do arquivo.",
+            "statusMessage": "Verificando se está editando CLAUDE.md..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash(git push)",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Verifica se o último commit segue o formato: 9P-XXX: Descrição (YYYY-MM-DD). Use $ARGUMENTS para obter detalhes.",
+            "statusMessage": "Validando formato do commit..."
+          }
+        ]
+      }
+    ]
+  },
+  "customCommands": {
+    "morning-call": "./.claude/commands/morning-call.md",
+    "novo-ep": "./.claude/commands/novo-ep.md",
+    "reel": "./.claude/commands/reel.md",
+    "auditoria-ig": "./.claude/commands/auditoria-ig.md",
+    "campanha": "./.claude/commands/campanha.md"
+  }
+}

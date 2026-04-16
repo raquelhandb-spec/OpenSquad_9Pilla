@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+.claude/logs/
+*.log
+
+# MCP/Playwright temp files
+.playwright-mcp/console-*.log
+.playwright-mcp/page-*.yml
+
+# Build
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Sensitive
+.claude/config-morning-call.json
+.claude/.env.paperclip

@@ -1,0 +1,39 @@
+---
+# Rotina Automática: Morning Call via Z-API
+# Executa seg-sex às 09h09 para enviar o Morning Call
+
+name: "Morning Call Automático"
+description: "Envia Morning Call diário para o grupo via Z-API"
+enabled: true
+schedule:
+  # Cron: seg-sex 09h09
+  # Formato: minuto hora dia-mês dia-semana
+  cron: "9 9 * * 1-5"
+  timezone: "America/Sao_Paulo"
+
+action:
+  type: "script"
+  command: "node .claude/scripts/send-morning-call.js"
+  workingDirectory: "."
+  timeout: 60
+
+notifications:
+  # Notificar em caso de sucesso
+  onSuccess:
+    enabled: true
+    message: "✅ Morning Call enviado com sucesso!"
+
+  # Notificar em caso de erro
+  onFailure:
+    enabled: true
+    message: "❌ Erro ao enviar Morning Call"
+
+retryPolicy:
+  enabled: true
+  maxAttempts: 3
+  backoffMs: 5000  # 5 segundos entre tentativas
+
+logging:
+  enabled: true
+  path: ".claude/logs/morning-call.log"
+  level: "info"

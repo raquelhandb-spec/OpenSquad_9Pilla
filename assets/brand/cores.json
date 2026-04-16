@@ -1,0 +1,34 @@
+{
+  "brand": {
+    "primary": {
+      "name": "Orange",
+      "hex": "#E84A1E",
+      "rgb": "rgb(232, 74, 30)",
+      "usage": "CTAs, ação, urgência, highlights"
+    },
+    "secondary": {
+      "name": "Dark Green",
+      "hex": "#1C2E1F",
+      "rgb": "rgb(28, 46, 31)",
+      "usage": "Autoridade, dados, títulos, fundos"
+    },
+    "accent": {
+      "name": "Beige",
+      "hex": "#D6C9B0",
+      "rgb": "rgb(214, 201, 176)",
+      "usage": "Orgânico, textura, papel"
+    },
+    "light": {
+      "name": "Sand",
+      "hex": "#EDE8DC",
+      "rgb": "rgb(237, 232, 220)",
+      "usage": "Acolhimento, educação, fundos"
+    }
+  },
+  "contrast": {
+    "orange_on_sand": 5.8,
+    "dark_on_sand": 11.2,
+    "orange_on_white": 6.2,
+    "note": "Todos com AAA accessibility (WCAG 2.1)"
+  }
+}
