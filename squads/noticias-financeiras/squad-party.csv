@@ -1,0 +1,7 @@
+id,name,title,icon,path
+nara-noticias,Nara Notícias,Pesquisadora de Notícias Financeiras,🔍,./agents/nara-noticias.agent.md
+carlos-carrossel,Carlos Carrossel,Redator de Carrosséis Financeiros,✍️,./agents/carlos-carrossel.agent.md
+diana-design,Diana Design,Designer de Slides para Instagram,🎨,./agents/diana-design.agent.md
+rafael-revisao,Rafael Revisão,Revisor de Conteúdo Financeiro,✅,./agents/rafael-revisao.agent.md
+gabi-gatilho,Gabi Gatilho,Coordenadora de Publicação,🎯,./agents/gabi-gatilho.agent.md
+paula-publicadora,Paula Publicadora,Publicadora Instagram,📲,./agents/paula-publicadora.agent.md

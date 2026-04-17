@@ -45,7 +45,20 @@
       "Bash(gh --version)",
       "Bash(git reset *)",
       "Bash(git commit -m 'Inicial: OpenSquad 9Pilla - Morning Call automático via Z-API *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(git remote *)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "WebFetch(domain:br.investing.com)",
+      "Bash(cscript.exe *)",
+      "Bash(dir *)",
+      "Bash(echo.)",
+      "Bash(psql -h localhost -p 54329 -U postgres -d paperclip -c \"SELECT id, name, adapter_type FROM agents LIMIT 5;\")",
+      "Bash(npm --version)",
+      "Bash(npm search *)",
+      "Bash(npm install *)",
+      "Bash(paperclip --help)",
+      "Bash(psql -h localhost -p 54329 -U postgres -d paperclip -c ' *)"
     ]
   },
   "enableAllProjectMcpServers": true,

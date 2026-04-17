@@ -1,0 +1,49 @@
+squad_code: "noticias-financeiras"
+purpose: "Criar carrosséis diários para o Instagram da 9Pilla sobre notícias do mercado financeiro brasileiro, com pesquisador de notícias, redator, designer, revisor, coordenador e publicador"
+domain: "content"
+
+company:
+  name: "9Pilla"
+  tone: "misto — varia conforme o tema"
+  products: "conteúdo financeiro para Instagram"
+
+language: "Português (Brasil)"
+
+context:
+  audience: "Misto — investidores iniciantes, experientes e público geral interessado em finanças"
+  platforms: "Instagram (carrosséis)"
+  tone: "Misto — varia conforme o tema (educativo, analítico, urgente/provocador, descontraído)"
+
+tools_needed:
+  - "web_search"
+  - "web_fetch"
+  - "apify"
+  - "canva"
+  - "instagram-publisher"
+
+investigation:
+  enabled: true
+  profiles:
+    - url: "https://www.instagram.com/mepoupenathalia/"
+      platform: "instagram"
+      investigation_mode: "profile_1"
+    - url: "https://www.instagram.com/primoricooficial/"
+      platform: "instagram"
+      investigation_mode: "profile_1"
+    - url: "https://www.instagram.com/warreninvestimentos/"
+      platform: "instagram"
+      investigation_mode: "profile_1"
+    - url: "https://www.instagram.com/thiagonigro/"
+      platform: "instagram"
+      investigation_mode: "profile_1"
+    - url: "https://www.instagram.com/9pilla.link/"
+      platform: "instagram"
+      investigation_mode: "profile_1"
+
+target_formats:
+  - "instagram-feed"
+
+extra_agents:
+  - id: "coordinator"
+    name: "Coordenador"
+    role: "Após revisão aprovada, apresenta o carrossel finalizado e solicita confirmação explícita do usuário ('sim') antes de acionar o publicador. Não publica sem confirmação."

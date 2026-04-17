@@ -1,0 +1,31 @@
+name: "Notícias Financeiras 9Pilla"
+code: "noticias-financeiras"
+description: "Cria carrosséis diários para o Instagram da 9Pilla sobre notícias do mercado financeiro brasileiro"
+icon: "📊"
+language: "Português (Brasil)"
+version: "1.0.0"
+
+skills:
+  - web_search
+  - web_fetch
+  - apify
+  - canva
+  - instagram-publisher
+
+agents:
+  - ./agents/nara-noticias.agent.md
+  - ./agents/carlos-carrossel.agent.md
+  - ./agents/diana-design.agent.md
+  - ./agents/rafael-revisao.agent.md
+  - ./agents/gabi-gatilho.agent.md
+  - ./agents/paula-publicadora.agent.md
+
+pipeline: ./pipeline/pipeline.yaml
+
+data:
+  - pipeline/data/research-brief.md
+  - pipeline/data/domain-framework.md
+  - pipeline/data/quality-criteria.md
+  - pipeline/data/output-examples.md
+  - pipeline/data/anti-patterns.md
+  - pipeline/data/tone-of-voice.md

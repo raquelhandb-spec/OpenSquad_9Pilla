@@ -1,0 +1,23 @@
+name: "Pipeline — Notícias Financeiras 9Pilla"
+squad: "noticias-financeiras"
+version: "1.0.0"
+description: "Pipeline de criação e publicação de carrosséis diários de notícias financeiras para o Instagram da 9Pilla"
+
+steps:
+  - file: steps/step-01-research-focus.md
+  - file: steps/step-02-news-research.md
+  - file: steps/step-03-news-selection.md
+  - file: steps/step-04-generate-angles.md
+  - file: steps/step-05-angle-selection.md
+  - file: steps/step-06-create-carousel.md
+  - file: steps/step-07-content-approval.md
+  - file: steps/step-08-create-slides.md
+  - file: steps/step-09-review.md
+  - file: steps/step-10-final-approval.md
+  - file: steps/step-11-publish.md
+
+checkpoints:
+  - step-01-research-focus
+  - step-03-news-selection
+  - step-05-angle-selection
+  - step-07-content-approval
