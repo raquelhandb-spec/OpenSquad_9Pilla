@@ -1,0 +1,11 @@
+{
+  "z-api": {
+    "apiUrl": "https://api.z-api.io/instances/SUA_INSTANCIA/token/SEU_TOKEN/send-text",
+    "groupJid": "120363000000000000@g.us",
+    "clientToken": "SEU_CLIENT_TOKEN"
+  },
+  "brapi": {
+    "baseUrl": "https://brapi.dev/api",
+    "token": "SEU_TOKEN_BRAPI"
+  }
+}
