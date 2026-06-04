@@ -1,0 +1,61 @@
+name: Morning Call 9Pilla
+
+on:
+  schedule:
+    # 09h09 BRT (America/Sao_Paulo = UTC-3 fixo desde 2019)
+    # 09:09 BRT = 12:09 UTC
+    - cron: '9 12 * * 1-5'
+  workflow_dispatch:
+    # Permite disparo manual pelo GitHub (útil para teste)
+
+jobs:
+  send-morning-call:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verificar arquivo de conteúdo do dia
+        run: |
+          DATE=$(TZ="America/Sao_Paulo" date +%Y-%m-%d)
+          FILE="content/morning-call/${DATE}.md"
+          echo "Data BRT: $DATE"
+          if [ ! -f "$FILE" ]; then
+            echo "❌ Arquivo $FILE não encontrado."
+            echo "   Gere o conteúdo com /morning-call e faça commit antes das 09h09."
+            exit 1
+          fi
+          echo "✅ Arquivo $FILE encontrado."
+
+      - name: Criar config-morning-call.json a partir dos secrets
+        env:
+          ZAPI_INSTANCE_ID: ${{ secrets.ZAPI_INSTANCE_ID }}
+          ZAPI_TOKEN: ${{ secrets.ZAPI_TOKEN }}
+          ZAPI_CLIENT_TOKEN: ${{ secrets.ZAPI_CLIENT_TOKEN }}
+          ZAPI_GROUP_JID: ${{ secrets.ZAPI_GROUP_JID }}
+          BRAPI_TOKEN: ${{ secrets.BRAPI_TOKEN }}
+        run: |
+          cat > .claude/config-morning-call.json << EOF
+          {
+            "z-api": {
+              "apiUrl": "https://api.z-api.io/instances/${ZAPI_INSTANCE_ID}/token/${ZAPI_TOKEN}/send-text",
+              "groupJid": "${ZAPI_GROUP_JID}",
+              "clientToken": "${ZAPI_CLIENT_TOKEN}"
+            },
+            "brapi": {
+              "baseUrl": "https://brapi.dev/api",
+              "token": "${BRAPI_TOKEN}"
+            }
+          }
+          EOF
+          echo "✅ Config criado."
+
+      - name: Enviar Morning Call via Z-API
+        run: node .claude/scripts/send-morning-call.js
