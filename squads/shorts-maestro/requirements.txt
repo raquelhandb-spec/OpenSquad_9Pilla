@@ -1,0 +1,49 @@
+# 🚀 9PILLA SHORTS-MAESTRO DEPENDENCIES
+
+# API Clients
+requests==2.31.0
+python-telegram-bot==20.3
+
+# Market Data
+brapi>=1.0.0
+
+# Web Scraping (for Investing.com)
+beautifulsoup4==4.12.2
+lxml==4.9.3
+
+# LLM Integration
+ollama==0.0.48
+
+# Video & Media
+moviepy==1.0.3
+pillow==10.0.0
+
+# Database (optional, for PostgreSQL)
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.21
+
+# Utilities
+python-dotenv==1.0.0
+pydantic==2.4.2
+pydantic-settings==2.0.3
+
+# Async
+aiohttp==3.9.0
+asyncio-contextmanager==1.0.0
+
+# Data Processing
+numpy==1.24.3
+pandas==2.1.1
+
+# Logging
+python-json-logger==2.0.7
+
+# Dev/Testing
+pytest==7.4.2
+pytest-asyncio==0.21.1
+black==23.11.0
+flake8==6.1.0
+mypy==1.7.0
+
+# Documentation
+markdown==3.5.1
