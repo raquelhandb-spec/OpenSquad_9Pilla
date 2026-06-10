@@ -41,14 +41,15 @@ class NinePillaOrchestrator:
         return {
             'brapi_key': os.getenv('BRAPI_API_KEY', ''),
             'elevenlabs_key': os.getenv('ELEVENLABS_API_KEY', ''),
+            'elevenlabs_voice_id': os.getenv('ELEVENLABS_VOICE_ID', '0r2zCQO0vO1jOfWbm7N7'),
             'heygen_key': os.getenv('HEYGEN_API_KEY', ''),
+            'heygen_avatar_id': os.getenv('HEYGEN_AVATAR_ID', '351538dd8eea417882a312681f2168d9'),
             'zapi_instance': os.getenv('ZAPI_INSTANCE_ID', ''),
             'zapi_token': os.getenv('ZAPI_API_TOKEN', ''),
             'telegram_bot_token': os.getenv('TELEGRAM_BOT_TOKEN', ''),
             'telegram_chat_id': os.getenv('TELEGRAM_CHAT_ID', ''),
             'manychat_key': os.getenv('MANYCHAT_API_KEY', ''),
             'ollama_url': os.getenv('OLLAMA_BASE_URL', 'http://localhost:11434'),
-            'elevenlabs_voice_id': os.getenv('ELEVENLABS_VOICE_ID', 'PLACEHOLDER_VOICE_ID'),
         }
 
     def _init_agents(self):
@@ -320,7 +321,7 @@ QUANDO APROVAR:
     def on_reviewer_approval(
         self,
         script_id: str,
-        avatar_id: str = "Avatar_1"
+        avatar_id: str = None
     ) -> Dict[str, Any]:
         """
         CALLBACK: Chamado quando Raquel aprova via Telegram (👍)
@@ -331,6 +332,10 @@ QUANDO APROVAR:
         print("\n" + "="*60)
         print(f"🎉 APROVADO! Criando vídeo...")
         print("="*60)
+
+        # Usar avatar ID configurado se não fornecido
+        if not avatar_id:
+            avatar_id = self.config.get('heygen_avatar_id', '351538dd8eea417882a312681f2168d9')
 
         # Encontrar ciclo correspondente
         cycle = None
@@ -348,7 +353,8 @@ QUANDO APROVAR:
         heygen_result = None
         if 'heygen' in self.agents:
             # Criar vídeo com HeyGen (após aprovação!)
-            print("⚠️ Criando avatar HeyGen (US$ 0.30)...")
+            print(f"⚠️ Criando avatar HeyGen com seu avatar realista (US$ 0.30)...")
+            print(f"   Avatar ID: {avatar_id}")
             heygen_result = self.agents['heygen'].create_avatar_video_with_retries(
                 script_text=cycle['stages']['writer']['script_id'],
                 avatar_id=avatar_id,
