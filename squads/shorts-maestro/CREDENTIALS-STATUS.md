@@ -83,21 +83,21 @@ Estratégia: Autoridade 1º, venda depois (Jan 2027)
 
 ---
 
-## 🤖 OLLAMA (Script Generation Local)
+## 🤖 CLAUDE API (Script Generation — substituiu Ollama em 11/06/2026)
 
 ```
-Base URL: http://localhost:11434
-Model: llama2
+API Key: ✅ Configurada (ANTHROPIC_API_KEY no .env)
+Model: claude-sonnet-4-6
 
-⚠️ PRECISA INSTALAR:
-1. Download: https://ollama.ai/download
-2. Instalar
-3. Executar: ollama serve
+⏳ FALTA: Adicionar créditos de API
+1. Acesse: https://console.anthropic.com/settings/billing
+2. Compre US$ 5 em créditos (~300-500 scripts)
 
-Depois roda localmente na sua máquina!
+Custo por script: ~US$ 0,01-0,03
+Ver: CLAUDE-AGENTS-MIGRATION.md
 ```
 
-**Status:** ⏳ PRECISA INSTALAR (gratuito)
+**Status:** ⏳ AGUARDANDO CRÉDITOS (chave válida ✅)
 
 ---
 
@@ -136,7 +136,7 @@ Por enquanto: Teste com mock, depois configure
 ## 🎯 O que FALTA
 
 ### Crítico (para rodar hoje):
-- [ ] **Instalar Ollama** (grátis, 10 min)
+- [ ] **Adicionar créditos Claude** (US$ 5)
 - [ ] **Criar Telegram Bot** (grátis, 5 min)
 
 ### Recomendado (para produção):
@@ -152,8 +152,8 @@ Por enquanto: Teste com mock, depois configure
 ## ✅ Quick Start
 
 ```bash
-# 1. Instalar Ollama
-https://ollama.ai/download
+# 1. Adicionar créditos Claude
+https://console.anthropic.com/settings/billing
 
 # 2. Criar Telegram Bot
 @BotFather no Telegram → /newbot
@@ -184,7 +184,7 @@ CREDENCIAL                          STATUS
 📊 Brapi API Key                    ✅ PRONTO
 💬 Z-API Credentials                ✅ PRONTO
 💼 ManyChat API Key                 ✅ PRONTO
-🤖 Ollama                           ⏳ INSTALAR (10 min)
+🤖 Claude API                       ⏳ ADICIONAR CRÉDITOS (US$ 5)
 📱 Telegram Bot                     ⏳ CRIAR (5 min)
 📺 YouTube OAuth2                   ⏳ SETUP (15 min)
 
@@ -196,7 +196,7 @@ TOTAL: 30 minutos para rodar! 🚀
 ## 🎯 Próximas Etapas
 
 ### Hoje (Junho 10)
-1. [ ] Instalar Ollama (`https://ollama.ai/download`)
+1. [ ] Adicionar créditos Claude (console.anthropic.com/settings/billing)
 2. [ ] Criar Telegram Bot (`TELEGRAM-SETUP.md`)
 3. [ ] Run `bash setup-quick.sh`
 4. [ ] Run `python orchestrator.py --cycle`
@@ -231,7 +231,7 @@ TOTAL: 30 minutos para rodar! 🚀
 **🟢 VOCÊ ESTÁ 100% PRONTO!**
 
 Só falta:
-1. Instalar Ollama (grátis)
+1. Adicionar créditos Claude (US$ 5)
 2. Criar Telegram Bot (grátis, 5 min)
 3. Rodar o comando
 

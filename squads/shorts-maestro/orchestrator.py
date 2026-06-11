@@ -53,7 +53,8 @@ class NinePillaOrchestrator:
             'telegram_bot_token': os.getenv('TELEGRAM_BOT_TOKEN', ''),
             'telegram_chat_id': os.getenv('TELEGRAM_CHAT_ID', ''),
             'manychat_key': os.getenv('MANYCHAT_API_KEY', ''),
-            'ollama_url': os.getenv('OLLAMA_BASE_URL', 'http://localhost:11434'),
+            'anthropic_key': os.getenv('ANTHROPIC_API_KEY', ''),
+            'claude_model': os.getenv('CLAUDE_MODEL', 'claude-sonnet-4-6'),
         }
 
     def _init_agents(self):
@@ -69,11 +70,15 @@ class NinePillaOrchestrator:
         else:
             print("⚠️ Prospector Agent (BRAPI_API_KEY não configurada)")
 
-        # 2. Writer (Ollama)
-        self.agents['writer'] = WriterAgent(
-            ollama_base_url=self.config['ollama_url']
-        )
-        print("✅ Writer Agent (Ollama)")
+        # 2. Writer (Claude API — migrado de Ollama em 11/06/2026)
+        if self.config['anthropic_key']:
+            self.agents['writer'] = WriterAgent(
+                claude_api_key=self.config['anthropic_key'],
+                model=self.config['claude_model']
+            )
+            print(f"✅ Writer Agent (Claude — {self.config['claude_model']})")
+        else:
+            print("⚠️ Writer Agent (ANTHROPIC_API_KEY não configurada)")
 
         # 3. Reviewer (Telegram)
         if self.config['telegram_bot_token'] and self.config['telegram_chat_id']:
@@ -189,7 +194,7 @@ class NinePillaOrchestrator:
         print("\n📋 CREDENCIAIS CRÍTICAS:")
         critical = {
             'BRAPI_API_KEY': bool(self.config['brapi_key']),
-            'OLLAMA_RUNNING': validation_results.get('writer', {}).get('status', False),
+            'CLAUDE_API': validation_results.get('writer', {}).get('status', False),
             'TELEGRAM_BOT': bool(self.config['telegram_bot_token']),
             'ELEVENLABS_VOICE_ID': self.config['elevenlabs_voice_id'] != 'PLACEHOLDER_VOICE_ID'
         }
@@ -257,14 +262,23 @@ class NinePillaOrchestrator:
             top_topic = prospector_result.get('top_topic', {})
             ticker_data = top_topic.get('data', {})
 
+            # Extrair ticker limpo das keywords (ex: 'petr4' → 'PETR4')
+            keywords = top_topic.get('keywords', [])
+            clean_ticker = keywords[0].upper() if keywords else 'IBOV'
+
             writer_result = self.agents['writer'].generate_script(
                 market_data={
-                    'ticker': top_topic.get('title', 'Mercado'),
+                    'ticker': clean_ticker,
                     'price': ticker_data.get('value', 0),
                     'change_percent': ticker_data.get('change_pct', 0),
-                    'trend_topic': top_topic.get('title', 'Notícia de mercado')
+                    'trend_topic': top_topic.get('title', 'Notícia de mercado'),
+                    'full_market': market_data
                 }
             )
+
+            if writer_result.get('status') == 'error':
+                raise RuntimeError(f"Writer falhou: {writer_result.get('message')}")
+
             results['stages']['writer'] = {
                 'status': 'completed',
                 'script_id': cycle_id,
