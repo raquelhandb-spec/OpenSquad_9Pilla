@@ -12,26 +12,52 @@ from typing import List, Dict, Any
 class ProspectorAgent:
     def __init__(self, brapi_key: str):
         self.brapi_key = brapi_key
-        self.base_url = "https://api.brapi.dev/api/v2"
+        # Endpoint oficial: https://brapi.dev/docs (corrigido em 11/06/2026)
+        self.base_url = "https://brapi.dev/api"
         self.headers = {"Authorization": f"Bearer {brapi_key}"}
 
     def get_market_data(self) -> Dict[str, Any]:
         """Buscar dados de mercado via Brapi"""
 
+        data = {}
+
         try:
-            # Índices principais
+            # Ações e índice (^BVSP = Ibovespa)
             response = requests.get(
-                f"{self.base_url}/quote/PETR4,VALE3,ITUB4,B3SA3,^BVSP,^USD",
-                params={"token": self.brapi_key},
+                f"{self.base_url}/quote/PETR4,VALE3,ITUB4,B3SA3,^BVSP",
+                headers=self.headers,
                 timeout=10
             )
 
             if response.status_code == 200:
-                data = response.json()
-                return self._parse_market_data(data)
+                data.update(self._parse_market_data(response.json()))
             else:
-                print(f"Erro Brapi: {response.status_code}")
-                return self._get_mock_data()
+                print(f"Erro Brapi (quote): {response.status_code}")
+
+            # Dólar via endpoint de moedas (v2/currency)
+            fx_response = requests.get(
+                f"{self.base_url}/v2/currency",
+                params={"currency": "USD-BRL"},
+                headers=self.headers,
+                timeout=10
+            )
+
+            if fx_response.status_code == 200:
+                fx = fx_response.json().get('currency', [])
+                if fx:
+                    usd = fx[0]
+                    data['dolar'] = {
+                        'value': float(usd.get('bidPrice', 0) or 0),
+                        'change': float(usd.get('bidVariation', 0) or 0),
+                        'change_pct': float(usd.get('percentageChange', 0) or 0),
+                    }
+            else:
+                print(f"Erro Brapi (currency): {fx_response.status_code}")
+
+            if data:
+                return data
+
+            return self._get_mock_data()
 
         except Exception as e:
             print(f"Erro ao conectar Brapi: {e}")
@@ -48,12 +74,6 @@ class ProspectorAgent:
 
                 if symbol == '^BVSP' or symbol == 'IBOV':
                     data['ibov'] = {
-                        'value': quote.get('regularMarketPrice', 0),
-                        'change': quote.get('regularMarketChange', 0),
-                        'change_pct': quote.get('regularMarketChangePercent', 0),
-                    }
-                elif symbol == '^USD' or 'USD' in symbol:
-                    data['dolar'] = {
                         'value': quote.get('regularMarketPrice', 0),
                         'change': quote.get('regularMarketChange', 0),
                         'change_pct': quote.get('regularMarketChangePercent', 0),

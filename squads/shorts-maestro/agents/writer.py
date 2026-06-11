@@ -78,6 +78,14 @@ EMOJIS PADRÃO:
 📈 = Ibovespa | 💵 = Dólar | 🛢️ = Petróleo | 🏦 = Bancos/Ações
 💊 = Píllula de Sabedoria | 🔥 = bloco de notícia
 
+🚫 REGRA ABSOLUTA DE ESCRITA (exigência da Raquel, 11/06/2026):
+NUNCA use o travessão "—" (em-dash). É marca registrada de texto de IA.
+Em vez disso, escreva frases fluidas como numa conversa real:
+- ERRADO: "O dólar subiu — e isso afeta seu bolso"
+- CERTO: "O dólar subiu, e isso afeta seu bolso" ou "O dólar subiu. E isso afeta seu bolso."
+Use vírgula, ponto final ou simplesmente emende a frase como se estivesse falando com uma amiga.
+As setas "→" para cadeia causal PODEM continuar (são visuais, não texto falado).
+
 PÍLLULA DE SABEDORIA (sempre incluir 1):
 Citação de investidor (Warren Buffett, Benjamin Graham, Barsi, Howard Marks)
 ou conceito educativo (Senhor Mercado, margem de segurança, paciência vs pânico).
@@ -238,6 +246,10 @@ IMPORTANTE:
             )
 
             script_text = response.content[0].text.strip()
+
+            # Trava de segurança (regra Raquel 11/06/2026): remover travessão
+            # "—" mesmo se o modelo escorregar. Texto deve fluir como conversa.
+            script_text = script_text.replace(' — ', ', ').replace('— ', ', ').replace(' —', ',').replace('—', ', ')
 
             if not script_text:
                 return {

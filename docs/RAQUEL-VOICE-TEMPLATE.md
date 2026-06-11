@@ -436,3 +436,23 @@ Quando treinar Ollama com este template, valide:
 **Documento criado:** Junho 2026  
 **Autor:** Claude Code  
 **Status:** 🟢 Pronto para implementação
+
+---
+
+## 🚫 REGRA ABSOLUTA: NUNCA USAR TRAVESSÃO "—"
+
+**Adicionada por Raquel em 11/06/2026:**
+
+> "NUNCA UTILIZAR '— ' ESSE SIMBOLO É UMA LINGUAGEM DE IA, EU QUERO UM TEXTO
+> FLUIDO COMO UMA CONVERSA PQ SOA MAIS HUMANO."
+
+**Implementação (dupla proteção):**
+1. Regra explícita no system prompt do WriterAgent (`agents/writer.py`)
+2. Trava de segurança no código: pós-processamento remove qualquer "—"
+   que escapar, substituindo por vírgula
+
+**Exemplos:**
+- ❌ ERRADO: "O dólar subiu — e isso afeta seu bolso"
+- ✅ CERTO: "O dólar subiu, e isso afeta seu bolso"
+
+**Exceção:** As setas "→" da cadeia causal PODEM continuar (são visuais).
