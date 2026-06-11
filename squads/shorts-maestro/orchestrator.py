@@ -10,6 +10,10 @@ import os
 import sys
 from datetime import datetime
 from typing import Dict, Any, Optional
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Import agents
 from agents.prospector import ProspectorAgent
@@ -235,32 +239,39 @@ class NinePillaOrchestrator:
             if 'prospector' not in self.agents:
                 raise RuntimeError("Prospector Agent não configurado")
 
-            prospector_result = self.agents['prospector'].identify_trending_topic()
+            prospector_result = self.agents['prospector'].run()
             results['stages']['prospector'] = {
                 'status': 'completed',
                 'result': prospector_result
             }
-            print(f"✅ Tema: {prospector_result.get('topic')}")
-            print(f"   Ticker: {prospector_result.get('trending_ticker')}")
+            top_topic = prospector_result.get('top_topic', {})
+            print(f"✅ Tema: {top_topic.get('title', 'N/A')}")
+            market_data = prospector_result.get('market_data', {})
 
             # STAGE 2: Writer
             print("\n[2/6] 📝 WRITER — Gerando script com Raquel Voice...")
             if 'writer' not in self.agents:
                 raise RuntimeError("Writer Agent não configurado")
 
+            # Preparar dados do tópico para o Writer
+            top_topic = prospector_result.get('top_topic', {})
+            ticker_data = top_topic.get('data', {})
+
             writer_result = self.agents['writer'].generate_script(
                 market_data={
-                    'ticker': prospector_result.get('trending_ticker'),
-                    'price': prospector_result.get('current_price'),
-                    'change_percent': prospector_result.get('price_change'),
-                    'trend_topic': prospector_result.get('topic')
+                    'ticker': top_topic.get('title', 'Mercado'),
+                    'price': ticker_data.get('value', 0),
+                    'change_percent': ticker_data.get('change_pct', 0),
+                    'trend_topic': top_topic.get('title', 'Notícia de mercado')
                 }
             )
             results['stages']['writer'] = {
                 'status': 'completed',
-                'script_id': cycle_id
+                'script_id': cycle_id,
+                'script': writer_result.get('script_full', '')
             }
-            print(f"✅ Script gerado ({len(writer_result.get('script_full', '').split())} palavras)")
+            script_word_count = len(writer_result.get('script_full', '').split())
+            print(f"✅ Script gerado ({script_word_count} palavras)")
 
             # STAGE 3: Reviewer
             print("\n[3/6] 👤 REVIEWER — Enviando para aprovação Raquel...")
@@ -273,12 +284,13 @@ class NinePillaOrchestrator:
                     script_id=cycle_id
                 )
                 results['stages']['reviewer'] = {
-                    'status': reviewer_result['status'],
-                    'message_id': reviewer_result.get('message_id')
+                    'status': reviewer_result.get('status'),
+                    'message_id': reviewer_result.get('message_id'),
+                    'script_id': reviewer_result.get('script_id')
                 }
                 print(f"✅ Script enviado para Telegram")
                 if 'telegram_url' in reviewer_result:
-                    print(f"   Link: {reviewer_result['telegram_url']}")
+                    print(f"   Link: {reviewer_result.get('telegram_url')}")
 
             # STAGE 4-6: Aguardando aprovação
             print("\n" + "="*60)
