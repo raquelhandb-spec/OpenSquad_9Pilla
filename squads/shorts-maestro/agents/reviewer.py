@@ -76,15 +76,20 @@ class ReviewerAgent:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-✅ RESPONDA:
-👍 APROVA (use a reação 👍)
-👎 REJEITA (use a reação 👎)
-💬 Feedback: Responda a essa mensagem
+Clique nos BOTÕES abaixo para decidir 👇
 
 ⚠️ PROTEÇÃO ORÇAMENTO:
 Se REJEITAR → Nenhum crédito HeyGen gasto ✅
 Se APROVAR → Avatar será criado (~US$ 0.30) ⚡
 """
+
+        # Botões inline (cliques processados pelo approval_bot.py na máquina local)
+        inline_keyboard = {
+            "inline_keyboard": [[
+                {"text": "✅ APROVAR", "callback_data": f"approve:script:{script_id}"},
+                {"text": "❌ REJEITAR", "callback_data": f"reject:script:{script_id}"}
+            ]]
+        }
 
         print(f"\n📨 Enviando script {script_id} para aprovação Telegram...")
         print(f"   Ticker: {ticker}")
@@ -96,8 +101,8 @@ Se APROVAR → Avatar será criado (~US$ 0.30) ⚡
                 headers=self.headers,
                 json={
                     "chat_id": self.telegram_chat_id,
-                    "text": message_text,
-                    "parse_mode": "HTML"
+                    "text": message_text[:4000],
+                    "reply_markup": inline_keyboard
                 },
                 timeout=10
             )
