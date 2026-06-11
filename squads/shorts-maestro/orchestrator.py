@@ -25,6 +25,7 @@ from agents.publisher import PublisherAgent
 from agents.zapi_broadcaster import ZAPIBroadcasterAgent
 from agents.manychat_integration import ManyChatAgent
 from agents.investing_analysis import InvestingAnalysisAgent
+from agents.market_analyst import MarketAnalystAgent
 
 
 class NinePillaOrchestrator:
@@ -134,6 +135,17 @@ class NinePillaOrchestrator:
         # 9. Investing Analysis (web scraper)
         self.agents['investing'] = InvestingAnalysisAgent()
         print("✅ Investing Analysis Agent")
+
+        # 10. Market Analyst (macro + geopolítica + fluxo, com histórico Brapi)
+        if self.config['anthropic_key']:
+            self.agents['analyst'] = MarketAnalystAgent(
+                brapi_key=self.config['brapi_key'],
+                claude_api_key=self.config['anthropic_key'],
+                model=self.config['claude_model']
+            )
+            print("✅ Market Analyst Agent (macro/geopolítica/fluxo)")
+        else:
+            print("⚠️ Market Analyst Agent (ANTHROPIC_API_KEY não configurada)")
 
     def validate_setup(self) -> Dict[str, Any]:
         """Valida se todos os agentes estão configurados"""
@@ -266,6 +278,23 @@ class NinePillaOrchestrator:
             keywords = top_topic.get('keywords', [])
             clean_ticker = keywords[0].upper() if keywords else 'IBOV'
 
+            # STAGE 1.5: Market Analyst (macro + geopolítica + fluxo)
+            analyst_result = None
+            if 'analyst' in self.agents:
+                print("\n[1.5/6] 🧠 ANALYST — Leitura macro, geopolítica e fluxo...")
+                analyst_result = self.agents['analyst'].analyze(
+                    ticker=clean_ticker,
+                    market_data=market_data,
+                    news_context=top_topic.get('title', '')
+                )
+                results['stages']['analyst'] = {
+                    'status': analyst_result.get('status'),
+                    'technical_stats': analyst_result.get('technical_stats', {})
+                }
+                if analyst_result.get('status') != 'completed':
+                    print(f"⚠️ Analyst indisponível, Writer seguirá sem análise profunda")
+                    analyst_result = None
+
             writer_result = self.agents['writer'].generate_script(
                 market_data={
                     'ticker': clean_ticker,
@@ -273,7 +302,8 @@ class NinePillaOrchestrator:
                     'change_percent': ticker_data.get('change_pct', 0),
                     'trend_topic': top_topic.get('title', 'Notícia de mercado'),
                     'full_market': market_data
-                }
+                },
+                analyst_insights=analyst_result
             )
 
             if writer_result.get('status') == 'error':

@@ -78,6 +78,16 @@ EMOJIS PADRÃO:
 📈 = Ibovespa | 💵 = Dólar | 🛢️ = Petróleo | 🏦 = Bancos/Ações
 💊 = Píllula de Sabedoria | 🔥 = bloco de notícia
 
+⚖️ COMPLIANCE CVM (regra absoluta, exigência da Raquel 11/06/2026):
+NUNCA afirme que um ativo VAI subir ou cair. Isso é ousadia e risco regulatório.
+Use SEMPRE linguagem probabilística e branda:
+- PROIBIDO: "PETR4 vai subir" / "compre agora" / "hora de vender"
+- CERTO: "existe a possibilidade de PETR4 subir no curto prazo, fica alerta"
+- CERTO: "o cenário sugere espaço para alta, mas nada é garantido"
+- CERTO: "historicamente, esse padrão antecedeu movimentos de alta. Fique de olho"
+Nunca dê recomendação direta de compra ou venda. Apresente cenários e possibilidades,
+e devolva a decisão para o espectador ("a decisão é sempre sua").
+
 🚫 REGRA ABSOLUTA DE ESCRITA (exigência da Raquel, 11/06/2026):
 NUNCA use o travessão "—" (em-dash). É marca registrada de texto de IA.
 Em vez disso, escreva frases fluidas como numa conversa real:
@@ -193,12 +203,25 @@ CONTEXTO BRASIL 2026:
 
         analyst_block = ""
         if analyst_insights:
-            sentiment = analyst_insights.get('sentiment', 'NEUTRA')
+            # MarketAnalystAgent: leitura macro/geopolítica/fluxo completa
+            analysis_text = analyst_insights.get('analysis_text', '')
+            stats = analyst_insights.get('technical_stats', {})
+            if analysis_text:
+                analyst_block = f"""
+🧠 LEITURA DO ANALISTA (macro + geopolítica + fluxo, baseie a ANÁLISE nisto):
+{analysis_text}
+"""
+                if stats:
+                    analyst_block += f"""
+📐 ESTATÍSTICAS TÉCNICAS (histórico real Brapi, pode citar):
+{json.dumps(stats, ensure_ascii=False)}
+"""
+            # Compat: InvestingAnalysisAgent (sentimento de analistas)
+            sentiment = analyst_insights.get('sentiment')
             analysts = analyst_insights.get('analysts', [])
-            analyst_block = f"""
-📈 ANÁLISE DE PROFISSIONAIS (Investing.com):
-- Sentimento geral dos analistas: {sentiment}
-- {len(analysts)} analistas consultados
+            if sentiment:
+                analyst_block += f"""
+📈 SENTIMENTO DE ANALISTAS (Investing.com): {sentiment} ({len(analysts)} consultados)
 """
 
         duration = {'shorts': 75, 'tiktok': 50, 'morning_call': 150}.get(video_format, 75)

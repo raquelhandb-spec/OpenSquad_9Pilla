@@ -11,6 +11,10 @@ Regras permanentes definidas pela Raquel. Valem para TODA sessão neste reposit�
   Escrever frases fluidas como conversa real, usando vírgula ou ponto.
   (Regra da Raquel, 11/06/2026. Implementada em `squads/shorts-maestro/agents/writer.py`
   com dupla proteção: prompt + pós-processamento)
+- **COMPLIANCE CVM: NUNCA afirmar movimento futuro de ativo.** Proibido "PETR4 vai subir".
+  Usar sempre linguagem probabilística e branda: "existe a possibilidade de PETR4 subir
+  no curto prazo, fica alerta". Nunca dar recomendação direta de compra ou venda.
+  (Regra da Raquel, 11/06/2026. Motivo: regulação CVM Res. 20/2021 e proteção jurídica)
 - Setas "→" para cadeia causal são permitidas (visuais, não faladas)
 - Voz da Raquel: ver `docs/RAQUEL-VOICE-TEMPLATE.md` (análise de 16 Morning Calls)
 - Fechamento obrigatório: "dinheiro não é destino. É a jornada para a liberdade. 💛"
