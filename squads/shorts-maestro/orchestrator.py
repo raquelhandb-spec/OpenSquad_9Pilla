@@ -287,6 +287,19 @@ class NinePillaOrchestrator:
             keywords = top_topic.get('keywords', [])
             clean_ticker = keywords[0].upper() if keywords else 'IBOV'
 
+            # Se o tema não é um ativo real (ex: tema educação → "INVESTIMENTO"),
+            # usar para análise o ativo que mais se mexeu no dia
+            KNOWN_TICKERS = {'PETR4', 'VALE3', 'ITUB4', 'B3SA3', 'IBOV', '^BVSP'}
+            if clean_ticker not in KNOWN_TICKERS:
+                TICKER_MAP = {'petr4': 'PETR4', 'vale3': 'VALE3', 'itub4': 'ITUB4',
+                              'b3sa3': 'B3SA3', 'ibov': '^BVSP'}
+                movers = [(k, abs(v.get('change_pct', 0))) for k, v in market_data.items()
+                          if k in TICKER_MAP]
+                if movers:
+                    top_mover = max(movers, key=lambda x: x[1])[0]
+                    clean_ticker = TICKER_MAP[top_mover]
+                    print(f"   ℹ️ Tema sem ticker próprio. Analista usará o ativo mais movimentado: {clean_ticker}")
+
             # STAGE 1.5: Market Analyst (macro + geopolítica + fluxo)
             analyst_result = None
             if 'analyst' in self.agents:
@@ -370,10 +383,11 @@ class NinePillaOrchestrator:
             print("="*60)
             print(f"""
 INSTRUÇÕES:
-1. Acesse: {results['stages'].get('reviewer', {}).get('telegram_url', '[Link enviado para Telegram]')}
-2. Reaja com 👍 para APROVAR (vai criar vídeo HeyGen - US$ 0.30)
-3. Reaja com 👎 para REJEITAR (zero gasto - volta para Writer)
-4. Ou responda com feedback
+1. Garanta que o approval_bot.py está rodando em outra janela:
+   python approval_bot.py
+2. Abra o Telegram (@raquel_9pilla_bot)
+3. Clique no botão ✅ APROVAR (vai criar vídeo HeyGen - US$ 0.30)
+   ou no botão ❌ REJEITAR (zero gasto + você pode mandar feedback)
 
 QUANDO APROVAR:
 → Executor (ElevenLabs + HeyGen) cria vídeo
