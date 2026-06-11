@@ -160,7 +160,8 @@ CONTEXTO BRASIL 2026:
         self,
         market_data: Dict[str, Any],
         analyst_insights: Optional[Dict[str, Any]] = None,
-        video_format: str = "shorts"  # shorts, morning_call, or tiktok
+        video_format: str = "shorts",  # shorts, morning_call, or tiktok
+        yesterday_review: Optional[str] = None  # bloco [CONFERE?] do ExpectationTracker
     ) -> Dict[str, Any]:
         """
         Gera script com voz Raquel usando Claude API
@@ -226,27 +227,49 @@ CONTEXTO BRASIL 2026:
 
         duration = {'shorts': 75, 'tiktok': 50, 'morning_call': 150}.get(video_format, 75)
 
-        user_prompt = f"""TAREFA: Escreva um script de YouTube Short de ~{duration} segundos (lido em voz alta) sobre:
+        review_block = ""
+        if yesterday_review:
+            review_block = f"""
+🔍 REVISÃO DE ONTEM (ExpectationTracker, incluir como seção [CONFERE?] logo após o termômetro):
+{yesterday_review}
+"""
 
-🎯 TEMA PRINCIPAL: {trend}
-- Ativo em destaque: {ticker}
-- Variação: {change:+.2f}%
-{thermometer}{analyst_block}
-DATA: {datetime.now().strftime('%d/%m/%Y')}
-
-ESTRUTURA DO SHORT (adaptação do Morning Call para vídeo curto):
+        if video_format == 'morning_call':
+            structure = """ESTRUTURA DO MORNING CALL COMPLETO (formato WhatsApp/Blog, 35-55 linhas):
+1. [ABERTURA] Saudação calorosa Raquel + ritual do café
+2. [TERMÔMETRO] Tabela completa: Ibov, Dólar, Brent, PETR4, VALE3, ITUB4 com emojis
+3. [CONFERE?] Revisão honesta do que foi dito ontem vs o que aconteceu (SE houver revisão acima)
+4. [BLOCO1] 🔥 1. Notícia principal em CAPS + contexto + cadeia causal + "o que isso significa pra você"
+5. [BLOCO2] 🔥 2. Notícia secundária, mesmo formato (efeito dominó)
+6. [BLOCO3] 🔥 3. Contexto Brasil, mesmo formato (foco no bolso)
+7. [PÍLLULA] 💊 Píllula de Sabedoria: citação de investidor + contexto + lição
+8. [CTA] Chamado à ação leve ("Gostou? Solta o emoji 👍")
+9. [FECHAMENTO] Assinatura + missão + disclaimer CVM"""
+            task_desc = f"Escreva o MORNING CALL 9PILLA completo de hoje (formato texto WhatsApp/Blog, ~{duration}s de leitura)"
+        else:
+            structure = """ESTRUTURA DO SHORT (adaptação do Morning Call para vídeo curto):
 1. [ABERTURA] Saudação calorosa Raquel (5s)
 2. [TERMÔMETRO] 3-4 indicadores principais com emojis (15s)
 3. [ANÁLISE] O tema principal com CADEIA CAUSAL explícita (25s)
 4. [BOLSO] "O que isso significa pro seu bolso:" com 2-3 setas → (15s)
 5. [PÍLLULA] Uma lição rápida de sabedoria (10s)
-6. [FECHAMENTO] CTA leve + assinatura + disclaimer (5s)
+6. [FECHAMENTO] CTA leve + assinatura + disclaimer (5s)"""
+            task_desc = f"Escreva um script de YouTube Short de ~{duration} segundos (lido em voz alta)"
+
+        user_prompt = f"""TAREFA: {task_desc} sobre:
+
+🎯 TEMA PRINCIPAL: {trend}
+- Ativo em destaque: {ticker}
+- Variação: {change:+.2f}%
+{thermometer}{analyst_block}{review_block}
+DATA: {datetime.now().strftime('%d/%m/%Y')}
+
+{structure}
 
 IMPORTANTE:
-- Texto será NARRADO em voz alta pela voz clonada da Raquel (ElevenLabs)
-- Escreva como FALA, não como texto escrito
+- {'Texto para LEITURA (WhatsApp/Blog), com formatação visual e emojis' if video_format == 'morning_call' else 'Texto será NARRADO em voz alta pela voz clonada da Raquel (ElevenLabs). Escreva como FALA, não como texto escrito'}
 - Use os números REAIS fornecidos acima
-- Responda APENAS com o script, marcando as seções com [ABERTURA], [TERMÔMETRO], [ANÁLISE], [BOLSO], [PÍLLULA], [FECHAMENTO]"""
+- Responda APENAS com o script, marcando as seções com os marcadores [SEÇÃO] indicados"""
 
         print(f"\n🎬 WriterAgent — Gerando script via Claude ({self.model})")
         print(f"   Ticker: {ticker}")
@@ -260,9 +283,12 @@ IMPORTANTE:
             }
 
         try:
+            # Morning Call completo é mais longo que Short (35-55 linhas)
+            max_tokens = 3000 if video_format == 'morning_call' else 1500
+
             response = self.client.messages.create(
                 model=self.model,
-                max_tokens=1500,
+                max_tokens=max_tokens,
                 temperature=0.7,
                 system=self.raquel_voice_prompt,
                 messages=[{"role": "user", "content": user_prompt}]

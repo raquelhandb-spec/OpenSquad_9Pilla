@@ -26,6 +26,7 @@ from agents.zapi_broadcaster import ZAPIBroadcasterAgent
 from agents.manychat_integration import ManyChatAgent
 from agents.investing_analysis import InvestingAnalysisAgent
 from agents.market_analyst import MarketAnalystAgent
+from agents.expectation_tracker import ExpectationTrackerAgent
 
 
 class NinePillaOrchestrator:
@@ -146,6 +147,14 @@ class NinePillaOrchestrator:
             print("✅ Market Analyst Agent (macro/geopolítica/fluxo)")
         else:
             print("⚠️ Market Analyst Agent (ANTHROPIC_API_KEY não configurada)")
+
+        # 11. Expectation Tracker (accountability: revisa ontem vs hoje)
+        if self.config['anthropic_key']:
+            self.agents['tracker'] = ExpectationTrackerAgent(
+                claude_api_key=self.config['anthropic_key'],
+                model=self.config['claude_model']
+            )
+            print("✅ Expectation Tracker Agent (revisão diária)")
 
     def validate_setup(self) -> Dict[str, Any]:
         """Valida se todos os agentes estão configurados"""
@@ -295,6 +304,24 @@ class NinePillaOrchestrator:
                     print(f"⚠️ Analyst indisponível, Writer seguirá sem análise profunda")
                     analyst_result = None
 
+            # STAGE 1.6: Expectation Tracker (accountability loop)
+            yesterday_review_text = None
+            if 'tracker' in self.agents:
+                # Revisar o que foi dito ontem contra os dados de hoje
+                review = self.agents['tracker'].review_yesterday(today_market=market_data)
+                if review.get('status') == 'completed':
+                    yesterday_review_text = review['review_text']
+                    results['stages']['tracker_review'] = {
+                        'status': 'completed',
+                        'reviewed_date': review['reviewed_date']
+                    }
+                # Salvar a expectativa de HOJE para revisão amanhã
+                if analyst_result:
+                    self.agents['tracker'].save_expectations(
+                        analysis=analyst_result,
+                        market_snapshot=market_data
+                    )
+
             writer_result = self.agents['writer'].generate_script(
                 market_data={
                     'ticker': clean_ticker,
@@ -303,7 +330,8 @@ class NinePillaOrchestrator:
                     'trend_topic': top_topic.get('title', 'Notícia de mercado'),
                     'full_market': market_data
                 },
-                analyst_insights=analyst_result
+                analyst_insights=analyst_result,
+                yesterday_review=yesterday_review_text
             )
 
             if writer_result.get('status') == 'error':

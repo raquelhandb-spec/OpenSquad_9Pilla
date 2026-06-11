@@ -1,0 +1,26 @@
+{
+  "date": "2026-06-11",
+  "ticker": "PETR4",
+  "analysis_text": "LEITURA MACRO: O dólar em R$ 5,18 com alta de 0,50% sinaliza pressão cambial moderada, alimentada pelo ambiente externo de aversão a risco. O Ibovespa recua 0,21%, indicando cautela.\n\nLEITURA GEOPOLÍTICA: A tensão entre Israel e Irã coloca o Estreito de Ormuz no centro das atenções. O Brent a US$ 93,50 sugere que o mercado começa a precificar esse risco, mas ainda sem pânico. Uma escalada poderia pressionar o Brent acima de US$ 95-100.\n\nPOSSIBILIDADES:\nCenário de pressão compradora: se a tensão se intensificar e o Brent avançar para US$ 96-100, existe a possibilidade de PETR4 encontrar suporte adicional no curto prazo. Fique alerta.\nCenário de pressão vendedora: caso o dólar continue subindo e o apetite a risco deteriore, o fluxo estrangeiro pode recuar da B3, arrastando inclusive commodities. Nada é garantido.\nCenário neutro: Brent estabilizado pode manter PETR4 oscilando lateralmente.\n\nALERTA DO DIA: Acompanhe notícias sobre o Estreito de Ormuz. Movimentos bruscos no Brent e dólar podem amplificar a volatilidade de PETR4.",
+  "technical_stats": {},
+  "market_snapshot": {
+    "ibov": {
+      "value": 168668,
+      "change_pct": -0.21
+    },
+    "dolar": {
+      "value": 5.18,
+      "change_pct": 0.5
+    },
+    "petr4": {
+      "value": 41.08,
+      "change_pct": 0.43
+    },
+    "brent": {
+      "value": 93.5,
+      "change_pct": 0.43
+    }
+  },
+  "saved_at": "2026-06-11T09:04:21.974319",
+  "reviewed": false
+}
