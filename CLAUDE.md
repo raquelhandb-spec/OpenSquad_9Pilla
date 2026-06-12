@@ -31,6 +31,14 @@ Regras permanentes definidas pela Raquel. Valem para TODA sessão neste reposit�
 - Economizar créditos Claude: validar qualidade ANTES de gerar em volume
 - Nada de criar conteúdo "sem sentido" para aprovação: qualidade primeiro
 
+## Estratégia de Formato de Conteúdo (Regra da Raquel, 11/06/2026)
+- **MORNING CALL (WhatsApp/Blog): TEXTO diário** (custo ~US$ 0,02). Sem HeyGen aqui,
+  "não tem essa necessidade, podemos economizar"
+- **SHORTS (YouTube/Instagram/TikTok): HeyGen é super válido** — vídeo com avatar
+  é para as redes de alcance, não para o grupo WhatsApp
+- **ÁUDIO (ElevenLabs): ocasional**, sempre com aprovação prévia da Raquel
+- Morning Call sai às 09:09 (horário tradicional da 9Pilla)
+
 ## Stack
 - Scripts: Claude API (claude-sonnet-4-6), NÃO Ollama (migrado 11/06/2026)
 - Dados de mercado: Brapi (`https://brapi.dev/api`, dólar via `/v2/currency?currency=USD-BRL`)

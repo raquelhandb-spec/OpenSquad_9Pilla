@@ -22,5 +22,36 @@
     }
   },
   "saved_at": "2026-06-11T09:04:21.974319",
-  "reviewed": false
+  "reviewed": true,
+  "review": {
+    "reviewed_on": "2026-06-12",
+    "review_text": "[CONFERE?]\n\nOntem a gente falou que uma escalada geopolítica poderia empurrar o Brent acima de US$ 95-100 e dar suporte a PETR4. E o que aconteceu? O Brent disparou para US$ 103,45, alta de quase 4%, bem acima do gatilho que mencionamos. O Ibovespa subiu 0,71% e o dólar recuou para R$ 4,96.\n\nAcerto parcial, com um erro importante no meio. A leitura geopolítica bateu certinho. Mas PETR4 caiu 1,76%, mesmo com petróleo nas alturas. Isso é a surpresa clássica: o mercado já havia precificado parte do risco antes, e algum fator específico da ação, seja fluxo, notícia corporativa ou realização, falou mais alto do que o Brent. Commodity subiu, ação caiu. Acontece, turma, e é exatamente por isso que nunca se deve operar \"no automático\".",
+    "today_market": {
+      "ibov": {
+        "value": 176200,
+        "change": 1250,
+        "change_pct": 0.71
+      },
+      "dolar": {
+        "value": 4.96,
+        "change": 0.02,
+        "change_pct": 0.4
+      },
+      "petr4": {
+        "value": 47.5,
+        "change": -0.85,
+        "change_pct": -1.76
+      },
+      "vale3": {
+        "value": 84.3,
+        "change": 1.1,
+        "change_pct": 1.32
+      },
+      "brent": {
+        "value": 103.45,
+        "change": 3.9,
+        "change_pct": 3.92
+      }
+    }
+  }
 }
