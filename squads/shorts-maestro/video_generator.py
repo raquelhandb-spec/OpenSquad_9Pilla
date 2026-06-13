@@ -32,7 +32,12 @@ def generate_audio_elevenlabs(text, bloco_num, mc_date):
     """Gera áudio com ElevenLabs (sua voz Raquel)"""
     print(f"\n   🎤 Gerando áudio ElevenLabs (Bloco {bloco_num})...")
 
-    url = "https://api.elevenlabs.io/v1/text-to-speech/{}".format(ELEVENLABS_VOICE_ID)
+    # Garantir que o texto tem mínimo de caracteres
+    if len(text.strip()) < 50:
+        print(f"      ⚠️ Texto muito curto ({len(text)} chars), expandindo...")
+        text = f"Olá! Aqui é a Raquel! {text} Obrigada por escutar!"
+
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVENLABS_VOICE_ID}"
 
     headers = {
         "xi-api-key": ELEVENLABS_API_KEY,
@@ -40,7 +45,7 @@ def generate_audio_elevenlabs(text, bloco_num, mc_date):
     }
 
     data = {
-        "text": text,
+        "text": text.strip(),
         "voice_settings": {
             "stability": 0.5,
             "similarity_boost": 0.75
@@ -48,7 +53,9 @@ def generate_audio_elevenlabs(text, bloco_num, mc_date):
     }
 
     try:
+        print(f"      📝 Enviando {len(text)} caracteres para ElevenLabs...")
         response = requests.post(url, json=data, headers=headers, timeout=30)
+
         if response.status_code == 200:
             audio_file = os.path.join(OUTPUT_DIR, f"audio_bloco{bloco_num}_{mc_date}.mp3")
             with open(audio_file, 'wb') as f:
@@ -56,7 +63,10 @@ def generate_audio_elevenlabs(text, bloco_num, mc_date):
             print(f"   ✅ Áudio salvo: {audio_file}")
             return audio_file
         else:
-            print(f"   ❌ ElevenLabs erro: {response.status_code}")
+            error_msg = response.text[:200] if response.text else "Erro desconhecido"
+            print(f"   ❌ ElevenLabs erro {response.status_code}: {error_msg}")
+            print(f"      API Key: {ELEVENLABS_API_KEY[:20]}...")
+            print(f"      Voice ID: {ELEVENLABS_VOICE_ID}")
             return None
     except Exception as e:
         print(f"   ❌ Erro ao gerar áudio: {e}")
