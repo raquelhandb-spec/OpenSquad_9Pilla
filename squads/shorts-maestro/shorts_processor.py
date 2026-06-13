@@ -27,7 +27,9 @@ def extract_section(text, section_name):
     pattern = rf'\[{section_name}\](.*?)(?=\n\[|$)'
     match = re.search(pattern, text, re.DOTALL | re.IGNORECASE)
     if match:
-        return match.group(1).strip()
+        content = match.group(1).strip()
+        if content:
+            return content
     return ""
 
 
@@ -56,11 +58,15 @@ def process_morning_call(mc_file):
     # Se não encontrar com números, pegar os primeiros 3 parágrafos significativos
     if not (bloco1 and bloco2 and bloco3):
         print("   ⚠️ Blocos estruturados não encontrados, extraindo por padrão...")
-        paragraphs = [p.strip() for p in mc_text.split('\n\n') if len(p.strip()) > 200]
+        paragraphs = [p.strip() for p in mc_text.split('\n\n') if len(p.strip()) > 150]
         if len(paragraphs) >= 3:
-            bloco1 = paragraphs[1]  # Skip abertura, pega análise 1
-            bloco2 = paragraphs[2]  # Análise 2
-            bloco3 = paragraphs[3] if len(paragraphs) > 3 else paragraphs[2]  # Análise 3
+            # Pega os parágrafos mais significativos
+            bloco1 = paragraphs[1] if len(paragraphs) > 1 else paragraphs[0]
+            bloco2 = paragraphs[2] if len(paragraphs) > 2 else paragraphs[1]
+            bloco3 = paragraphs[3] if len(paragraphs) > 3 else paragraphs[2]
+        else:
+            print("   ⚠️ Não há parágrafos suficientes, usando todo o conteúdo...")
+            bloco1 = bloco2 = bloco3 = mc_text
 
     blocos = {
         'bloco1': bloco1[:500],  # Limita a 500 chars (60-90s de fala)
