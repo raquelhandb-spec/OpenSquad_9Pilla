@@ -24,12 +24,14 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def extract_section(text, section_name):
     """Extrai uma seção do Morning Call por nome"""
-    pattern = rf'\[{section_name}\](.*?)(?=\n\[|$)'
-    match = re.search(pattern, text, re.DOTALL | re.IGNORECASE)
-    if match:
-        content = match.group(1).strip()
-        if content:
-            return content
+    try:
+        pattern = rf'\[{section_name}\](.*?)(?=\n\[|$)'
+        match = re.search(pattern, text, re.DOTALL | re.IGNORECASE)
+        if match is not None:
+            content = match.group(1).strip()
+            return content if content else ""
+    except:
+        pass
     return ""
 
 
