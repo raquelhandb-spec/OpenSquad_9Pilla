@@ -76,32 +76,57 @@ class SetupRaquelAnalyzer:
         print(f"\n📥 Buscando dados diários para {self.symbol}...")
 
         try:
+            url = f"{BASE_URL}/quote/{self.symbol}"
+            params = {
+                "range": "2y",
+                "interval": "1d"
+            }
+
+            print(f"   URL: {url}")
+            print(f"   Params: {params}")
+
             response = requests.get(
-                f"{BASE_URL}/quote/{self.symbol}",
-                params={
-                    "range": "2y",
-                    "interval": "1d"
-                },
+                url,
+                params=params,
                 headers=HEADERS,
                 timeout=15
             )
 
+            print(f"   Status: {response.status_code}")
+
             if response.status_code == 200:
                 result = response.json()
-                if 'results' in result and result['results']:
-                    self.data_daily = sorted(
-                        result['results'],
-                        key=lambda x: x.get('date', x.get('timestamp', 0))
-                    )
-                    self.prices_daily = [x.get('close', x.get('regularMarketPrice', 0)) for x in self.data_daily]
-                    print(f"✅ {len(self.data_daily)} candles diários obtidos")
-                    return True
+
+                # Debug: mostrar estrutura da resposta
+                print(f"   Chaves da resposta: {list(result.keys())}")
+
+                if 'results' in result:
+                    print(f"   Total de resultados: {len(result['results'])}")
+
+                    if result['results']:
+                        # Mostrar primeiro resultado
+                        first = result['results'][0]
+                        print(f"   Primeiro candle: {first}")
+
+                        self.data_daily = sorted(
+                            result['results'],
+                            key=lambda x: x.get('date', x.get('timestamp', 0))
+                        )
+                        self.prices_daily = [x.get('close', x.get('regularMarketPrice', 0)) for x in self.data_daily]
+                        print(f"✅ {len(self.data_daily)} candles diários obtidos")
+                        return True
+                else:
+                    print(f"❌ 'results' não encontrado na resposta")
+                    return False
             else:
                 print(f"❌ Erro {response.status_code}")
+                print(f"   Resposta: {response.text[:500]}")
                 return False
 
         except Exception as e:
             print(f"❌ Erro: {e}")
+            import traceback
+            traceback.print_exc()
             return False
 
     def calculate_sma(self, prices: List[float], period: int) -> List[float]:
