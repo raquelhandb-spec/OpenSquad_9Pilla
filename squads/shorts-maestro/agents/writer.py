@@ -100,6 +100,26 @@ Em vez disso, escreva frases fluidas como numa conversa real:
 Use vírgula, ponto final ou simplesmente emende a frase como se estivesse falando com uma amiga.
 As setas "→" para cadeia causal PODEM continuar (são visuais, não texto falado).
 
+📚 TRADUZIR TERMOS TÉCNICOS (exigência da Raquel, 14/06/2026):
+Cada termo técnico DEVE ser traduzido e explicado em português claro.
+- ERRADO: "SMA20 cruzou acima de SMA45"
+- CERTO: "A média de 20 dias subiu acima da média de 45 dias, o que é como
+          dizer que a ação tá acelerada agora. Isso geralmente sinaliza força de alta."
+Padrão para cada termo técnico:
+  1. Diga o termo ("SMA20")
+  2. Explique em português ("Média de 20 dias")
+  3. Use analogia ("é como...")
+  4. Explique impacto prático ("significa que...")
+Termos que SEMPRE precisam de tradução:
+  • SMA, MACD, RSI, Bollinger Bands → Médias, indicadores técnicos
+  • Ponta Compradora/Vendedora → Quem quer comprar/vender mais
+  • Order Flow → Fluxo de ordens, quem tá comprando/vendendo
+  • Convergência/Divergência → Tudo alinhado / conflitante
+  • Breakout → Quando sai de uma faixa de preço
+  • Suporte/Resistência → Piso histórico / teto histórico
+  • Volatilidade → Oscilação de preço, mercado mexendo mais ou menos
+  • R:R (Risk Reward) → Relação risco/lucro
+
 PÍLLULA DE SABEDORIA (sempre incluir 1):
 Citação de investidor (Warren Buffett, Benjamin Graham, Barsi, Howard Marks)
 ou conceito educativo (Senhor Mercado, margem de segurança, paciência vs pânico).
@@ -111,7 +131,20 @@ FECHAMENTO OBRIGATÓRIO:
 CONTEXTO BRASIL 2026:
 - Geopolítica: Oriente Médio, Estreito de Ormuz (20% do petróleo mundial)
 - Macro: IPCA ~5% (acima do teto 4,50%), Selic 14,50% em ciclo de corte, Dólar ~R$ 5
-- Mercado: Ibovespa volátil, fluxo estrangeiro oscilando, Brent US$ 95-110"""
+- Mercado: Ibovespa volátil, fluxo estrangeiro oscilando, Brent US$ 95-110
+
+🌍 DADOS GLOBAIS (SEMPRE incluir quando relevante):
+Conecte o Morning Call ao mercado global. Use:
+- Wall Street (S&P 500, Dow Jones): sinais de entrada/saída de capital
+- Petróleo Brent: direto PETR4, inflação, Selic
+- Dólar: câmbio, importações, Taxa Fed
+- Índices Ásia (Nikkei, Hang Seng): risk sentiment
+- Cripto: sentimento de risco global
+Estrutura: "Enquanto você dormiu, [o que aconteceu globalmente].
+          Aqui no Brasil, isso significa [impacto local]."
+Exemplo: "Petróleo Brent subiu 2% na noite (afeta PETR4 amanhã).
+         S&P 500 em alta (risco global positivo, comprador estrangeiro entra no BR).
+         Logo, IBOVESPA deve reagir bem."
 
     def validate_connection(self) -> bool:
         """Valida se Claude API está acessível e com créditos"""
