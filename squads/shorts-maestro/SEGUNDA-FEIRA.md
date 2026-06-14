@@ -1,21 +1,24 @@
-# ✅ CHECKLIST SEGUNDA-FEIRA 15/06/2026
+# ✅ CHECKLIST SEGUNDA-FEIRA 15/06/2026 (PRIMEIRA EXECUÇÃO)
+
+**Importante:** Isso é a PRIMEIRA execução. Depois, é rotina diária (seg-sex). Ver ROTINA-DIARIA.md
 
 ## 🕐 TIMELINE DO DIA
 
 ### **10:00 - Abertura da Bolsa**
 ```
-⏰ HORÁRIO: 09:30 Pré-market | 10:00 Abertura oficial
+⏰ HORÁRIO: 10:00 Abertura oficial (09:30 pré-market)
 ✅ ACTION: Profit Pro já deve estar rodando com NTSL script
 ```
 
-### **10:00-16:30 - Expediente Normal**
+### **10:00-16:55 - Expediente Normal (B3)**
 ```
 ✅ Profit Pro exportando dados (Order Flow)
 ✅ NTSL rodando automático
 ✅ CSV sendo gerado: output/profit_export.csv
+Período oficial de negociação: 10:00-16:55
 ```
 
-### **16:30-17:00 - Logo após fechamento**
+### **17:00-17:30 - Logo após fechamento**
 ```
 TURMA 9PILLA AGORA VAI VER O JOGO MUDAR!
 Rode nessa ordem (copia e cola um por um):
