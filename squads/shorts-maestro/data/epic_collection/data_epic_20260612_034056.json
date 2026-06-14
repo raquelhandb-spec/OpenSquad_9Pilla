@@ -1,0 +1,34 @@
+{
+  "timestamp": "2026-06-12T03:40:56.830966",
+  "data_br": {},
+  "bolsas_globais": {},
+  "commodities": {},
+  "crypto": {
+    "BTC": {
+      "price_usd": 62805,
+      "price_brl": 320305,
+      "change_24h": -0.14041682760080795
+    },
+    "ETH": {
+      "price_usd": 1651.01,
+      "price_brl": 8420.17,
+      "change_24h": -0.4982017509946024
+    }
+  },
+  "analise_geopolitica": {
+    "trump_negociacoes": {
+      "evento": "Trump anuncia momentos finais de negociações de paz",
+      "impacto_esperado": "Redução de tensões geopolíticas → petróleo pode cair → flight-to-safety reduz → mercados emergentes ganham apetite",
+      "horario_noticia": "~03:00 UTC (ontem/hoje madrugada)"
+    },
+    "oriente_medio": {
+      "status": "Tensões elevadas, petróleo reagindo",
+      "proxy": "BRENT acima de US$ 100"
+    },
+    "brasil": {
+      "risco_politico": "PETR4 pode sofrer com pressão por intervenção em combustíveis se Brent ficar alto",
+      "selic": "14,50% ao ano",
+      "inflacao": "IPCA acima de 5%, teto em 4,50%"
+    }
+  }
+}
