@@ -13,6 +13,10 @@ import json
 import os
 from datetime import datetime
 from typing import Dict, Any, Optional, List
+from dotenv import load_dotenv
+
+# Carregar variáveis de ambiente
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '.env'))
 
 try:
     from anthropic import Anthropic
