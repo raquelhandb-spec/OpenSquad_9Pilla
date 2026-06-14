@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 🎯 SETUP RAQUEL ANALYZER — Análise exata do seu setup profissional
 Médias: SMA 20 (curto), SMA 45 (médio), SMA 200 (longo)
@@ -7,12 +8,17 @@ Cenários dinâmicos com cruzamento de sinais
 """
 
 import os
+import sys
 import json
 import requests
 import numpy as np
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from typing import Dict, List, Any
+
+# Fix encoding para Windows
+if sys.platform == 'win32':
+    sys.stdout.reconfigure(encoding='utf-8')
 
 load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env'))
 
@@ -107,21 +113,25 @@ class SetupRaquelAnalyzer:
     def analyze_timeframe(self, prices: List[float], timeframe: str) -> Dict[str, Any]:
         """Analisa um timeframe com as 3 médias de Raquel"""
 
-        if len(prices) < 200:
+        if not prices or len(prices) < 2:
             return {}
 
-        # Calcular as 3 médias
-        sma_20 = self.calculate_sma(prices, 20)
-        sma_45 = self.calculate_sma(prices, 45)
-        sma_200 = self.calculate_sma(prices, 200)
+        # Calcular as 3 médias (usar mínimo disponível)
+        sma_20_period = min(20, len(prices))
+        sma_45_period = min(45, len(prices))
+        sma_200_period = min(200, len(prices))
+
+        sma_20 = self.calculate_sma(prices, sma_20_period) if sma_20_period > 0 else []
+        sma_45 = self.calculate_sma(prices, sma_45_period) if sma_45_period > 0 else []
+        sma_200 = self.calculate_sma(prices, sma_200_period) if sma_200_period > 0 else []
 
         current_price = prices[-1]
         prev_price = prices[-2] if len(prices) > 1 else current_price
 
         # Últimos valores das médias
-        last_sma_20 = sma_20[-1] if sma_20 else 0
-        last_sma_45 = sma_45[-1] if sma_45 else 0
-        last_sma_200 = sma_200[-1] if sma_200 else 0
+        last_sma_20 = sma_20[-1] if sma_20 else current_price
+        last_sma_45 = sma_45[-1] if sma_45 else current_price
+        last_sma_200 = sma_200[-1] if sma_200 else current_price
 
         # Determinar tendência
         trend = self._determine_trend(current_price, last_sma_20, last_sma_45, last_sma_200)
@@ -289,6 +299,10 @@ class SetupRaquelAnalyzer:
 
         # Análise diária
         analysis_daily = self.analyze_timeframe(self.prices_daily, "DIÁRIO (tendência)")
+
+        if not analysis_daily:
+            print("❌ Não consegui gerar análise (dados insuficientes)")
+            return
 
         print(f"\n📊 TIMEFRAME DIÁRIO (Tendência de Médio/Longo Prazo)")
         print("-" * 100)

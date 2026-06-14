@@ -64,11 +64,12 @@ print("-" * 100)
 
 try:
     result = subprocess.run(
-        [sys.executable, 'profit_flow_analyzer.py'],
+        [sys.executable, '-u', 'profit_flow_analyzer.py'],
         cwd=BASE_DIR,
         capture_output=True,
         text=True,
-        timeout=30
+        timeout=60,
+        encoding='utf-8'
     )
 
     if result.returncode == 0:

@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 🔥 PROFIT FLOW ANALYZER — Processa Order Flow do Profit Pro
 Lê CSVs exportados, identifica ponta, cria cenários dinâmicos
 """
 
 import os
+import sys
 import csv
 import json
 import numpy as np
 from datetime import datetime
 from typing import Dict, List, Any
+
+# Fix encoding para Windows
+if sys.platform == 'win32':
+    sys.stdout.reconfigure(encoding='utf-8')
 
 class ProfitFlowAnalyzer:
     """Analisa Order Flow a partir de CSVs do Profit Pro"""
