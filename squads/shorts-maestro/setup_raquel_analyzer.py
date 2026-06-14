@@ -57,14 +57,14 @@ class SetupRaquelAnalyzer:
                 if 'results' in result and result['results']:
                     self.data_5min = sorted(
                         result['results'],
-                        key=lambda x: x.get('timestamp', 0)
+                        key=lambda x: x.get('date', x.get('timestamp', 0))
                     )
                     self.prices_5min = [x.get('close', x.get('regularMarketPrice', 0)) for x in self.data_5min]
                     print(f"✅ {len(self.data_5min)} candles de 5min obtidos")
                     return True
             else:
                 print(f"⚠️ BRAPI não suporta 5min (erro {response.status_code})")
-                print("   Usando 1 dia com interval diário como fallback")
+                print("   Usando dados diários como fallback")
                 return self.fetch_daily_data()
 
         except Exception as e:
@@ -91,7 +91,7 @@ class SetupRaquelAnalyzer:
                 if 'results' in result and result['results']:
                     self.data_daily = sorted(
                         result['results'],
-                        key=lambda x: x.get('timestamp', 0)
+                        key=lambda x: x.get('date', x.get('timestamp', 0))
                     )
                     self.prices_daily = [x.get('close', x.get('regularMarketPrice', 0)) for x in self.data_daily]
                     print(f"✅ {len(self.data_daily)} candles diários obtidos")
