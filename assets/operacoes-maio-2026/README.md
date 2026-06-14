@@ -6,15 +6,15 @@
 
 ---
 
-## 📋 Conteúdo
+## 📋 Conteúdo (124 arquivos totais)
 
-### Screenshots (12 arquivos)
+### Screenshots de Relatórios (12 arquivos)
 - **Captura de tela 2026-05-24 131653.png** — Relatório principal Elliot-Warren
 - **Captura de tela 2026-05-25 004955.png** — Gráfico de patrimônio crescente
 - **Captura de tela 2026-05-28 23x.png** — Análises avançadas e detalhes operacionais
 
-### Depoimentos & Operações (50 imagens WhatsApp)
-- WhatsApp Image 2026-05-14 → WhatsApp Image 2026-05-24
+### Depoimentos & Operações (61 imagens WhatsApp)
+- WhatsApp Image 2026-04-24 → WhatsApp Image 2026-05-24
 - Documentação de operações ganhadoras
 - Depoimentos de membros da Turma 9Pilla
 - Análises e estratégias aplicadas
@@ -44,10 +44,11 @@ Estes arquivos são **PROVA DE PERFORMANCE** para:
 
 ## ✅ Status
 
-- ✅ Arquivos salvos em GitHub
+- ✅ 124 arquivos salvos em GitHub
+- ✅ 5 partes consolidadas (april-maio 2026)
 - ✅ Versionados e seguros
-- ✅ Pronto para landing page
-- ⏳ Aguardando métricas finais (amanhã)
+- ✅ **Pronto para landing page + ebook v2**
+- ⏳ Aguardando 4 métricas finais: Retorno %, Drawdown, Maior Lucro 1 Op, Bônus
 
 ---
 
