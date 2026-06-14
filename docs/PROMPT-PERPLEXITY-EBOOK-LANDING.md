@@ -25,8 +25,12 @@ OFERTA:
 - Produto: eBook "Delta, Gamma, Theta — as 3 amigas" (operações com opções
   e travas para limitar risco)
 - Preço: R$ 49,90
-- Cupom: turma9pilla
 - Bônus: Planilha de controle de operações
+- Checkout deve ter um campo "Cupom de desconto" (opcional, vazio por padrão)
+  para o cliente digitar um código. NÃO exibir nem mencionar o cupom
+  "turma9pilla" em nenhum lugar visível da página — ele é exclusivo para
+  membros da Turma 9Pilla e será divulgado apenas internamente (grupo
+  fechado), nunca no site público.
 
 PROVA SOCIAL (dados reais, carteira pessoal Raquel, conta Elliot-Warren 1019286):
 - Resultado do mês: R$ 5.097,96
@@ -68,8 +72,10 @@ Paralisia por análise."
 
 [CTA FINAL]
 "Liberdade não se aposenta. Se constrói todo dia.
-Comece hoje. Use o cupom turma9pilla."
+Comece hoje."
 Botão: "Garantir meu eBook por R$ 49,90"
+Checkout: incluir campo opcional "Tem um cupom de desconto?" (input de texto,
+vazio, sem sugestão de código)
 
 OBRIGATÓRIO (CVM Resolução 20/2021):
 Incluir disclaimer visível no rodapé: "As operações apresentadas são
