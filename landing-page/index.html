@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eBook Delta, Gamma, Theta — 9Pilla</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --verde: #06A77D;
+            --azul: #1B3A5C;
+            --laranja: #FF7A3D;
+            --vermelho: #E63946;
+            --cinza: #666666;
+            --bg: #F5F5F5;
+            --branco: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--azul);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, var(--azul) 0%, #0d2137 100%);
+            color: var(--branco);
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--verde);
+            color: var(--branco);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h1 {
+            font-size: 1.8rem;
+            line-height: 1.3;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .hero h1 span {
+            color: var(--verde);
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 32px;
+            max-width: 520px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            background: var(--laranja);
+            color: var(--branco);
+            padding: 16px 40px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 122, 61, 0.4);
+        }
+
+        .btn-price {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        /* SEÇÕES */
+        section {
+            padding: 48px 20px;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-align: center;
+            color: var(--azul);
+        }
+
+        /* PROBLEMA */
+        .problema {
+            background: var(--branco);
+        }
+
+        .problema-list {
+            list-style: none;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .problema-list li {
+            padding: 12px 0;
+            padding-left: 32px;
+            position: relative;
+            font-size: 1.05rem;
+            color: var(--cinza);
+        }
+
+        .problema-list li::before {
+            content: "\2716";
+            position: absolute;
+            left: 0;
+            color: var(--vermelho);
+            font-weight: 700;
+        }
+
+        /* SOLUÇÃO */
+        .solucao {
+            background: var(--bg);
+        }
+
+        .solucao-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .solucao-card {
+            background: var(--branco);
+            border-radius: 12px;
+            padding: 24px;
+            border-left: 4px solid var(--verde);
+        }
+
+        .solucao-card h3 {
+            font-size: 1.1rem;
+            color: var(--verde);
+            margin-bottom: 8px;
+        }
+
+        .solucao-card p {
+            color: var(--cinza);
+            font-size: 0.95rem;
+        }
+
+        /* PROVA SOCIAL */
+        .prova {
+            background: var(--azul);
+            color: var(--branco);
+        }
+
+        .prova .section-title {
+            color: var(--branco);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            max-width: 520px;
+            margin: 0 auto 32px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--verde);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .stat-card.highlight {
+            grid-column: 1 / -1;
+            background: rgba(6, 167, 125, 0.15);
+            border: 1px solid rgba(6, 167, 125, 0.3);
+        }
+
+        .depoimento-note {
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        /* BÔNUS */
+        .bonus {
+            background: var(--branco);
+        }
+
+        .bonus-box {
+            max-width: 520px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #f0faf6 0%, #e8f5f0 100%);
+            border: 2px dashed var(--verde);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .bonus-tag {
+            display: inline-block;
+            background: var(--verde);
+            color: var(--branco);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .bonus-box h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--azul);
+        }
+
+        .bonus-box p {
+            color: var(--cinza);
+            font-size: 0.95rem;
+        }
+
+        /* CTA FINAL */
+        .cta-final {
+            background: linear-gradient(135deg, var(--azul) 0%, #0d2137 100%);
+            color: var(--branco);
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .cta-final blockquote {
+            font-size: 1.3rem;
+            font-style: italic;
+            margin-bottom: 8px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.4;
+        }
+
+        .cta-final .subtitle {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 32px;
+        }
+
+        /* CUPOM */
+        .cupom-field {
+            max-width: 320px;
+            margin: 24px auto 0;
+        }
+
+        .cupom-field label {
+            display: block;
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-bottom: 6px;
+        }
+
+        .cupom-field input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: var(--branco);
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+        }
+
+        .cupom-field input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        .cupom-field input:focus {
+            border-color: var(--verde);
+        }
+
+        /* DISCLAIMER */
+        .disclaimer {
+            background: var(--branco);
+            padding: 32px 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .disclaimer p {
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 0.75rem;
+            color: #999;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .disclaimer .cvm-badge {
+            display: block;
+            font-weight: 600;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        /* RESPONSIVO */
+        @media (min-width: 480px) {
+            .hero h1 { font-size: 2.2rem; }
+            .section-title { font-size: 1.6rem; }
+        }
+
+        @media (min-width: 768px) {
+            .hero { padding: 80px 20px; }
+            .hero h1 { font-size: 2.5rem; }
+            .solucao-cards { grid-template-columns: 1fr 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-badge">28 operacoes documentadas</div>
+            <h1>Raquel ganhou <span>R$ 5.097,96</span> em maio com opcoes.</h1>
+            <p>Nenhum segredo. So disciplina, gregas e resultados reais. Tudo explicado neste eBook.</p>
+            <a href="#comprar" class="btn-primary">
+                Quero aprender por R$ 49,90
+                <span class="btn-price">Acesso imediato ao eBook + bonus</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- PROBLEMA -->
+    <section class="problema">
+        <div class="container">
+            <h2 class="section-title">Voce se identifica?</h2>
+            <ul class="problema-list">
+                <li>Ve a bolsa subindo mas nao sabe como entrar</li>
+                <li>Opcoes parecem complicadas demais</li>
+                <li>Medo de perder tudo em uma operacao</li>
+                <li>Paralisia por analise — estuda mas nunca comeca</li>
+                <li>Acha que precisa de muito dinheiro pra investir</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- SOLUÇÃO -->
+    <section class="solucao">
+        <div class="container">
+            <h2 class="section-title">O que voce vai aprender</h2>
+            <div class="solucao-cards">
+                <div class="solucao-card">
+                    <h3>Delta</h3>
+                    <p>Entenda quanto sua opcao ganha para cada R$ 1 que o ativo anda. Sem economes.</p>
+                </div>
+                <div class="solucao-card">
+                    <h3>Gamma</h3>
+                    <p>Saiba quando sua opcao acelera o lucro. A "amiga" que multiplica seus ganhos.</p>
+                </div>
+                <div class="solucao-card">
+                    <h3>Theta</h3>
+                    <p>Aprenda a usar o tempo a seu favor. Ganhe dinheiro enquanto o mercado dorme.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROVA SOCIAL -->
+    <section class="prova">
+        <div class="container">
+            <h2 class="section-title">Resultados reais, documentados</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number">67,86%</span>
+                    <span class="stat-label">Taxa de acertos</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">28</span>
+                    <span class="stat-label">Operacoes documentadas</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">+R$ 574,60</span>
+                    <span class="stat-label">Maior lucro em 1 dia (+28,79%)</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">130</span>
+                    <span class="stat-label">Membros na turma</span>
+                </div>
+                <div class="stat-card highlight">
+                    <span class="stat-number">R$ 5.097,96</span>
+                    <span class="stat-label">Resultado do mes (maio/2026)</span>
+                </div>
+            </div>
+            <p class="depoimento-note">Prints reais de operacoes e depoimentos de alunos disponiveis</p>
+        </div>
+    </section>
+
+    <!-- BÔNUS -->
+    <section class="bonus">
+        <div class="container">
+            <h2 class="section-title">Bonus incluso</h2>
+            <div class="bonus-box">
+                <span class="bonus-tag">GRATIS</span>
+                <h3>Planilha de Controle de Operacoes</h3>
+                <p>Acompanhe suas gregas, resultados e taxa de acerto em tempo real. A mesma planilha que a Raquel usa.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="cta-final" id="comprar">
+        <div class="container">
+            <blockquote>"Liberdade nao se aposenta.<br>Se constroi todo dia."</blockquote>
+            <p class="subtitle">Comece hoje.</p>
+            <a href="#" class="btn-primary" onclick="alert('Integrar com plataforma de pagamento'); return false;">
+                Garantir meu eBook por R$ 49,90
+                <span class="btn-price">eBook + Planilha de Controle</span>
+            </a>
+            <div class="cupom-field">
+                <label>Tem um cupom de desconto?</label>
+                <input type="text" placeholder="Digite seu cupom aqui">
+            </div>
+        </div>
+    </section>
+
+    <!-- DISCLAIMER CVM -->
+    <footer class="disclaimer">
+        <p>
+            <span class="cvm-badge">CVM Resolucao 20/2021</span>
+            As operacoes apresentadas sao realizadas com recursos proprios de Raquel,
+            pessoa fisica, para fins exclusivos de gestao da sua carteira pessoal.
+            Conteudo exclusivamente educacional e informativo. Nada aqui constitui
+            indicacao, recomendacao ou oferta de investimento. Resultados passados
+            nao garantem resultados futuros. Cada investidor deve avaliar seus proprios
+            objetivos, perfil de risco e situacao financeira antes de tomar qualquer decisao.
+        </p>
+    </footer>
+
+</body>
+</html>
