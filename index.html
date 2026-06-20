@@ -3,78 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diario de Opcoes: Opcoes na Pratica — 9Pilla</title>
+    <title>9Pilla — Diario de Operacoes: Opcoes na Pratica</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --verde: #06A77D;
-            --azul: #1B3A5C;
-            --laranja: #FF7A3D;
-            --vermelho: #E63946;
-            --cinza: #666666;
-            --bg: #F5F5F5;
+            --moss: #3D5240;
+            --bege: #FAF7F1;
+            --tinta: #0A0A0A;
             --branco: #FFFFFF;
+            --moss-light: #4a6550;
+            --moss-dark: #2d3e30;
+            --cinza: #6B6B6B;
+            --vermelho: #C0392B;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--bg);
-            color: var(--azul);
-            line-height: 1.6;
+            font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+            background: var(--bege);
+            color: var(--tinta);
+            line-height: 1.7;
         }
 
         .container {
-            max-width: 680px;
+            max-width: 720px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 24px;
         }
 
         .hero {
-            background: linear-gradient(135deg, var(--azul) 0%, #0d2137 100%);
-            color: var(--branco);
-            padding: 60px 20px;
+            background: var(--moss);
+            color: var(--bege);
+            padding: 64px 24px;
             text-align: center;
         }
 
         .hero-badge {
             display: inline-block;
-            background: var(--verde);
-            color: var(--branco);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
+            background: rgba(250, 247, 241, 0.15);
+            color: var(--bege);
+            padding: 8px 20px;
+            border-radius: 24px;
+            font-size: 0.8rem;
             font-weight: 600;
-            margin-bottom: 24px;
-            letter-spacing: 0.5px;
+            margin-bottom: 28px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: 1px solid rgba(250, 247, 241, 0.25);
+        }
+
+        .hero .ebook-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.1rem;
+            opacity: 0.8;
+            font-style: italic;
+            margin-bottom: 4px;
+        }
+
+        .hero .ebook-author {
+            font-size: 0.85rem;
+            opacity: 0.6;
+            margin-bottom: 28px;
         }
 
         .hero h1 {
-            font-size: 1.8rem;
-            line-height: 1.3;
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2rem;
+            line-height: 1.25;
             margin-bottom: 16px;
             font-weight: 700;
         }
 
-        .hero h1 span { color: var(--verde); }
+        .hero h1 span { color: #A8D5BA; }
 
-        .hero .ebook-title {
-            font-size: 1rem;
-            opacity: 0.7;
-            margin-bottom: 8px;
-            font-style: italic;
-        }
-
-        .hero .ebook-author {
-            font-size: 0.9rem;
-            opacity: 0.6;
-            margin-bottom: 24px;
-        }
-
-        .hero p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 32px;
+        .hero p.hero-sub {
+            font-size: 1.05rem;
+            opacity: 0.85;
+            margin-bottom: 36px;
             max-width: 520px;
             margin-left: auto;
             margin-right: auto;
@@ -82,42 +90,118 @@
 
         .btn-primary {
             display: inline-block;
-            background: var(--laranja);
-            color: var(--branco);
-            padding: 16px 40px;
+            background: var(--moss-dark);
+            color: var(--bege);
+            padding: 18px 44px;
             border-radius: 8px;
-            font-size: 1.1rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.05rem;
             font-weight: 700;
             text-decoration: none;
-            border: none;
+            border: 2px solid rgba(250, 247, 241, 0.3);
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(255, 122, 61, 0.4);
+            box-shadow: 0 8px 28px rgba(61, 82, 64, 0.35);
+            background: #233527;
         }
 
         .btn-price {
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 400;
-            opacity: 0.9;
+            opacity: 0.75;
+            margin-top: 6px;
+        }
+
+        section { padding: 56px 24px; }
+
+        .section-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 28px;
+            text-align: center;
+            color: var(--tinta);
+        }
+
+        .workshop {
+            background: var(--branco);
+            border-bottom: 1px solid rgba(61, 82, 64, 0.1);
+        }
+
+        .workshop-card {
+            max-width: 560px;
+            margin: 0 auto;
+            background: var(--moss);
+            border-radius: 16px;
+            padding: 36px 28px;
+            text-align: center;
+            color: var(--bege);
+        }
+
+        .workshop-card .workshop-date {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .workshop-card .workshop-time {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        .workshop-card p {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .workshop-card .workshop-presenters {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-bottom: 24px;
+            font-style: italic;
+        }
+
+        .btn-calendar {
+            display: inline-block;
+            background: rgba(250, 247, 241, 0.15);
+            color: var(--bege);
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid rgba(250, 247, 241, 0.3);
+            transition: background 0.2s;
+            margin-bottom: 12px;
+        }
+
+        .btn-calendar:hover { background: rgba(250, 247, 241, 0.25); }
+
+        .workshop-price {
+            display: block;
+            margin-top: 16px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        .workshop-price-note {
+            font-size: 0.8rem;
+            opacity: 0.6;
             margin-top: 4px;
         }
 
-        section { padding: 48px 20px; }
-
-        .section-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 24px;
-            text-align: center;
-            color: var(--azul);
-        }
-
-        .problema { background: var(--branco); }
+        .problema { background: var(--bege); }
 
         .problema-list {
             list-style: none;
@@ -126,10 +210,10 @@
         }
 
         .problema-list li {
-            padding: 12px 0;
-            padding-left: 32px;
+            padding: 14px 0;
+            padding-left: 36px;
             position: relative;
-            font-size: 1.05rem;
+            font-size: 1rem;
             color: var(--cinza);
         }
 
@@ -139,121 +223,129 @@
             left: 0;
             color: var(--vermelho);
             font-weight: 700;
+            font-size: 0.9rem;
         }
 
-        .solucao { background: var(--bg); }
+        .solucao { background: var(--branco); }
 
         .solucao-cards {
             display: grid;
             grid-template-columns: 1fr;
             gap: 16px;
-            max-width: 520px;
+            max-width: 560px;
             margin: 0 auto;
         }
 
         .solucao-card {
-            background: var(--branco);
+            background: var(--bege);
             border-radius: 12px;
-            padding: 24px;
-            border-left: 4px solid var(--verde);
+            padding: 28px;
+            border-left: 4px solid var(--moss);
         }
 
         .solucao-card h3 {
-            font-size: 1.1rem;
-            color: var(--verde);
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.15rem;
+            color: var(--moss);
             margin-bottom: 8px;
         }
 
         .solucao-card p { color: var(--cinza); font-size: 0.95rem; }
 
         .prova {
-            background: var(--azul);
-            color: var(--branco);
+            background: var(--moss);
+            color: var(--bege);
         }
 
-        .prova .section-title { color: var(--branco); }
+        .prova .section-title { color: var(--bege); }
 
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
-            max-width: 520px;
+            max-width: 560px;
             margin: 0 auto 32px;
         }
 
         .stat-card {
-            background: rgba(255,255,255,0.1);
+            background: rgba(250, 247, 241, 0.08);
             border-radius: 12px;
-            padding: 20px;
+            padding: 22px;
             text-align: center;
+            border: 1px solid rgba(250, 247, 241, 0.1);
         }
 
         .stat-number {
+            font-family: 'Playfair Display', Georgia, serif;
             font-size: 1.6rem;
             font-weight: 700;
-            color: var(--verde);
+            color: #A8D5BA;
             display: block;
         }
 
         .stat-label {
-            font-size: 0.85rem;
-            opacity: 0.8;
-            margin-top: 4px;
+            font-size: 0.82rem;
+            opacity: 0.75;
+            margin-top: 6px;
         }
 
         .stat-card.highlight {
             grid-column: 1 / -1;
-            background: rgba(6, 167, 125, 0.15);
-            border: 1px solid rgba(6, 167, 125, 0.3);
+            background: rgba(168, 213, 186, 0.12);
+            border: 1px solid rgba(168, 213, 186, 0.25);
         }
 
         .depoimento-note {
             text-align: center;
-            font-size: 0.9rem;
-            opacity: 0.7;
+            font-size: 0.85rem;
+            opacity: 0.6;
             font-style: italic;
         }
 
-        .bonus { background: var(--branco); }
+        .bonus { background: var(--bege); }
 
         .bonus-box {
-            max-width: 520px;
+            max-width: 560px;
             margin: 0 auto;
-            background: linear-gradient(135deg, #f0faf6 0%, #e8f5f0 100%);
-            border: 2px dashed var(--verde);
+            background: var(--branco);
+            border: 2px dashed var(--moss);
             border-radius: 12px;
-            padding: 24px;
+            padding: 28px;
             text-align: center;
         }
 
         .bonus-tag {
             display: inline-block;
-            background: var(--verde);
-            color: var(--branco);
-            padding: 4px 12px;
+            background: var(--moss);
+            color: var(--bege);
+            padding: 4px 14px;
             border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         .bonus-box h3 {
+            font-family: 'Playfair Display', Georgia, serif;
             font-size: 1.1rem;
             margin-bottom: 8px;
-            color: var(--azul);
+            color: var(--tinta);
         }
 
-        .bonus-box p { color: var(--cinza); font-size: 0.95rem; }
+        .bonus-box p { color: var(--cinza); font-size: 0.9rem; }
 
         .cta-final {
-            background: linear-gradient(135deg, var(--azul) 0%, #0d2137 100%);
-            color: var(--branco);
+            background: var(--moss);
+            color: var(--bege);
             text-align: center;
-            padding: 60px 20px;
+            padding: 64px 24px;
         }
 
         .cta-final blockquote {
-            font-size: 1.3rem;
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.4rem;
             font-style: italic;
             margin-bottom: 8px;
             max-width: 480px;
@@ -264,50 +356,65 @@
 
         .cta-final .subtitle {
             font-size: 1rem;
-            opacity: 0.8;
-            margin-bottom: 32px;
+            opacity: 0.7;
+            margin-bottom: 36px;
         }
 
         .cupom-field {
             max-width: 320px;
-            margin: 24px auto 0;
+            margin: 28px auto 0;
         }
 
         .cupom-field label {
             display: block;
-            font-size: 0.85rem;
-            opacity: 0.7;
-            margin-bottom: 6px;
+            font-size: 0.82rem;
+            opacity: 0.6;
+            margin-bottom: 8px;
         }
 
         .cupom-field input {
             width: 100%;
-            padding: 12px 16px;
-            border: 1px solid rgba(255,255,255,0.3);
+            padding: 14px 16px;
+            border: 1px solid rgba(250, 247, 241, 0.25);
             border-radius: 8px;
-            background: rgba(255,255,255,0.1);
-            color: var(--branco);
-            font-size: 1rem;
+            background: rgba(250, 247, 241, 0.08);
+            color: var(--bege);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
             text-align: center;
             outline: none;
         }
 
-        .cupom-field input::placeholder { color: rgba(255,255,255,0.4); }
-        .cupom-field input:focus { border-color: var(--verde); }
+        .cupom-field input::placeholder { color: rgba(250, 247, 241, 0.35); }
+        .cupom-field input:focus { border-color: #A8D5BA; }
+
+        .tagline {
+            background: var(--tinta);
+            color: var(--bege);
+            text-align: center;
+            padding: 28px 24px;
+        }
+
+        .tagline p {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1rem;
+            font-style: italic;
+            opacity: 0.7;
+        }
 
         .disclaimer {
-            background: var(--branco);
-            padding: 32px 20px;
-            border-top: 1px solid #e0e0e0;
+            background: var(--bege);
+            padding: 32px 24px;
+            border-top: 1px solid rgba(61, 82, 64, 0.1);
         }
 
         .disclaimer p {
             max-width: 600px;
             margin: 0 auto;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: #999;
             text-align: center;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         .disclaimer .cvm-badge {
@@ -315,16 +422,18 @@
             font-weight: 600;
             color: #888;
             margin-bottom: 8px;
+            font-size: 0.75rem;
         }
 
         @media (min-width: 480px) {
-            .hero h1 { font-size: 2.2rem; }
-            .section-title { font-size: 1.6rem; }
+            .hero h1 { font-size: 2.4rem; }
+            .section-title { font-size: 1.7rem; }
+            .workshop-card .workshop-date { font-size: 1.9rem; }
         }
 
         @media (min-width: 768px) {
-            .hero { padding: 80px 20px; }
-            .hero h1 { font-size: 2.5rem; }
+            .hero { padding: 88px 24px; }
+            .hero h1 { font-size: 2.8rem; }
             .solucao-cards { grid-template-columns: 1fr 1fr 1fr; }
         }
     </style>
@@ -334,14 +443,31 @@
     <section class="hero">
         <div class="container">
             <div class="hero-badge">28 operacoes documentadas</div>
-            <p class="ebook-title">Diario de Opcoes: Opcoes na Pratica</p>
+            <p class="ebook-title">Diario de Operacoes: Opcoes na Pratica</p>
             <p class="ebook-author">por Raquel Amorim</p>
             <h1>Raquel ganhou <span>R$ 5.097,96</span> em maio com opcoes.</h1>
-            <p>Nenhum segredo. So disciplina, gregas e resultados reais. Tudo explicado neste eBook.</p>
+            <p class="hero-sub">Nenhum segredo. So disciplina, gregas e resultados reais. Tudo explicado neste eBook.</p>
             <a href="#comprar" class="btn-primary">
-                Quero aprender por R$ 49,90
-                <span class="btn-price">Acesso imediato ao eBook + bonus</span>
+                Quero o eBook por R$ 49,90
+                <span class="btn-price">Acesso imediato + bonus</span>
             </a>
+        </div>
+    </section>
+
+    <section class="workshop">
+        <div class="container">
+            <h2 class="section-title">Workshop ao vivo</h2>
+            <div class="workshop-card">
+                <div class="workshop-date">18 de Julho</div>
+                <div class="workshop-time">Sexta-feira, 09h09</div>
+                <p>Aula ao vivo de opcoes com Raquel e Milton Montanari. Operacoes reais na tela, gregas na pratica e o que 40 anos de mercado ensinam sobre opcoes.</p>
+                <div class="workshop-presenters">Raquel + Milton Montanari (40 anos de mercado)</div>
+                <a href="https://calendar.app.google/pdxVq9fXgQm35TwP6" target="_blank" rel="noopener" class="btn-calendar">
+                    Adicionar na agenda
+                </a>
+                <span class="workshop-price">R$ 49,90</span>
+                <span class="workshop-price-note">Ingresso via Hubla</span>
+            </div>
         </div>
     </section>
 
@@ -352,7 +478,7 @@
                 <li>Ve a bolsa subindo mas nao sabe como entrar</li>
                 <li>Opcoes parecem complicadas demais</li>
                 <li>Medo de perder tudo em uma operacao</li>
-                <li>Paralisia por analise — estuda mas nunca comeca</li>
+                <li>Paralisia por analise: estuda mas nunca comeca</li>
                 <li>Acha que precisa de muito dinheiro pra investir</li>
             </ul>
         </div>
@@ -411,7 +537,7 @@
         <div class="container">
             <h2 class="section-title">Bonus incluso</h2>
             <div class="bonus-box">
-                <span class="bonus-tag">GRATIS</span>
+                <span class="bonus-tag">Gratis</span>
                 <h3>Planilha de Controle de Operacoes</h3>
                 <p>Acompanhe suas gregas, resultados e taxa de acerto em tempo real. A mesma planilha que a Raquel usa.</p>
             </div>
@@ -420,7 +546,7 @@
 
     <section class="cta-final" id="comprar">
         <div class="container">
-            <blockquote>"Liberdade nao se aposenta.<br>Se constroi todo dia."</blockquote>
+            <blockquote>"Dinheiro nao e destino.<br>E a jornada para a liberdade."</blockquote>
             <p class="subtitle">Comece hoje.</p>
             <a href="#" class="btn-primary">
                 Garantir meu eBook por R$ 49,90
@@ -432,6 +558,10 @@
             </div>
         </div>
     </section>
+
+    <div class="tagline">
+        <p>9Pilla: Dinheiro nao e destino. E a jornada para a liberdade.</p>
+    </div>
 
     <footer class="disclaimer">
         <p>
