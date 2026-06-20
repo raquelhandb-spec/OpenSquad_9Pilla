@@ -59,7 +59,8 @@
       "Bash(npm install *)",
       "Bash(paperclip --help)",
       "Bash(psql -h localhost -p 54329 -U postgres -d paperclip -c ' *)",
-      "Bash(cp /root/.claude/uploads/2039be76-ba70-51ec-a346-29c98814e59a/3ec72578-9pilla_lancamento_18julho_para_thiago_1.md *)"
+      "Bash(cp /root/.claude/uploads/2039be76-ba70-51ec-a346-29c98814e59a/3ec72578-9pilla_lancamento_18julho_para_thiago_1.md *)",
+      "mcp__Gamma__import-claude-design-from-url"
     ]
   },
   "enableAllProjectMcpServers": true,
