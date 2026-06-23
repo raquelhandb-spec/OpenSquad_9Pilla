@@ -24,7 +24,7 @@ def hex_to_rgb(hex_color):
     hex_color = hex_color.lstrip('#')
     return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
 
-PASTA_FONTES = r"C:\Users\raque\AppData\Local\Microsoft\Windows\Fonts"
+PASTA_FONTES = os.environ.get("PASTA_FONTES", os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts"))
 
 def fonte(nome_arquivo, tamanho):
     caminho = os.path.join(PASTA_FONTES, nome_arquivo)

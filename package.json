@@ -2,6 +2,11 @@
   "name": "opensquad-project",
   "version": "1.0.0",
   "private": true,
+  "scripts": {
+    "test": "node test_gemini.js",
+    "gerar:carrosseis": "node gerar_carrosseis_9pilla.js",
+    "gerar:slides": "python3 gerar_slides_9pilla.py"
+  },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "dotenv": "^17.4.2",

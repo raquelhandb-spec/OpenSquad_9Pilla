@@ -108,11 +108,8 @@
 
 ```
 OpenSquad_9Pilla/
-├── CLAUDE.md ← Instruções (NUNCA ALTERAR)
 ├── SETUP.md ← Este arquivo
 ├── .claude/
-│   ├── settings.json
-│   ├── settings.local.json
 │   └── commands/
 │       ├── morning-call.md
 │       ├── novo-ep.md
@@ -123,7 +120,9 @@ OpenSquad_9Pilla/
 │   ├── morning-call/
 │   ├── papo-de-grana/
 │   └── instagram/
-├── app/ ← 9Pilla APP (GitHub Pages)
+├── skills/ ← Skills dos agentes
+├── squads/ ← Configuração dos squads
+├── dashboard/ ← Dashboard do projeto
 └── assets/
     ├── brand/
     └── templates/
