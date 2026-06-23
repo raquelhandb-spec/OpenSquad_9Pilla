@@ -23,18 +23,21 @@ jobs:
           node-version: '20'
 
       - name: Verificar arquivo de conteúdo do dia
+        id: check_content
         run: |
           DATE=$(TZ="America/Sao_Paulo" date +%Y-%m-%d)
           FILE="content/morning-call/${DATE}.md"
           echo "Data BRT: $DATE"
           if [ ! -f "$FILE" ]; then
-            echo "❌ Arquivo $FILE não encontrado."
-            echo "   Gere o conteúdo com /morning-call e faça commit antes das 09h09."
-            exit 1
+            echo "⚠️ Arquivo $FILE não encontrado."
+            echo "content_available=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          echo "content_available=true" >> "$GITHUB_OUTPUT"
           echo "✅ Arquivo $FILE encontrado."
 
       - name: Criar config-morning-call.json a partir dos secrets
+        if: steps.check_content.outputs.content_available == 'true'
         env:
           ZAPI_INSTANCE_ID: ${{ secrets.ZAPI_INSTANCE_ID }}
           ZAPI_TOKEN: ${{ secrets.ZAPI_TOKEN }}
@@ -57,5 +60,10 @@ jobs:
           EOF
           echo "✅ Config criado."
 
+      - name: Pular envio quando conteúdo estiver ausente
+        if: steps.check_content.outputs.content_available != 'true'
+        run: echo "⏭️ Envio pulado: conteúdo diário não foi gerado."
+
       - name: Enviar Morning Call via Z-API
+        if: steps.check_content.outputs.content_available == 'true'
         run: node .claude/scripts/send-morning-call.js
