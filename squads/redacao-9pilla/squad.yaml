@@ -1,0 +1,150 @@
+---
+squad:
+  id: redacao-9pilla
+  name: "Squad Redação 9Pilla"
+  version: "1.0.0"
+  created: "2026-06-24"
+  domain: "content-generation"
+  mission: "Produzir conteúdo educativo de qualidade com Voice DNA da Raquel Hanada"
+
+orchestrator_config: "../../.claude/config/9pilla-orchestrator.yml"
+
+agents:
+  # Tier 0 — Chief
+  - id: caio-content-chief
+    name: "Caio"
+    tier: 0
+    role: "Orquestrador"
+    file: "agents/caio-content-chief.agent.md"
+    status: "active"
+
+  # Tier 1 — Masters
+  - id: amorim-editor
+    name: "Amorim Analista"
+    tier: 1
+    role: "Editorial Review + Market Analysis"
+    file: "agents/amorim-editor.agent.md"
+    status: "active"
+
+  - id: nina-redacao
+    name: "Nina"
+    tier: 1
+    role: "Content Writer"
+    file: "agents/nina-redacao.agent.md"
+    status: "active"
+
+  # Tier 2 — Specialists
+  - id: lea-cvm
+    name: "Léa"
+    tier: 2
+    role: "Compliance Validator"
+    file: "agents/lea-cvm.agent.md"
+    status: "active"
+
+  - id: bela-pilula
+    name: "Bela"
+    tier: 2
+    role: "Research & Wisdom Pills"
+    file: "agents/bela-pilula.agent.md"
+    status: "active"
+
+tasks:
+  - id: criar-morning-call
+    name: "Criar Morning Call"
+    command: "/morning-call"
+    flow: ["amorim-editor", "nina-redacao", "bela-pilula", "lea-cvm"]
+    description: "Gera Morning Call completo do dia (seg-sex 09h09)"
+    output_dir: "../../content/morning-call"
+
+  - id: criar-reel-script
+    name: "Criar Script de Reel"
+    command: "/criar-reel-script"
+    flow: ["nina-redacao", "lea-cvm"]
+    description: "Cria script de Reel em 6 slides"
+    output_dir: "../../content/reels"
+
+  - id: criar-copy-produto
+    name: "Criar Copy de Produto"
+    command: "/criar-copy-produto"
+    flow: ["nina-redacao", "lea-cvm"]
+    description: "Gera copy de venda para produto 9Pilla"
+    output_dir: "../../content/copies"
+
+  - id: mensagem-grupo
+    name: "Mensagem para Turma/VIP"
+    command: "/mensagem-grupo"
+    flow: ["nina-redacao"]
+    description: "Cria mensagem para Turma 9Pilla ou Grupo Winner VIP"
+    output_dir: "../../content/grupos"
+
+  - id: sinal-privado
+    name: "Gerar Sinal Privado"
+    command: "/sinal-privado"
+    flow: ["amorim-editor", "lea-cvm"]
+    description: "Gera sinal ITM exclusivo para Raquel (NUNCA público)"
+    output_dir: "../../content/sinais"
+    restricted: true
+    output_destination: "APENAS Raquel"
+
+skills:
+  - id: caio-orchestrator
+    name: "Caio Content Orchestrator"
+    file: "../../skills/caio-content-orchestrator/SKILL.md"
+
+  - id: amorim-review
+    name: "Amorim Editorial Review"
+    file: "../../skills/amorim-editorial-review/SKILL.md"
+
+  - id: nina-writer
+    name: "Nina Redacao"
+    file: "../../skills/nina-redacao/SKILL.md"
+
+  - id: lea-compliance
+    name: "Léa Compliance CVM"
+    file: "../../skills/lea-compliance/SKILL.md"
+
+  - id: bela-research
+    name: "Bela Píllula Sabedoria"
+    file: "../../skills/bela-pilula/SKILL.md"
+
+integrations:
+  - name: "Canva"
+    for: ["reel-script", "copy-product"]
+    skill: "canva"
+
+  - name: "HeyGen"
+    for: ["reel-script"]
+    skill: "heygen"
+
+  - name: "Instagram Publisher"
+    for: ["morning-call", "reel-script"]
+    skill: "instagram-publisher"
+
+  - name: "Z-API (WhatsApp)"
+    for: ["morning-call", "mensagem-grupo"]
+    integration: "z-api"
+
+automation:
+  morning_call:
+    schedule: "seg-sex 09h09"
+    timezone: "America/Sao_Paulo"
+    triggers:
+      - type: "cron"
+        value: "0 9 * * 1-5"
+      - type: "command"
+        value: "/morning-call"
+
+constitution:
+  mandatory_rules:
+    - "Nunca inventar citações ou dados"
+    - "Sempre usar disclaimer CVM em conteúdo de mercado"
+    - "Nunca publicar sinais em canal público"
+    - "Voice DNA de Raquel sempre presente"
+    - "Banned words NUNCA aparecem no conteúdo publicado"
+
+metadata:
+  owner: "Raquel Hanada"
+  brand: "9Pilla"
+  repository: "raquelhandb-spec/OpenSquad_9Pilla"
+  branch: "claude/morning-call-dna-config-aone1i"
+  last_updated: "2026-06-24"
