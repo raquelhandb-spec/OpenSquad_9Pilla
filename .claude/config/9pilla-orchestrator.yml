@@ -561,8 +561,9 @@ tasks:
         action: "Valida compliance antes de entregar para Raquel aprovar"
       - step: 5
         agent: "content-chief"
-        action: "Entrega para Raquel com status de validação"
-    output: "Morning Call completo, pronto para aprovação de Raquel às 09h09"
+        action: "Entrega arquivo para Telegram de Raquel (aprovação pessoal)"
+    approval_workflow: "Telegram → Raquel aprova → 09h09 dispara para Turma 9Pilla"
+    output: "Morning Call pronto em content/morning-call/YYYY-MM-DD.md, enviado para Telegram de Raquel"
 
   - id: criar-reel-script
     name: "Criar Script de Reel"
