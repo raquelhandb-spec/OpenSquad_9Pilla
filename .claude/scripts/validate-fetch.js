@@ -30,30 +30,16 @@ async function main() {
   console.log('🔎 DRY-RUN — validando busca real (nada será enviado)\n');
   const brapi = loadBrapi();
 
-  console.log('1️⃣  Ativos obrigatórios (brapi, com fallback Yahoo)');
+  console.log('1️⃣  Os 8 ativos obrigatórios (brapi + fallback Yahoo; Brent/WTI via Yahoo)');
   const data = await market.fetchMorningCallData({
     baseUrl: brapi.baseUrl || market.DEFAULT_BASE_URL,
     token: brapi.token,
   });
   console.log(market.formatMarketBlock(data));
-  const fontes = new Set(
-    [data.ibov, data.dolar, data.petr4, data.vale3, data.itub4].map((a) => a.source)
-  );
+  const fontes = new Set(Object.values(data).map((a) => a.source));
   console.log(`   fontes usadas: ${[...fontes].join(', ')}\n`);
 
-  console.log('2️⃣  Internacional (Yahoo: NY + commodities)');
-  const g = await market.fetchGlobalData();
-  for (const k of Object.keys(g)) {
-    const a = g[k];
-    console.log(
-      a.error
-        ? `   ⚠️  ${a.ticker}: ${a.error}`
-        : `   ${a.ticker}: ${a.price} (${a.changePercent.toFixed(2)}%)`
-    );
-  }
-  console.log('');
-
-  console.log('3️⃣  Selic oficial (Banco Central, série 432)');
+  console.log('2️⃣  Selic oficial (Banco Central, série 432)');
   try {
     const s = await market.fetchSelic();
     console.log(`   Meta Selic: ${s.value}% a.a. (${s.asOf})\n`);
@@ -61,7 +47,7 @@ async function main() {
     console.log(`   ⚠️  Não confirmou Selic no BCB: ${e.message}\n`);
   }
 
-  console.log('4️⃣  Notícias reais do dia (Investing, InfoMoney, Bloomberg, CNN primeiro)');
+  console.log('3️⃣  Notícias reais do dia (Investing, InfoMoney, Bloomberg, CNN primeiro)');
   const headlines = await news.fetchHeadlines({ limit: 5 });
   headlines.forEach((h) =>
     console.log(`   ${h.preferred ? '⭐' : '  '} ${h.title}  ::  ${h.source || 's/ fonte'}`)

@@ -5,10 +5,14 @@
  *
  * Regra de ouro: DADO REAL OU NADA. Nunca preenche valor "plausível".
  *
+ * Ativos obrigatórios do Morning Call (definidos pela Raquel):
+ *   IBOV (^BVSP), BOVA11, PETR4, VALE3, ITUB4, Dólar (USD-BRL),
+ *   Petróleo Brent (BZ=F) e WTI (CL=F) enquanto a guerra não estiver resolvida.
+ *
  * Fontes (com fallback automático, correto-ou-nada):
  *  1) brapi.dev   — ações B3 e índice (^BVSP); dólar via /v2/currency
- *  2) Yahoo Finance (query1.finance.yahoo.com) — BACKUP sem token; cobre
- *     também NY (^GSPC, ^IXIC, ^DJI) e commodities (BZ=F Brent, CL=F WTI)
+ *  2) Yahoo Finance (query1.finance.yahoo.com) — BACKUP sem token; ÚNICA
+ *     fonte de Brent/WTI (commodities) e cobre NY se precisar
  *  3) Banco Central (API SGS, série 432) — Meta Selic OFICIAL
  *
  * Se um ativo obrigatório falhar em TODAS as fontes, LANÇA erro. Quem chama
@@ -25,7 +29,6 @@ const REQUEST_TIMEOUT_MS = 15000;
 const UA =
   'Mozilla/5.0 (compatible; 9PillaMorningCall/1.0; +https://9pilla.link)';
 
-/** GET genérico que devolve JSON, ou lança erro com status/corpo. */
 function getJson(url, headers = {}) {
   return new Promise((resolve, reject) => {
     const req = https.get(
@@ -90,8 +93,9 @@ async function fetchCurrencyBrapi(baseUrl, token, pair = 'USD-BRL') {
 async function fetchQuoteYahoo(symbol) {
   const url = `${YAHOO_BASE}${encodeURIComponent(symbol)}?interval=1d&range=1d`;
   const json = await getJson(url);
-  const meta = json && json.chart && json.chart.result && json.chart.result[0]
-    && json.chart.result[0].meta;
+  const meta =
+    json && json.chart && json.chart.result && json.chart.result[0] &&
+    json.chart.result[0].meta;
   if (!meta) throw new Error(`Yahoo sem resultado para ${symbol}`);
   const price = Number(meta.regularMarketPrice);
   const prev = Number(meta.chartPreviousClose ?? meta.previousClose);
@@ -104,7 +108,6 @@ async function fetchQuoteYahoo(symbol) {
 
 /* ---------------- Fonte 3: Banco Central (Selic oficial) ---------------- */
 
-/** Meta Selic vigente (% a.a.), direto da API SGS do BCB (série 432). */
 async function fetchSelic() {
   const json = await getJson(BCB_SELIC_URL);
   const row = Array.isArray(json) && json[json.length - 1];
@@ -122,84 +125,50 @@ async function withFallback(label, primary, fallback) {
   } catch (e1) {
     try {
       const r = await fallback();
-      console.warn(`⚠️  ${label}: brapi falhou (${e1.message}). Usei Yahoo como backup.`);
+      console.warn(`⚠️  ${label}: fonte principal falhou (${e1.message}). Usei backup.`);
       return r;
     } catch (e2) {
       throw new Error(
-        `${label} não pôde ser confirmado em nenhuma fonte. brapi: ${e1.message} | yahoo: ${e2.message}`
+        `${label} não pôde ser confirmado em nenhuma fonte. principal: ${e1.message} | backup: ${e2.message}`
       );
     }
   }
 }
 
+const noBrapi = () => Promise.reject(new Error('sem token brapi'));
+
 /**
- * Busca os 5 ativos obrigatórios do Morning Call, com brapi + fallback Yahoo.
- * Lança erro se QUALQUER um falhar em ambas as fontes (correto-ou-nada).
+ * Busca os 8 ativos obrigatórios do Morning Call.
+ * brapi principal (B3) + Yahoo backup; Brent/WTI só via Yahoo.
+ * Lança erro se QUALQUER um falhar (correto-ou-nada).
  */
 async function fetchMorningCallData({ baseUrl = DEFAULT_BASE_URL, token } = {}) {
   const useBrapi = !!token && token !== '';
+  const brapiQuote = (t) => (useBrapi ? () => fetchQuoteBrapi(baseUrl, token, t) : noBrapi);
 
-  const ibovP = withFallback(
-    'IBOV',
-    () => (useBrapi ? fetchQuoteBrapi(baseUrl, token, '^BVSP') : Promise.reject(new Error('sem token brapi'))),
-    () => fetchQuoteYahoo('^BVSP')
-  );
-  const petrP = withFallback(
-    'PETR4',
-    () => (useBrapi ? fetchQuoteBrapi(baseUrl, token, 'PETR4') : Promise.reject(new Error('sem token brapi'))),
-    () => fetchQuoteYahoo('PETR4.SA')
-  );
-  const valeP = withFallback(
-    'VALE3',
-    () => (useBrapi ? fetchQuoteBrapi(baseUrl, token, 'VALE3') : Promise.reject(new Error('sem token brapi'))),
-    () => fetchQuoteYahoo('VALE3.SA')
-  );
-  const itubP = withFallback(
-    'ITUB4',
-    () => (useBrapi ? fetchQuoteBrapi(baseUrl, token, 'ITUB4') : Promise.reject(new Error('sem token brapi'))),
-    () => fetchQuoteYahoo('ITUB4.SA')
-  );
-  const dolarP = withFallback(
-    'Dólar',
-    () => (useBrapi ? fetchCurrencyBrapi(baseUrl, token, 'USD-BRL') : Promise.reject(new Error('sem token brapi'))),
-    () => fetchQuoteYahoo('BRL=X')
-  );
-
-  const [ibov, petr4, vale3, itub4, dolar] = await Promise.all([
-    ibovP, petrP, valeP, itubP, dolarP,
-  ]);
-
-  return {
-    ibov: { ticker: 'IBOV', ...ibov },
-    dolar: { ticker: 'Dólar', ...dolar },
-    petr4: { ticker: 'PETR4', ...petr4 },
-    vale3: { ticker: 'VALE3', ...vale3 },
-    itub4: { ticker: 'ITUB4', ...itub4 },
+  const jobs = {
+    ibov: withFallback('IBOV', brapiQuote('^BVSP'), () => fetchQuoteYahoo('^BVSP')),
+    bova11: withFallback('BOVA11', brapiQuote('BOVA11'), () => fetchQuoteYahoo('BOVA11.SA')),
+    petr4: withFallback('PETR4', brapiQuote('PETR4'), () => fetchQuoteYahoo('PETR4.SA')),
+    vale3: withFallback('VALE3', brapiQuote('VALE3'), () => fetchQuoteYahoo('VALE3.SA')),
+    itub4: withFallback('ITUB4', brapiQuote('ITUB4'), () => fetchQuoteYahoo('ITUB4.SA')),
+    dolar: withFallback(
+      'Dólar',
+      useBrapi ? () => fetchCurrencyBrapi(baseUrl, token, 'USD-BRL') : noBrapi,
+      () => fetchQuoteYahoo('BRL=X')
+    ),
+    brent: withFallback('Brent', () => fetchQuoteYahoo('BZ=F'), () => fetchQuoteYahoo('BZ=F')),
+    wti: withFallback('WTI', () => fetchQuoteYahoo('CL=F'), () => fetchQuoteYahoo('CL=F')),
   };
-}
 
-/**
- * Bloco internacional (NY + commodities), só via Yahoo (brapi não cobre bem).
- * Não é obrigatório: se falhar, retorna o que conseguiu e marca os ausentes.
- */
-async function fetchGlobalData() {
-  const symbols = [
-    ['sp500', '^GSPC', 'S&P 500'],
-    ['nasdaq', '^IXIC', 'Nasdaq'],
-    ['dow', '^DJI', 'Dow Jones'],
-    ['brent', 'BZ=F', 'Petróleo Brent'],
-    ['wti', 'CL=F', 'Petróleo WTI'],
-  ];
+  const keys = Object.keys(jobs);
+  const results = await Promise.all(keys.map((k) => jobs[k]));
   const out = {};
-  await Promise.all(
-    symbols.map(async ([key, sym, label]) => {
-      try {
-        out[key] = { ticker: label, ...(await fetchQuoteYahoo(sym)) };
-      } catch (e) {
-        out[key] = { ticker: label, error: e.message };
-      }
-    })
-  );
+  const labels = {
+    ibov: 'IBOV', bova11: 'BOVA11', petr4: 'PETR4', vale3: 'VALE3',
+    itub4: 'ITUB4', dolar: 'Dólar', brent: 'Petróleo Brent', wti: 'Petróleo WTI',
+  };
+  keys.forEach((k, i) => (out[k] = { ticker: labels[k], ...results[i] }));
   return out;
 }
 
@@ -221,34 +190,43 @@ function signed(changePercent) {
   return `${s}${brNumber(changePercent, 2)}%`;
 }
 
-/** Linha de índice em PONTOS. Ex: "🟢 IBOV: 173.295 pts (+0,76%)" */
+/** Índice em PONTOS. Ex: "🟢 IBOV: 173.295 pts (+0,76%)" */
 function formatIndexLine(asset) {
   return `${emojiFor(asset.changePercent)} ${asset.ticker}: ${brNumber(asset.price, 0)} pts (${signed(asset.changePercent)})`;
 }
 
-/** Linha de preço em R$. Ex: "🔴 PETR4: R$ 38,07 (-0,99%)" */
+/** Preço em R$. Ex: "🔴 PETR4: R$ 38,07 (-0,99%)" */
 function formatPriceLine(asset, decimals = 2) {
   return `${emojiFor(asset.changePercent)} ${asset.ticker}: R$ ${brNumber(asset.price, decimals)} (${signed(asset.changePercent)})`;
 }
 
+/** Preço em US$ (commodities). Ex: "🔴 Petróleo Brent: US$ 72,52 (-1,20%)" */
+function formatUsdLine(asset, decimals = 2) {
+  return `${emojiFor(asset.changePercent)} ${asset.ticker}: US$ ${brNumber(asset.price, decimals)} (${signed(asset.changePercent)})`;
+}
+
+/** Monta o bloco "MERCADO AGORA" com os 8 ativos, na ordem da Raquel. */
 function formatMarketBlock(data) {
   return [
     formatIndexLine(data.ibov),
-    formatPriceLine(data.dolar, 2),
+    formatPriceLine(data.bova11, 2),
     formatPriceLine(data.petr4, 2),
     formatPriceLine(data.vale3, 2),
     formatPriceLine(data.itub4, 2),
+    formatPriceLine(data.dolar, 2),
+    formatUsdLine(data.brent, 2),
+    formatUsdLine(data.wti, 2),
   ].join('\n');
 }
 
 module.exports = {
   DEFAULT_BASE_URL,
   fetchMorningCallData,
-  fetchGlobalData,
   fetchSelic,
   fetchQuoteYahoo,
   formatMarketBlock,
   formatIndexLine,
   formatPriceLine,
+  formatUsdLine,
   brNumber,
 };
