@@ -7,6 +7,11 @@ on:
     - cron: '9 12 * * 1-5'
   workflow_dispatch:
     # Permite disparo manual pelo GitHub (útil para teste)
+    inputs:
+      dry_run:
+        description: 'Dry-run: só valida a busca real (brapi + notícias) e NÃO envia ao grupo'
+        type: boolean
+        default: false
 
 jobs:
   send-morning-call:
@@ -22,7 +27,27 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Criar config (dry-run) a partir dos secrets
+        if: ${{ inputs.dry_run }}
+        env:
+          BRAPI_TOKEN: ${{ secrets.BRAPI_TOKEN }}
+        run: |
+          mkdir -p .claude
+          cat > .claude/config-morning-call.json << EOF
+          { "brapi": { "baseUrl": "https://brapi.dev/api", "token": "${BRAPI_TOKEN}" } }
+          EOF
+          echo "✅ Config dry-run criado."
+
+      - name: Validar busca real (dry-run, NÃO envia)
+        if: ${{ inputs.dry_run }}
+        run: node .claude/scripts/validate-fetch.js
+
+      - name: Encerrar (dry-run não envia)
+        if: ${{ inputs.dry_run }}
+        run: echo "🔎 Dry-run concluído. Nada foi enviado ao grupo."
+
       - name: Verificar arquivo de conteúdo do dia
+        if: ${{ !inputs.dry_run }}
         id: check_content
         run: |
           DATE=$(TZ="America/Sao_Paulo" date +%Y-%m-%d)
@@ -61,8 +86,9 @@ jobs:
           echo "✅ Config criado."
 
       - name: Pular envio quando conteúdo estiver ausente
-        if: steps.check_content.outputs.content_available != 'true'
-        run: echo "⏭️ Envio pulado: conteúdo diário não foi gerado."
+        if: ${{ !inputs.dry_run && steps.check_content.outputs.content_available != 'true' }}
+        run: |
+          echo "Envio pulado: conteúdo diário não foi gerado."
 
       - name: Enviar Morning Call via Z-API
         if: steps.check_content.outputs.content_available == 'true'
