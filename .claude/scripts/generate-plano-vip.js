@@ -56,6 +56,13 @@ async function main() {
   const data = await market.fetchMorningCallData({ token: process.env.BRAPI_TOKEN });
   const block = market.formatMarketBlock(data);
 
+  // Enriquecimento (brapi pago): destaques do pregao. Best-effort.
+  const topMovers = await market.fetchTopMovers({ token: process.env.BRAPI_TOKEN });
+  const destaquesBlock = market.formatTopMovers(topMovers);
+  const destaquesSection = destaquesBlock
+    ? `\n📊 *DESTAQUES DO PREGÃO*\n${destaquesBlock}\n`
+    : '';
+
   const body = `🎯 *PLANO VIP DO DIA* — ${dateBR(now)}
 _Exclusivo VIP 9Pilla. Recebido em primeira mão._
 

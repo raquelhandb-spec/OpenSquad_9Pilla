@@ -117,6 +117,33 @@ async function fetchSelic() {
   return { value, asOf: row.data || null, source: 'bcb' };
 }
 
+/* ---------------- Enriquecimento (brapi pago): destaques do pregão ---------------- */
+
+/**
+ * Maiores altas e baixas do dia via /quote/list (requer brapi pago).
+ * Best-effort: se falhar, retorna null (NUNCA derruba o Morning Call).
+ */
+async function fetchTopMovers({ baseUrl = DEFAULT_BASE_URL, token, n = 3 } = {}) {
+  if (!token) return null; // recurso do brapi pago
+  async function side(order) {
+    const url = `${baseUrl}/quote/list?type=stock&sortBy=change&sortOrder=${order}&limit=${n}&token=${token}`;
+    const json = await getJson(url, { Authorization: `Bearer ${token}` });
+    const list = (json && json.stocks) || [];
+    return list
+      .slice(0, n)
+      .map((s) => ({ ticker: s.stock, change: Number(s.change), close: Number(s.close) }))
+      .filter((x) => isFiniteNumber(x.change));
+  }
+  try {
+    const [altas, baixas] = await Promise.all([side('desc'), side('asc')]);
+    if (!altas.length && !baixas.length) return null;
+    return { altas, baixas };
+  } catch (e) {
+    console.warn('⚠️  Destaques do pregão indisponíveis (brapi):', e.message);
+    return null;
+  }
+}
+
 /* ---------------- Orquestração com fallback ---------------- */
 
 async function withFallback(label, primary, fallback) {
@@ -205,6 +232,15 @@ function formatUsdLine(asset, decimals = 2) {
   return `${emojiFor(asset.changePercent)} ${asset.ticker}: US$ ${brNumber(asset.price, decimals)} (${signed(asset.changePercent)})`;
 }
 
+/** Formata os destaques do pregão (maiores altas/baixas). Vazio se null. */
+function formatTopMovers(tm) {
+  if (!tm) return '';
+  const fmt = (m) => `${m.ticker} ${signed(m.change)}`;
+  const altas = tm.altas.map(fmt).join(', ');
+  const baixas = tm.baixas.map(fmt).join(', ');
+  return `📈 Maiores altas: ${altas}\n📉 Maiores baixas: ${baixas}`;
+}
+
 /** Monta o bloco "MERCADO AGORA" com os 8 ativos, na ordem da Raquel. */
 function formatMarketBlock(data) {
   return [
@@ -223,8 +259,10 @@ module.exports = {
   DEFAULT_BASE_URL,
   fetchMorningCallData,
   fetchSelic,
+  fetchTopMovers,
   fetchQuoteYahoo,
   formatMarketBlock,
+  formatTopMovers,
   formatIndexLine,
   formatPriceLine,
   formatUsdLine,

@@ -87,6 +87,16 @@ async function main() {
   headlines.forEach((h) => console.log(`   • ${h.title} (${h.source || 's/ fonte'})`));
   console.log('');
 
+  // 2.5) Enriquecimento (brapi pago): destaques do pregão. Best-effort.
+  const topMovers = await market.fetchTopMovers({
+    baseUrl: brapi.baseUrl || market.DEFAULT_BASE_URL,
+    token: brapi.token,
+  });
+  const destaquesBlock = market.formatTopMovers(topMovers);
+  const destaquesSection = destaquesBlock
+    ? `\n📊 DESTAQUES DO PREGÃO\n${destaquesBlock}\n`
+    : '';
+
   // 3) Monta o conteúdo (bloco de mercado delimitado para reinjeção)
   const body = `Bom dia, Turma! 🌅
 
@@ -97,7 +107,7 @@ async function main() {
 ${marketBlock}
 <!--MERCADO:END-->
 ━━━━━━━━━━━━━━━━━━━━
-
+${destaquesSection}
 🌎 O QUE ACONTECEU
 
 ${formatNews(headlines)}
@@ -106,7 +116,7 @@ ${formatNews(headlines)}
 
 Revise sua carteira com calma. Quem constrói patrimônio não corre atrás de barulho: lê o cenário, respira e age com método.
 
-Liberdade não se aposenta. Se constrói todo dia. 🌱
+Dinheiro não é destino. É a jornada para a LIBERDADE. 🌱
 
 ⚠️ Conteúdo educativo e informativo. Não é recomendação de investimento. Decisões são de responsabilidade do investidor. Investimentos envolvem riscos. CVM Resolução 20/2021.`;
 
