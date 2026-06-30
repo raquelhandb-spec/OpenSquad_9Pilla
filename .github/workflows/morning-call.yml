@@ -2,19 +2,42 @@ name: Morning Call 9Pilla
 
 on:
   schedule:
-    # 09h09 BRT (America/Sao_Paulo = UTC-3 fixo desde 2019)
-    # 09:09 BRT = 12:09 UTC
+    # 08:15 BRT (UTC-3) = 11:15 UTC -> gerar Morning Call + enviar p/ aprovação no WhatsApp da Raquel
+    - cron: '15 11 * * 1-5'
+    # 09:09 BRT (UTC-3) = 12:09 UTC -> publicar na Turma 9Pilla SE a Raquel aprovou
     - cron: '9 12 * * 1-5'
   workflow_dispatch:
-    # Permite disparo manual pelo GitHub (útil para teste)
+    inputs:
+      dry_run:
+        description: 'Dry-run: só valida a busca real (dados + notícias), não envia nada'
+        type: boolean
+        default: false
+      manual_phase:
+        description: 'Teste manual de uma fase'
+        type: choice
+        default: 'nenhuma'
+        options: ['nenhuma', 'gerar_e_avisar', 'publicar']
 
 jobs:
-  send-morning-call:
+  morning-call:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    env:
+      BRAPI_TOKEN: ${{ secrets.BRAPI_TOKEN }}
+      ZAPI_INSTANCE_ID: ${{ secrets.ZAPI_INSTANCE_ID }}
+      ZAPI_TOKEN: ${{ secrets.ZAPI_TOKEN }}
+      ZAPI_CLIENT_TOKEN: ${{ secrets.ZAPI_CLIENT_TOKEN }}
+      ZAPI_GROUP_JID: ${{ secrets.ZAPI_GROUP_JID }}
+      ZAPI_PHONE_RAQUEL: ${{ secrets.ZAPI_PHONE_RAQUEL }}
+      # Flags de fase (calculadas a partir do gatilho)
+      IS_DRY: ${{ inputs.dry_run == true }}
+      IS_GENERATE: ${{ github.event.schedule == '15 11 * * 1-5' || inputs.manual_phase == 'gerar_e_avisar' }}
+      IS_PUBLISH: ${{ github.event.schedule == '9 12 * * 1-5' || inputs.manual_phase == 'publicar' }}
 
     steps:
-      - name: Checkout do repositório
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Node.js 20
@@ -22,48 +45,38 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Verificar arquivo de conteúdo do dia
-        id: check_content
+      - name: Config brapi (para geração/validação)
+        run: |
+          mkdir -p .claude
+          cat > .claude/config-morning-call.json << EOF
+          { "brapi": { "baseUrl": "https://brapi.dev/api", "token": "${BRAPI_TOKEN}" } }
+          EOF
+
+      # ---------- DRY-RUN: só valida, não envia ----------
+      - name: Dry-run (validar busca real)
+        if: ${{ env.IS_DRY == 'true' }}
+        run: node .claude/scripts/validate-fetch.js
+
+      # ---------- FASE 08:15 — gerar + avisar no WhatsApp ----------
+      - name: Gerar Morning Call do dia (dados + notícias reais)
+        if: ${{ env.IS_DRY != 'true' && env.IS_GENERATE == 'true' }}
+        run: node .claude/scripts/generate-morning-call.js
+
+      - name: Commitar a Morning Call gerada
+        if: ${{ env.IS_DRY != 'true' && env.IS_GENERATE == 'true' }}
         run: |
           DATE=$(TZ="America/Sao_Paulo" date +%Y-%m-%d)
-          FILE="content/morning-call/${DATE}.md"
-          echo "Data BRT: $DATE"
-          if [ ! -f "$FILE" ]; then
-            echo "⚠️ Arquivo $FILE não encontrado."
-            echo "content_available=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          echo "content_available=true" >> "$GITHUB_OUTPUT"
-          echo "✅ Arquivo $FILE encontrado."
+          git config user.name "9Pilla Bot"
+          git config user.email "bot@9pilla.link"
+          git add "content/morning-call/${DATE}.md" || true
+          git commit -m "chore: Morning Call ${DATE} (gerada automaticamente)" || echo "nada a commitar"
+          git push || echo "push falhou (sem mudanças?)"
 
-      - name: Criar config-morning-call.json a partir dos secrets
-        if: steps.check_content.outputs.content_available == 'true'
-        env:
-          ZAPI_INSTANCE_ID: ${{ secrets.ZAPI_INSTANCE_ID }}
-          ZAPI_TOKEN: ${{ secrets.ZAPI_TOKEN }}
-          ZAPI_CLIENT_TOKEN: ${{ secrets.ZAPI_CLIENT_TOKEN }}
-          ZAPI_GROUP_JID: ${{ secrets.ZAPI_GROUP_JID }}
-          BRAPI_TOKEN: ${{ secrets.BRAPI_TOKEN }}
-        run: |
-          cat > .claude/config-morning-call.json << EOF
-          {
-            "z-api": {
-              "apiUrl": "https://api.z-api.io/instances/${ZAPI_INSTANCE_ID}/token/${ZAPI_TOKEN}/send-text",
-              "groupJid": "${ZAPI_GROUP_JID}",
-              "clientToken": "${ZAPI_CLIENT_TOKEN}"
-            },
-            "brapi": {
-              "baseUrl": "https://brapi.dev/api",
-              "token": "${BRAPI_TOKEN}"
-            }
-          }
-          EOF
-          echo "✅ Config criado."
+      - name: Enviar para aprovação no WhatsApp da Raquel
+        if: ${{ env.IS_DRY != 'true' && env.IS_GENERATE == 'true' }}
+        run: node .claude/scripts/notify-personal.js
 
-      - name: Pular envio quando conteúdo estiver ausente
-        if: steps.check_content.outputs.content_available != 'true'
-        run: echo "⏭️ Envio pulado: conteúdo diário não foi gerado."
-
-      - name: Enviar Morning Call via Z-API
-        if: steps.check_content.outputs.content_available == 'true'
-        run: node .claude/scripts/send-morning-call.js
+      # ---------- FASE 09:09 — publicar se aprovado ----------
+      - name: Publicar na Turma 9Pilla (se aprovado)
+        if: ${{ env.IS_DRY != 'true' && env.IS_PUBLISH == 'true' }}
+        run: node .claude/scripts/publish-if-approved.js

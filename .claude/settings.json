@@ -51,11 +51,16 @@
       }
     ]
   },
+  "orchestratorConfig": "./.claude/config/9pilla-orchestrator.yml",
   "customCommands": {
     "morning-call": "./.claude/commands/morning-call.md",
     "novo-ep": "./.claude/commands/novo-ep.md",
     "reel": "./.claude/commands/reel.md",
     "auditoria-ig": "./.claude/commands/auditoria-ig.md",
-    "campanha": "./.claude/commands/campanha.md"
+    "campanha": "./.claude/commands/campanha.md",
+    "criar-reel-script": "./.claude/commands/criar-reel-script.md",
+    "criar-copy-produto": "./.claude/commands/criar-copy-produto.md",
+    "mensagem-grupo": "./.claude/commands/mensagem-grupo.md",
+    "sinal-privado": "./.claude/commands/sinal-privado.md"
   }
 }
