@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>9Pilla — Playbook de Vendas</title>
+<style>
+  :root{
+    --bg:#0b0f0d;--card:#16201b;--card2:#1b2720;--green:#19c37d;--green-soft:#7ee3b8;
+    --gold:#e9c46a;--gold-soft:#f3dca0;--ink:#eaf3ee;--muted:#9fb3a8;--line:rgba(126,227,184,.16);
+    --red:#ff8b6b;--blue:#8fb8ff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;
+    background:radial-gradient(1100px 600px at 80% -10%,#11241b 0,var(--bg) 55%) fixed,var(--bg);
+    color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .app{display:grid;grid-template-columns:310px 1fr;min-height:100vh}
+  .side{background:linear-gradient(180deg,#0e1713,#0b0f0d);border-right:1px solid var(--line);
+    padding:24px 16px;position:sticky;top:0;height:100vh;overflow-y:auto}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:6px;padding:0 6px}
+  .brand .mark{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;
+    background:linear-gradient(145deg,var(--green),#0e8f5b);color:#04130c;font-weight:900;font-size:19px}
+  .brand .name{font-weight:800;font-size:18px}.brand .name span{color:var(--green)}
+  .side .tag{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);padding:0 6px;margin-bottom:18px}
+  .navgroup{margin-top:16px}
+  .navgroup .gt{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--green-soft);
+    font-weight:700;padding:6px 10px;opacity:.85}
+  .nav a{display:flex;justify-content:space-between;align-items:center;gap:8px;
+    padding:9px 10px;border-radius:9px;color:var(--ink);text-decoration:none;font-size:14px;cursor:pointer;border:1px solid transparent}
+  .nav a:hover{background:var(--card)}
+  .nav a.active{background:var(--card2);border-color:var(--line)}
+  .nav a .pr{font-size:12px;color:var(--green);font-weight:700;white-space:nowrap}
+  .nav a.active .pr{color:var(--gold)}
+  .main{padding:40px clamp(20px,5vw,56px)}
+  .panel{max-width:900px;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .eyebrow{letter-spacing:.22em;text-transform:uppercase;font-size:12px;color:var(--green-soft);font-weight:700}
+  h1{font-size:clamp(27px,4.2vw,42px);font-weight:800;letter-spacing:-.4px;margin:8px 0}
+  h1 .g{color:var(--green)}
+  h2.sub{font-size:20px;margin:30px 0 12px;color:var(--gold-soft);border-bottom:1px solid var(--line);padding-bottom:8px}
+  .price-head{display:inline-flex;align-items:baseline;gap:10px;margin:6px 0 4px}
+  .price-head .from{color:var(--muted);text-decoration:line-through;font-size:17px}
+  .price-head .pr{font-size:30px;font-weight:800;color:var(--gold)}
+  .price-head .per{color:var(--muted);font-size:14px}
+  .lead{color:var(--muted);font-size:17px;max-width:66ch;margin:6px 0 24px}
+  .block{background:linear-gradient(165deg,var(--card2),var(--card));border:1px solid var(--line);
+    border-radius:16px;padding:20px 22px;margin-bottom:14px}
+  .block h3{font-size:14px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:9px}
+  .block.pain h3{color:var(--red)} .block.benef h3{color:var(--green-soft)}
+  .block.pitch h3{color:var(--gold-soft)} .block.obj h3{color:var(--ink)} .block.close h3{color:var(--green)}
+  .who-for{display:inline-block;background:rgba(25,195,125,.1);border:1px solid var(--line);
+    color:var(--green-soft);font-size:13px;padding:7px 14px;border-radius:999px;margin-bottom:18px}
+  ul{list-style:none;display:grid;gap:9px}
+  ul li{padding-left:26px;position:relative;font-size:15.5px}
+  ul li::before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:800}
+  .pitch p,.close p{font-size:16.5px;font-style:italic;color:var(--ink);border-left:3px solid var(--gold);padding-left:16px}
+  .close p{border-color:var(--green);font-style:normal;font-weight:600}
+  .obj-item{border-top:1px dashed var(--line);padding:14px 0}
+  .obj-item:first-of-type{border-top:none;padding-top:0}
+  .obj-item .q{color:var(--red);font-weight:700;font-size:14.5px;margin-bottom:5px}
+  .obj-item .q::before{content:"“";} .obj-item .q::after{content:"”";}
+  .obj-item .a{font-size:15px;color:var(--ink)}
+  .obj-item .a b{color:var(--green-soft)}
+  /* GOLDEN CIRCLE per product */
+  .gc{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:4px 0 16px}
+  .gc .g1,.gc .g2,.gc .g3{border-radius:14px;padding:15px 16px;border:1px solid var(--line)}
+  .gc .g1{background:rgba(233,196,106,.08)} .gc .g2{background:rgba(25,195,125,.08)} .gc .g3{background:rgba(143,184,255,.08)}
+  .gc .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:800;margin-bottom:6px}
+  .gc .g1 .lbl{color:var(--gold)} .gc .g2 .lbl{color:var(--green-soft)} .gc .g3 .lbl{color:var(--blue)}
+  .gc p{font-size:14px;color:var(--ink)}
+  .trig{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 20px}
+  .trig .t{font-size:12px;background:var(--card);border:1px solid var(--line);color:var(--green-soft);padding:5px 11px;border-radius:999px}
+  /* CIRCLES big (porque page) */
+  .circles{display:grid;gap:14px;margin:18px 0}
+  .circ{border-radius:16px;padding:22px 24px;border:1px solid var(--line)}
+  .circ.why{background:linear-gradient(160deg,rgba(233,196,106,.14),var(--card));border-color:rgba(233,196,106,.4)}
+  .circ.how{background:linear-gradient(160deg,rgba(25,195,125,.12),var(--card))}
+  .circ.what{background:linear-gradient(160deg,rgba(143,184,255,.1),var(--card))}
+  .circ .k{font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;margin-bottom:6px}
+  .circ.why .k{color:var(--gold)} .circ.how .k{color:var(--green-soft)} .circ.what .k{color:var(--blue)}
+  .circ h3{font-size:20px;margin-bottom:8px}
+  .circ p{color:var(--ink);font-size:15.5px;margin-bottom:8px}
+  /* method */
+  .step-row{display:flex;gap:14px;margin-bottom:14px;align-items:flex-start}
+  .step-row .num{flex:none;width:34px;height:34px;border-radius:10px;background:linear-gradient(145deg,var(--green),#0e8f5b);
+    color:#04130c;font-weight:800;display:grid;place-items:center;font-size:15px}
+  .step-row .body{flex:1}
+  .step-row .body b{color:var(--green-soft);font-size:16px}
+  .step-row .body p{color:var(--muted);font-size:14.5px;margin-top:2px}
+  .say{color:var(--gold-soft);font-style:italic;border-left:3px solid var(--gold);padding-left:12px;margin-top:6px;font-size:14.5px}
+  table.tear{width:100%;border-collapse:collapse;margin:8px 0 6px;font-size:13.5px}
+  table.tear td,table.tear th{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+  table.tear th{color:var(--green-soft);background:var(--card);font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+  table.tear td:first-child{color:var(--gold-soft);font-weight:600;white-space:nowrap}
+  .redline{background:rgba(255,139,107,.08);border:1px solid rgba(255,139,107,.35);border-radius:12px;padding:14px 16px;margin:12px 0;color:#ffd3c6;font-size:14px}
+  .redline b{color:var(--red)}
+  .lib{display:grid;gap:10px;margin-top:8px}
+  .lib .bk{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .lib .bk b{color:var(--gold-soft)} .lib .bk span{color:var(--muted);font-size:14px}
+  /* experts */
+  .expert{display:grid;grid-template-columns:120px 1fr;gap:22px;align-items:start;margin-bottom:8px}
+  .expert .av{width:120px;height:120px;border-radius:18px;display:grid;place-items:center;font-size:34px;font-weight:800;color:#04130c}
+  .av.ra{background:linear-gradient(145deg,var(--gold),#b8862f);color:#1a1304}
+  .av.mm{background:linear-gradient(145deg,var(--green),#0e8f5b)}
+  .expert h3{font-size:22px;margin-bottom:2px}.expert .role{color:var(--green-soft);font-size:14px;margin-bottom:10px}
+  .tl{border-left:2px solid var(--line);padding-left:14px;margin:10px 0 6px}
+  .tl .i{font-size:14px;margin-bottom:7px}.tl .i b{color:var(--green-soft)}
+  .fill{background:rgba(233,196,106,.08);border:1px dashed var(--gold);border-radius:10px;
+    padding:10px 14px;color:var(--gold-soft);font-size:13.5px;margin:8px 0}
+  .usebox{background:rgba(25,195,125,.07);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:10px}
+  .usebox b{color:var(--green-soft)}.usebox p{font-size:14px;margin-bottom:6px}
+  .note{background:rgba(25,195,125,.07);border:1px solid var(--line);border-radius:12px;padding:16px 18px;color:var(--muted);font-size:14px;margin-top:10px}
+  .disc{color:var(--muted);font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:18px;max-width:74ch}
+  .home-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:22px}
+  .hc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .hc b{color:var(--green-soft)}.hc p{color:var(--muted);font-size:14px;margin-top:4px}
+  .menu-btn{display:none}
+  @media (max-width:880px){
+    .app{grid-template-columns:1fr}
+    .side{position:fixed;left:0;top:0;width:290px;z-index:50;transform:translateX(-100%);transition:.25s}
+    .side.open{transform:none}
+    .menu-btn{display:inline-flex;align-items:center;gap:8px;position:fixed;top:14px;left:14px;z-index:60;
+      background:var(--green);color:#04130c;border:none;font-weight:800;padding:10px 14px;border-radius:10px;cursor:pointer}
+    .main{padding-top:64px}
+    .expert,.gc,.circles{grid-template-columns:1fr}
+    .home-cards{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<button class="menu-btn" onclick="document.querySelector('.side').classList.toggle('open')">☰ Menu</button>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="mark">9</div><div class="name">9<span>Pilla</span></div></div>
+    <div class="tag">Playbook de Vendas · Uso do Consultor</div>
+    <nav class="nav" id="nav"></nav>
+  </aside>
+  <main class="main"><div class="panel" id="panel"></div></main>
+</div>
+
+<script>
+const P = [
+  {cat:"🧭 Fundamentos", id:"home", home:true},
+  {cat:"🧭 Fundamentos", id:"porque", porque:true, name:"🟡 O Porquê (Golden Circle)"},
+  {cat:"🧭 Fundamentos", id:"comovender", metodo:true, name:"🎯 Como Vender"},
+
+  {cat:"📚 Digitais", id:"ebook", name:"Ebook: Diário de Operações", price:"R$ 29,90", from:"R$ 49,90",
+   who:"Iniciante curioso, que quer começar barato e aprende lendo",
+   porque:"Ninguém deveria entrar na bolsa às cegas. Ver como um operador de verdade pensa antes de arriscar o próprio dinheiro é um direito, não um luxo.",
+   como:"O diário real de operações da Raquel, traduzido pra linguagem sem economês.",
+   oque:"Ebook Opções na Prática. De R$49,90 por R$29,90 com cupom TURMA9PILLA.",
+   trig:["Custo por dia (menos que uma pizza)","Reciprocidade","Baixo risco de entrada"],
+   lead:"A porta de entrada mais barata e mais inteligente do ecossistema. Por menos que uma pizza, o cliente tem o diário real de como a Raquel opera opções.",
+   pain:"Quero entrar na bolsa, mas não sei por onde começar e morro de medo de perder dinheiro no escuro.",
+   benef:["Passo a passo real de quem opera de verdade, não teoria de livro","Linguagem sem economês, do jeito que a 9Pilla fala","Investimento baixíssimo pro primeiro contato com o método","Cupom TURMA9PILLA já aplicado: de R$49,90 por R$29,90"],
+   pitch:"Olha, o maior erro de quem começa é entrar achando. Esse ebook é o diário real de como a Raquel pensa cada operação. Por R$29,90 você troca o achismo por método. É o primeiro passo mais seguro que existe.",
+   obj:[{q:"É muito básico pra mim?",a:"O básico é justamente o que 90% pula e depois se machuca no mercado. Quem domina a base opera com segurança, não no impulso."},
+        {q:"Eu não costumo ler ebook.",a:"Entendo. Esse é curto e direto ao ponto. E se você prefere aprender vendo, o <b>Kit Iniciante</b> já te coloca pra ver a Raquel operar ao vivo."}],
+   close:"São R$29,90 com o cupom TURMA9PILLA. Quer que eu já te mando o link do pagamento agora?"},
+
+  {cat:"📚 Digitais", id:"checklist", name:"Checklist Operacional 9Pilla", price:"R$ 47",
+   who:"Quem já opera (ou vai operar) e perde dinheiro por falta de processo",
+   porque:"Prejuízo quase sempre nasce da falta de processo, não da falta de sorte. Disciplina se aprende, não se herda.",
+   como:"Uma página que obriga o cliente a checar tudo antes de cada operação.",
+   oque:"PDF premium: pré-operação, setup de corretora e gestão de risco. R$47.",
+   trig:["Aversão à perda","Ancoragem (custa menos que 1 erro)","Autoridade"],
+   lead:"O PDF premium que cabe numa página e impede o cliente de operar no impulso. Pré-operação, setup de corretora e gestão de risco num só lugar.",
+   pain:"Eu entro no impulso, esqueço de checar as coisas, e aí dá ruim. Falta processo.",
+   benef:["Checklist de pré-operação que evita erro emocional","Setup de corretora explicado, sem deixar nada no ar","Gestão de risco aplicada antes de cada entrada","Uma página, consulta rápida, usa todo dia"],
+   pitch:"Sabe aquela operação que você entrou com raiva ou com pressa e se arrependeu? Esse checklist existe pra isso não acontecer. É a sua disciplina escrita numa folha. R$47 que te protegem de prejuízos que custam muito mais.",
+   obj:[{q:"R$47 por um PDF?",a:"R$47 uma única vez evitam <b>um</b> prejuízo de centenas numa entrada mal feita. É o seguro mais barato da sua operação."},
+        {q:"Eu já tenho minha rotina.",a:"Ótimo, então esse checklist organiza o que você já faz e fecha as brechas que a gente nem percebe que tem."}],
+   close:"R$47 e você nunca mais opera no escuro. Posso te enviar o link?"},
+
+  {cat:"📚 Digitais", id:"planilha", name:"Planilha de Controle de Operações", price:"R$ 97",
+   who:"Quem opera e não sabe, com clareza, se está ganhando ou perdendo",
+   porque:"Quem não mede, não controla. Decidir no escuro é o oposto de tudo o que a 9Pilla defende.",
+   como:"Um dashboard que transforma cada operação em dado: resultado e drawdown.",
+   oque:"Planilha Excel/Google Sheets. R$97.",
+   trig:["Prova (dado > sensação)","Autoridade","Compromisso"],
+   lead:"O DNA da 9Pilla é dado. Essa planilha entrega dashboard de posições, resultado e drawdown pro cliente parar de operar no escuro.",
+   pain:"Eu opero, mas não tenho controle nenhum. Não sei meu resultado real, nem o quanto já recuei.",
+   benef:["Dashboard visual de posições e resultado em tempo real","Cálculo de drawdown, pra saber seu risco de verdade","Decisão baseada em dado, não em sensação","Funciona no Excel e no Google Sheets, sem complicação"],
+   pitch:"Quem não mede, não controla. Você não consegue melhorar um resultado que nem enxerga direito. Essa planilha te dá o raio-x da sua operação: o que funciona, o que te derruba, e onde está o seu risco.",
+   obj:[{q:"Eu já uso uma planilha minha.",a:"Essa foi pensada por quem opera, com <b>drawdown</b> e métricas de risco que a maioria das planilhas caseiras não tem."},
+        {q:"Não sou bom com Excel.",a:"Você só preenche suas operações, o resto ela calcula sozinha. É feita pra ser simples."}],
+   close:"R$97 pra você ter controle total da sua operação. Quer começar hoje?"},
+
+  {cat:"📚 Digitais", id:"kit", name:"Kit Iniciante 9Pilla", price:"R$ 100", from:"R$ 155,90",
+   who:"Quem quer começar completo, sem ter que montar o caminho sozinho",
+   porque:"Começar do jeito certo não deveria ser um quebra-cabeça que afasta quem tem medo.",
+   como:"O caminho pronto na ordem certa: aprende, organiza e já vê operação ao vivo.",
+   oque:"Ebook + Checklist + 1 mês de Grupo VIP. De R$155,90 por R$100.",
+   trig:["Ancoragem (economia R$55,90)","Valor de bundle","Prova social (entrada mais escolhida)"],
+   lead:"O combo perfeito de entrada: Ebook + Checklist + 1 mês de Grupo VIP. O cliente aprende, se organiza e já vê a Raquel operar ao vivo. Economia de R$55,90.",
+   pain:"Quero começar do jeito certo, mas não sei qual produto comprar primeiro. Me dá o caminho pronto.",
+   benef:["Ebook pra aprender o método","Checklist pra operar com disciplina","1 mês de Grupo VIP pra ver a Raquel operando ao vivo","Tudo junto sai R$55,90 mais barato que separado"],
+   pitch:"Esse é o atalho. Em vez de comprar pingado, você leva o pacote completo de quem está começando: aprende, se organiza e já entra no VIP vendo operação real. E ainda economiza R$55,90.",
+   obj:[{q:"Posso comprar os itens separados?",a:"Pode, mas junto você economiza <b>R$55,90</b> e já entra no Grupo VIP no primeiro dia. Separado fica mais caro e mais lento."},
+        {q:"Será que dou conta de tudo junto?",a:"O kit foi montado na ordem certa: lê, organiza, observa. Você vai no seu ritmo, mas com tudo na mão."}],
+   close:"De R$155,90 por R$100, com 1 mês de VIP incluso. Fecho seu Kit Iniciante agora?"},
+
+  {cat:"🎓 Aulas", id:"workshop", name:"Workshop Gravado On Demand", price:"R$ 197",
+   who:"Quem quer formação estruturada, mas no próprio tempo e pra sempre",
+   porque:"Conhecimento bom não deveria expirar nem depender de bater horário.",
+   como:"A formação estruturada do Aulão, gravada e vitalícia, no ritmo do cliente.",
+   oque:"Workshop gravado on demand, acesso pra sempre. R$197.",
+   trig:["Posse (é seu pra sempre)","Custo por hora diluído","Autoridade"],
+   lead:"A versão gravada do Aulão em Turma, com acesso vitalício. O cliente assiste quando quiser e revê quantas vezes precisar.",
+   pain:"Não consigo bater horário de aula ao vivo, e quando aprendo algo importante, esqueço se não revejo.",
+   benef:["Acesso vitalício: assiste e revê pra sempre","Mesmo conteúdo do Aulão em Turma","No seu tempo, sem pressão de horário","Pausa, volta, anota, no seu ritmo"],
+   pitch:"A vida é corrida, eu sei. Por isso esse workshop é seu pra sempre. Aprendeu, esqueceu, voltou. Reviu antes de uma operação importante. É conhecimento que não expira, no horário que cabe na sua rotina.",
+   obj:[{q:"Prefiro aprender ao vivo.",a:"Faz sentido. Se interação na hora é o seu lance, o <b>Aulão em Turma</b> é o ideal. Mas o gravado você tem pra sempre, pra revisar."},
+        {q:"R$197 não é caro?",a:"É vitalício. Diluído nos anos que você vai rever, é o conteúdo mais barato por hora que existe."}],
+   close:"R$197 e o conhecimento é seu pra sempre. Quero te liberar o acesso, pode ser?"},
+
+  {cat:"🎓 Aulas", id:"aulao", name:"Aulão em Turma (até 10 pessoas)", price:"R$ 279",
+   who:"Quem aprende melhor ao vivo, em grupo, podendo perguntar na hora",
+   porque:"Dúvida travada no peito não vira conhecimento. Perguntar na hora liberta.",
+   como:"2 horas ao vivo, no máximo 10 pessoas, atenção de verdade pra cada um.",
+   oque:"Aulão em Turma, online, até 10 vagas. R$279.",
+   trig:["Escassez REAL (10 vagas)","Interação ao vivo","Prova social (turma)"],
+   lead:"2 horas ao vivo, online, com no máximo 10 pessoas. Intimista o suficiente pra cada um tirar dúvida de verdade.",
+   pain:"Tenho dúvidas específicas e quero perguntar na hora, não ficar falando com uma gravação.",
+   benef:["2 horas ao vivo, interação real","Turma de até 10 pessoas: atenção de verdade","Tira dúvida na hora, no calor do conteúdo","Networking com outras pessoas no mesmo caminho"],
+   pitch:"Aqui você não é número. São no máximo 10 pessoas, então a Raquel olha pra sua dúvida de verdade. É ao vivo, é interativo, e é onde a ficha cai porque você pergunta exatamente o que te trava.",
+   obj:[{q:"Por que não o gravado, que é mais barato?",a:"No ao vivo você <b>tira dúvida na hora</b>. A gravação não te responde. Pra quem tem perguntas, isso vale ouro."},
+        {q:"Vai ter vaga?",a:"São só 10 lugares por turma justamente pra manter a qualidade. Por isso enche rápido, vale garantir o seu."}],
+   close:"São R$279 e só 10 vagas. Quer que eu reserve a sua antes de fechar a turma?"},
+
+  {cat:"🎓 Aulas", id:"individual", name:"Aula Individual Online", price:"R$ 799",
+   who:"Quem quer atenção 100% exclusiva, no próprio nível e realidade",
+   porque:"Cada pessoa tem um ponto de trava diferente. Atenção exclusiva é o que acelera de verdade.",
+   como:"2 horas ao vivo só pra ele, olhando a carteira e as dúvidas dele.",
+   oque:"Aula individual online, 1 sessão de 2h. R$799.",
+   trig:["Exclusividade","Aceleração (compra de tempo)","Autoridade"],
+   lead:"1 sessão de 2 horas ao vivo, totalmente personalizada. O foco é a carteira, as dúvidas e o momento do cliente.",
+   pain:"Em grupo eu me perco. Preciso de algo no meu ritmo, olhando a minha realidade e a minha carteira.",
+   benef:["2 horas só pra você, sem dividir atenção","Conteúdo moldado ao seu nível e seus objetivos","Olhar direto pra sua carteira e suas dúvidas","Evolução muito mais rápida que em grupo"],
+   pitch:"Tem gente que precisa de aula sob medida, e tá tudo certo. Aqui são 2 horas em que a Raquel olha só pra você: seu nível, sua carteira, suas travas. É o caminho mais rápido pra sair do lugar.",
+   obj:[{q:"R$799 é bastante.",a:"É atenção exclusiva com quem opera de verdade. Um único erro evitado no mercado já paga essa aula. Aqui você compra <b>aceleração</b>."},
+        {q:"O grupo não resolve?",a:"Resolve pra muita gente. Mas se você sente que se perde no grupo, o individual é feito exatamente pra te destravar."}],
+   close:"R$799 pelas 2 horas exclusivas. Quer que eu veja a primeira data disponível na agenda da Raquel?"},
+
+  {cat:"🎓 Aulas", id:"dupla", name:"Aula Dupla Individual Online", price:"R$ 1.400",
+   who:"Quem quer aprofundar com prática acompanhada e revisão",
+   porque:"Conhecimento que fica é o que a gente pratica e revisa. Informação solta se perde.",
+   como:"2 sessões: na primeira aprende e aplica, na segunda a Raquel revisa e corrige a rota.",
+   oque:"Aula dupla individual, 2 sessões de 2h. R$1.400.",
+   trig:["Compromisso/consistência","Revisão (transformação)","Ancoragem vs individual"],
+   lead:"2 sessões de 2 horas cada, personalizadas. Aprende, pratica e revisa a evolução com acompanhamento de perto.",
+   pain:"Uma aula só não fixa. Eu quero praticar e ter alguém revisando se estou no caminho certo.",
+   benef:["2 sessões de 2 horas: tempo pra fixar de verdade","Prática acompanhada entre os encontros","Revisão da sua evolução na segunda sessão","Aprofundamento real, não pincelada"],
+   pitch:"Conhecimento que fica é o que a gente pratica e revisa. Na primeira sessão você aprende e aplica; na segunda, a Raquel revisa o que você fez e corrige a rota. É assim que vira competência, não informação solta.",
+   obj:[{q:"Por que não fazer só uma aula?",a:"Porque a mágica está na <b>revisão</b>. A segunda sessão corrige o que você praticou. Uma aula informa; duas transformam."},
+        {q:"R$1.400 pesa.",a:"São duas mentorias individuais com acompanhamento. Pelo nível de atenção, se paga na primeira operação bem executada."}],
+   close:"R$1.400 pelas duas sessões com acompanhamento. Posso já reservar as duas datas pra você?"},
+
+  {cat:"⭐ Grupo VIP", id:"vip-mensal", name:"Winner VIP — Mensal", price:"R$ 79", per:"/ mês",
+   who:"Quem estuda mas trava na hora de operar e quer ver a Raquel ao vivo",
+   porque:"Ver quem faz é o que destrava quem estuda mas congela na hora de operar.",
+   como:"Operações de opções da Raquel ao vivo, todo dia, com a tese de cada entrada e saída.",
+   oque:"Winner VIP mensal. R$79 (cerca de R$2,60 por dia).",
+   trig:["Custo por dia","Prova (operação real ao vivo)","Comunidade / prova social"],
+   lead:"O coração da 9Pilla. Operações de opções da Raquel ao vivo, todos os dias, com a tese por trás de cada entrada e saída.",
+   pain:"Eu até estudo, mas na hora de operar eu travo. Não sei aplicar sozinho.",
+   benef:["Operações da Raquel ao vivo, em tempo real","A tese de cada entrada e saída, pra você entender o porquê","Aprende no calor do mercado, vendo quem faz","Comunidade de gente no mesmo caminho que o seu"],
+   pitch:"Estudar é importante, mas é vendo alguém operar que a ficha cai. No VIP você acompanha a Raquel ao vivo, com o raciocínio dela em cada operação. É como ter um GPS enquanto aprende a dirigir. R$79 pra parar de operar sozinho.",
+   obj:[{q:"Vou conseguir acompanhar?",a:"O VIP é feito exatamente pra quem quer <b>aprender aplicando</b>. Você começa observando e evolui no seu tempo."},
+        {q:"R$79 todo mês é muito.",a:"São cerca de R$2,60 por dia, menos que um cafezinho. E no <b>plano anual</b> cai pra ~R$67/mês."}],
+   close:"R$79 e você já entra hoje vendo a Raquel operar. Quer que eu te coloque no VIP agora, ou prefere o anual que sai bem mais em conta?"},
+
+  {cat:"⭐ Grupo VIP", id:"vip-anual", name:"Winner VIP — Planos (Tri / Sem / Anual)", price:"R$ 806", from:"R$ 948",
+   who:"Quem já decidiu que quer evoluir e quer o melhor custo por mês",
+   porque:"Constância, não curiosidade de 30 dias, é o que forma um operador de verdade.",
+   como:"O mesmo VIP ao vivo, o ano inteiro, por muito menos por mês.",
+   oque:"Trimestral R$225,15 · Semestral R$440,82 · Anual R$805,80 (~R$67/mês).",
+   trig:["Ancoragem (de R$948)","Compromisso","Melhor valor (< R$2,30/dia)"],
+   lead:"Quanto maior o compromisso, menor a mensalidade. Trimestral R$75,05/mês, Semestral R$73,47/mês e o Anual saindo por ~R$67/mês (de R$948 por R$805,80).",
+   pain:"Eu quero de verdade aprender a operar, não é só uma curiosidade de um mês.",
+   benef:["Trimestral: R$225,15 (R$75,05/mês)","Semestral: R$440,82 (R$73,47/mês)","Anual: R$805,80, ~R$67/mês, o melhor valor","Tudo do VIP: operações ao vivo, tese e comunidade, o ano inteiro"],
+   pitch:"Aprender a operar não acontece em 30 dias, acontece com constância. Por isso quem leva a sério escolhe um plano maior: você se compromete com a sua evolução e paga bem menos por mês. No anual dá uns R$67 mensais, o ano todo de operação ao vivo.",
+   obj:[{q:"E se eu não gostar?",a:"Por isso o cliente pode começar no <b>mensal</b> pra sentir e migrar depois. Mas quem já sabe que quer, economiza muito indo direto no anual."},
+        {q:"Pagar tudo de uma vez pesa.",a:"Pensa no custo por dia: o ano inteiro sai por menos de R$2,30 por dia. É o melhor custo-benefício da 9Pilla."}],
+   close:"O anual fecha em R$805,80, ~R$67 por mês. Quer garantir o melhor valor e travar seu acesso pelo ano todo?"},
+
+  {cat:"🚀 Alto Nível", id:"acomp", name:"Acompanhamento Avançado Mensal", price:"R$ 497", per:"/ mês",
+   who:"Quem já opera e quer um olhar experiente revisando de perto, todo mês",
+   porque:"Operar sozinho é caro: você repete o mesmo erro sem perceber, ano após ano.",
+   como:"Revisão contínua das suas operações no WhatsApp + 1 call de 1h por mês.",
+   oque:"Acompanhamento avançado, recorrente. R$497/mês.",
+   trig:["Aversão à perda (erro evitado)","Relacionamento recorrente","Autoridade"],
+   lead:"Mentoria recorrente: revisão das suas operações pelo WhatsApp + 1 call de 1 hora por mês. Correção contínua de quem já faz.",
+   pain:"Eu opero sozinho e não tenho ninguém experiente olhando meus erros e me corrigindo.",
+   benef:["Revisão das suas operações direto no WhatsApp","1 call de 1 hora por mês pra aprofundar","Correção contínua, mês após mês","Acesso recorrente a quem opera de verdade"],
+   pitch:"Operar sozinho é caro: você repete o mesmo erro sem perceber. Aqui você tem alguém experiente revisando suas operações todo mês e uma call pra ajustar a rota. Encurta anos de tentativa e erro.",
+   obj:[{q:"R$497 por mês é alto.",a:"É uma mentoria recorrente por uma fração do preço de um curso fechado. <b>Um único erro evitado</b> por mês já paga o acompanhamento."},
+        {q:"Não sei se preciso de tanto.",a:"Se você já opera com regularidade, esse olhar de fora é o que separa quem estaciona de quem evolui de verdade."}],
+   close:"R$497 no mês com revisão contínua e call mensal. Quer começar esse mês e já mandar suas próximas operações pra revisão?"},
+
+  {cat:"🚀 Alto Nível", id:"mentoria", name:"Mentoria Online", price:"R$ 3.799", from:"R$ 5.000",
+   who:"Quem leva a sério e quer transformação acelerada com os dois experts",
+   porque:"Tem um momento em que continuar tentando sozinho custa mais caro do que aprender com quem já chegou lá.",
+   como:"3 sessões de 2h, sob medida, com Raquel Amorim e Milton Montanari juntos.",
+   oque:"Mentoria online. De R$5.000 por R$3.799.",
+   trig:["Autoridade dupla (2 experts)","Ancoragem R$5.000 → R$3.799","Compra de tempo"],
+   lead:"3 sessões de 2 horas, personalizadas, com Raquel Amorim + Milton Montanari. Estratégia sob medida pra acelerar o cliente.",
+   pain:"Quero pular a curva de tentativa e erro e aprender direto com quem já chegou lá.",
+   benef:["3 sessões de 2 horas, totalmente personalizadas","Acesso direto a Raquel Amorim E Milton Montanari","Estratégia construída sob medida pro seu momento","De R$5.000 por R$3.799"],
+   pitch:"Tem um momento em que continuar tentando sozinho fica mais caro que investir em quem já fez. Essa mentoria é isso: dois experts olhando a sua estratégia, do seu jeito, por três sessões. É compra de tempo, você pula anos de erro.",
+   obj:[{q:"É muito dinheiro.",a:"É acesso direto aos dois, sob medida. Pergunta: quanto te custa continuar <b>errando sozinho</b> pelos próximos dois anos? Costuma ser bem mais que R$3.799."},
+        {q:"Preciso pensar.",a:"Faz total sentido, é uma decisão séria. Posso te explicar exatamente como são as 3 sessões pra você avaliar com clareza?"}],
+   close:"De R$5.000 por R$3.799, com a Raquel e o Milton. Quer que eu veja a agenda deles pra já reservar sua primeira sessão?"},
+
+  {cat:"🚀 Alto Nível", id:"imersao", name:"Imersão Presencial SP", price:"R$ 5.000",
+   who:"Quem quer a experiência completa: presença, imersão total e networking",
+   porque:"Tem transformação que só acontece presencialmente, sem distração, cercado de gente que também leva a sério.",
+   como:"2 dias em São Paulo, imersão e prática concentradas, ao lado de Raquel e Milton.",
+   oque:"Imersão presencial SP, 2 dias. R$5.000, vagas limitadas pelo espaço.",
+   trig:["Escassez REAL (limite do espaço)","Networking / pertencimento","Autoridade + experiência"],
+   lead:"2 dias de evento físico em São Paulo, 4 horas de imersão, ao lado de Raquel e Milton. A experiência mais completa da 9Pilla.",
+   pain:"Online é bom, mas eu rendo muito mais presencialmente. Quero imersão total e gente do meu nível por perto.",
+   benef:["2 dias presenciais em São Paulo","Ao lado de Raquel e Milton, ao vivo","Networking de alto nível com outros investidores","Imersão e prática concentradas, experiência que transforma"],
+   pitch:"Tem coisa que só acontece presencialmente: a energia, o networking, a imersão sem distração. São 2 dias ao lado da Raquel e do Milton, com gente que também leva a sério. É o tipo de experiência que vira ponto de virada.",
+   obj:[{q:"É caro e ainda tem o deslocamento.",a:"É uma experiência única. O <b>networking</b> de dois dias com investidores e mentores já costuma valer o investimento, mais a transformação concentrada."},
+        {q:"Não seria melhor online?",a:"Se você rende mais à distância, a Mentoria Online é ótima. Mas se presencial te transforma, a imersão é incomparável."}],
+   close:"São R$5.000 pelos 2 dias de imersão em SP com a Raquel e o Milton. As vagas são limitadas pelo espaço, quer que eu garanta a sua?"},
+
+  {cat:"👥 Sobre", id:"experts", experts:true, name:"👥 Os Experts"}
+];
+
+const nav=document.getElementById('nav'), panel=document.getElementById('panel');
+let groups={}; P.forEach(p=>{(groups[p.cat]=groups[p.cat]||[]).push(p)});
+Object.keys(groups).forEach(cat=>{
+  const g=document.createElement('div'); g.className='navgroup';
+  g.innerHTML=`<div class="gt">${cat.replace('Sobre','')}</div>`;
+  const box=document.createElement('div');
+  groups[cat].forEach(p=>{
+    const a=document.createElement('a'); a.dataset.id=p.id;
+    const label=p.home?"🏠 Início":(p.name);
+    a.innerHTML=`<span>${label}</span>${p.price?`<span class="pr">${p.price}</span>`:""}`;
+    a.onclick=()=>show(p.id); box.appendChild(a);
+  });
+  g.appendChild(box); nav.appendChild(g);
+});
+
+function gcBlock(p){
+  if(!p.porque||!p.oque) return "";
+  return `<div class="gc">
+    <div class="g1"><div class="lbl">Por que vende</div><p>${p.porque}</p></div>
+    <div class="g2"><div class="lbl">Como vende</div><p>${p.como}</p></div>
+    <div class="g3"><div class="lbl">O que vende</div><p>${p.oque}</p></div>
+  </div>
+  <div class="trig">${(p.trig||[]).map(t=>`<span class="t">🎯 ${t}</span>`).join('')}</div>`;
+}
+
+function render(p){
+  if(p.home) return `<div class="eyebrow">Playbook de Vendas</div>
+    <h1>Não venda o produto. Venda o <span class="g">porquê</span>.</h1>
+    <p class="lead">Gente não compra o que você faz, compra o motivo pelo qual você faz. Este playbook ensina o consultor a conduzir a venda do primeiro contato ao fechamento, de um ebook de R$29 a uma imersão de R$5.000, sempre pela crença primeiro, produto depois.</p>
+    <div class="home-cards">
+      <div class="hc"><b>🟡 Comece pelo Porquê</b><p>Abra a conversa pela crença e pela dor. O preço é a última coisa que entra.</p></div>
+      <div class="hc"><b>🦸 O cliente é o herói</b><p>A Raquel e o Milton são os guias. Você não vende gurus, você tira o medo do cliente.</p></div>
+      <div class="hc"><b>🪜 Use a escada</b><p>Produto caro pra ele? Ofereça o degrau anterior. Nunca perca o cliente, reposicione.</p></div>
+      <div class="hc"><b>🤝 Sempre feche</b><p>Toda conversa termina com uma pergunta de fechamento. Quem não pede, não vende.</p></div>
+    </div>
+    <p class="lead" style="margin-top:22px">Comece por <b style="color:var(--gold-soft)">🟡 O Porquê</b> pra entender a crença que você defende, depois <b style="color:var(--green-soft)">🎯 Como Vender</b> pra dominar o método. Em cada produto você tem o mini Golden Circle, a dor, os benefícios, o pitch, as objeções e a frase de fechamento.</p>
+    <p class="disc">⚠️ Uso interno do consultor. Conteúdo educativo, sem promessa de rentabilidade. A 9Pilla não faz recomendação de investimento. Apresente sempre a Raquel como operadora de opções, não como consultora. CVM Resolução 20/2021.</p>`;
+
+  if(p.porque) return `<div class="eyebrow">Golden Circle · A crença que você vende</div>
+    <h1>O <span class="g">Porquê</span> da 9Pilla</h1>
+    <p class="lead">Simon Sinek resumiu: as pessoas não compram O QUE você faz, compram POR QUE você faz. O consultor que vende de dentro pra fora (crença → método → produto) fecha muito mais que o que só fala preço e característica. Decore esta ordem.</p>
+    <div class="circles">
+      <div class="circ why"><div class="k">🟡 Por quê · A crença</div><h3>Ninguém deveria ficar refém do dinheiro nem depender de sorte.</h3>
+        <p>A maioria das pessoas nunca foi ensinada a fazer o dinheiro trabalhar por ela, e o mercado foi construído pra parecer complicado e excludente. A 9Pilla existe pra democratizar esse conhecimento com verdade, dado e método, pra que qualquer pessoa comum consiga se libertar pelo próprio preparo. Dinheiro não é destino, é a jornada para a liberdade.</p></div>
+      <div class="circ how"><div class="k">🟢 Como · O método</div><h3>Dado tratado virando decisão, com gestão de risco no centro.</h3>
+        <p>A gente ensina leitura de mercado todo dia, transformando número em decisão consciente. Gestão de risco antes de qualquer operação (método acima de adrenalina). Educação como escada, cada degrau no tempo da pessoa. Operação de opções ao vivo, pra aprender vendo quem faz. E linguagem sem economês, porque conhecimento que ninguém entende não liberta ninguém.</p></div>
+      <div class="circ what"><div class="k">🔵 O quê · A entrega</div><h3>Um ecossistema de 4 trilhas, da porta de entrada ao alto nível.</h3>
+        <p>Digitais (começar), Aulas (aprender), Grupo VIP (operar junto) e Mentoria &amp; Imersão (acelerar). O produto é só a forma que a crença toma pra chegar em cada pessoa no degrau certo.</p></div>
+    </div>
+    <div class="redline"><b>Lembrete de ouro:</b> nunca abra a conversa pelo preço nem pela característica do produto. Abra pela crença e pela dor. O cliente precisa sentir que você entende o mundo dele antes de você falar em dinheiro.</div>
+    <p class="disc">⚠️ Uso interno. A 9Pilla é educação financeira e operação de opções, não consultoria de investimento. Sem promessa de resultado. CVM Res. 20/2021.</p>`;
+
+  if(p.metodo) return renderMetodo();
+  if(p.experts) return renderExperts();
+
+  return `<div class="eyebrow">${p.cat.replace(/^[^ ]+ /,'')} · Pitch de Fechamento</div>
+    <h1>${p.name}</h1>
+    <div class="price-head">${p.from?`<span class="from">${p.from}</span>`:""}<span class="pr">${p.price}</span>${p.per?`<span class="per">${p.per}</span>`:""}</div>
+    <div class="who-for" style="margin-top:10px">🎯 Ideal para: ${p.who}</div>
+    ${gcBlock(p)}
+    <p class="lead">${p.lead}</p>
+    <div class="block pain"><h3>😟 A dor que ele sente</h3><p style="font-size:16px;font-style:italic;color:var(--ink)">“${p.pain}”</p></div>
+    <div class="block benef"><h3>✨ O que ele ganha</h3><ul>${p.benef.map(b=>`<li>${b}</li>`).join('')}</ul></div>
+    <div class="block pitch"><h3>💬 Pitch pronto pra falar</h3><p>${p.pitch}</p></div>
+    <div class="block obj"><h3>🧱 Objeções &amp; respostas</h3>${p.obj.map(o=>`<div class="obj-item"><div class="q">${o.q}</div><div class="a">${o.a}</div></div>`).join('')}</div>
+    <div class="block close"><h3>🤝 Frase de fechamento</h3><p>${p.close}</p></div>
+    <p class="disc">⚠️ Uso interno do consultor. Sem promessa de rentabilidade. Resultados passados não garantem resultados futuros. CVM Res. 20/2021.</p>`;
+}
+
+function renderMetodo(){ return `<div class="eyebrow">O método de venda · da abordagem ao fechamento</div>
+  <h1>Como <span class="g">Vender</span></h1>
+  <p class="lead">Este é o manual de convicção do consultor. Ele destila os melhores livros de vendas e storytelling num fluxo prático, pra você conduzir uma conversa ao vivo do "oi" até o "fechei", com ética e sem parecer que está empurrando nada.</p>
+
+  <h2 class="sub">1. A mentalidade certa (Gitomer)</h2>
+  <div class="block"><p>A frase-mãe da Bíblia de Vendas de Jeffrey Gitomer: <b style="color:var(--gold-soft)">as pessoas odeiam que vendam pra elas, mas amam comprar.</b> Seu trabalho não é convencer, é ajudar o cliente a se convencer. Você é um consultor que resolve um problema, não um vendedor que empurra um produto. Fale 30%, escute 70%. Quem pergunta, conduz.</p></div>
+
+  <h2 class="sub">2. O cliente é o herói, você é o guia (StoryBrand)</h2>
+  <div class="block"><p>O maior erro de vendedor é se colocar (ou colocar o expert) como o herói da história. Donald Miller mostra o contrário: <b style="color:var(--green-soft)">o cliente é o herói, a 9Pilla é o guia</b> (o mentor que já trilhou o caminho e volta pra buscar quem está começando). O consultor não diz "a Raquel é incrível". Diz "você vai conseguir, e não vai fazer isso sozinho". A estrutura da conversa vira uma história:</p>
+    <div style="margin-top:12px">
+      <div class="step-row"><div class="num">1</div><div class="body"><b>Um herói (o cliente)</b><p>com um problema: medo de perder dinheiro, sensação de estar ficando pra trás.</p></div></div>
+      <div class="step-row"><div class="num">2</div><div class="body"><b>encontra um guia (9Pilla / Raquel + Milton)</b><p>que tem autoridade (opera de verdade, 40 anos de mercado) e empatia (já sentiu o mesmo medo).</p></div></div>
+      <div class="step-row"><div class="num">3</div><div class="body"><b>que dá um plano (a escada de produtos)</b><p>e um chamado à ação (o próximo degrau certo pra ele).</p></div></div>
+      <div class="step-row"><div class="num">4</div><div class="body"><b>levando a um final feliz</b><p>liberdade e autonomia, evitando o fracasso de continuar refém do dinheiro.</p></div></div>
+    </div>
+  </div>
+
+  <h2 class="sub">3. O script da conversa ao vivo (6 passos)</h2>
+  <div class="block">
+    <div class="step-row"><div class="num">1</div><div class="body"><b>Conexão</b><p>Quebra o gelo, cria rapport, chama pelo nome. Ninguém compra de quem não gostou.</p><div class="say">"Oi, [nome], tudo bem? Antes de qualquer coisa, me conta um pouco de você e o que te trouxe até a 9Pilla."</div></div></div>
+    <div class="step-row"><div class="num">2</div><div class="body"><b>Diagnóstico (perguntas SPIN)</b><p>Situação → Problema → Implicação → Necessidade. Faça o cliente falar da dor com as palavras dele.</p><div class="say">"Hoje você já investe em algo? · O que mais te trava pra começar/evoluir? · E o que acontece se daqui a um ano você continuar exatamente onde está? · Se existisse um jeito seguro de sair disso, isso mudaria o quê pra você?"</div></div></div>
+    <div class="step-row"><div class="num">3</div><div class="body"><b>Amplifique a dor (com cuidado)</b><p>Espelhe o que ele disse pra ele sentir o custo de não agir. Sem drama, com verdade.</p><div class="say">"Então hoje você sente que perde oportunidade por não saber por onde começar, e isso já vem te incomodando faz um tempo, é isso?"</div></div></div>
+    <div class="step-row"><div class="num">4</div><div class="body"><b>Apresente o guia e o porquê</b><p>Conecte a crença da 9Pilla à dor dele. Aqui entram os experts como autoridade que tira o medo.</p><div class="say">"A 9Pilla nasceu exatamente pra quem se sente assim. A gente acredita que ninguém deveria depender de sorte, e por isso ensina método, com a Raquel operando ao vivo e o Milton, que tem 40 anos de mercado, por trás da estratégia."</div></div></div>
+    <div class="step-row"><div class="num">5</div><div class="body"><b>Ofereça o degrau certo (o quê)</b><p>Recomende UM produto (o degrau da escada que resolve a dor dele agora). Apresente valor antes do preço, e sempre com ancoragem.</p><div class="say">"Pra onde você está, o passo certo é [produto]. Ele custa [valor cheio], mas hoje sai por [valor final], e resolve exatamente o [dor] que você me contou."</div></div></div>
+    <div class="step-row"><div class="num">6</div><div class="body"><b>Feche pedindo a venda</b><p>Termine com uma pergunta que assume o próximo passo. Se veio objeção, trate (seção 5) e feche de novo.</p><div class="say">"Faz sentido pra você? O que eu preciso fazer pra a gente dar esse próximo passo agora e já garantir o seu acesso?"</div></div></div>
+  </div>
+
+  <h2 class="sub">4. A cadência de dois contatos (venda branda → oferta quente)</h2>
+  <div class="block"><p>Nem toda venda fecha no primeiro toque, e tudo bem. A estrutura mais forte pra ticket médio e alto é em dois tempos:</p>
+    <div class="step-row" style="margin-top:12px"><div class="num">1º</div><div class="body"><b>Contato 1 — Venda branda</b><p>O objetivo NÃO é fechar, é diagnosticar e gerar confiança. Você escuta, entende a dor, entrega um insight de valor de graça (reciprocidade) e planta a semente. Sai com um compromisso pequeno: "posso te mandar um material?" ou "topa a gente conversar de novo [dia]?".</p></div></div>
+    <div class="step-row"><div class="num">2º</div><div class="body"><b>Contato 2 — Oferta quente</b><p>Agora sim você monta uma oportunidade sob medida pra dor que ELE confessou, com uma condição real e com prazo. O cliente sente que é feita pra ele e que não vale a pena desperdiçar. É aqui que a escassez ética fecha.</p></div></div>
+  </div>
+
+  <h2 class="sub">5. Objeção é sinal de compra (Sentir · Senti · Descobri)</h2>
+  <div class="block"><p>Quando o cliente objeta, ele está interessado (indiferente não discute, vai embora). Nunca discuta. Use o método <b style="color:var(--green-soft)">Sentir, Senti, Descobri</b>: valide o sentimento, mostre que outros sentiram igual, revele o que eles descobriram.</p>
+    <div class="say" style="margin-top:10px">"Entendo como você <b>se sente</b>, muita gente que hoje é aluna <b>sentiu</b> exatamente isso antes de começar. O que elas <b>descobriram</b> é que o custo de continuar parada era bem maior que o do primeiro passo."</div>
+    <p style="margin-top:14px"><b>Regra do preço:</b> quando vier "tá caro", nunca baixe o preço na hora. Primeiro <b>isole</b> ("é só o valor ou tem mais alguma coisa?"), depois <b>reancore</b> no valor e no custo por dia, e só então, se precisar, <b>desça a escada</b> pro degrau anterior (ex.: da Mentoria pro Acompanhamento, do VIP anual pro mensal). Você reposiciona, nunca perde o cliente.</p>
+  </div>
+
+  <h2 class="sub">6. Gatilhos mentais (Cialdini) com ética</h2>
+  <div class="block">
+    <ul style="gap:11px">
+      <li><b>Reciprocidade:</b> entregue valor antes de pedir a venda (um insight, um diagnóstico). Quem recebe, quer retribuir.</li>
+      <li><b>Compromisso e coerência:</b> conquiste pequenos "sins" ao longo da conversa. Quem concorda em partes, fecha no todo.</li>
+      <li><b>Prova social:</b> "a maioria começa pelo Kit Iniciante", "a turma do VIP cresce todo dia". Gente confia em gente.</li>
+      <li><b>Autoridade:</b> a Raquel opera de verdade, o Milton tem 40 anos de mercado. Autoridade tira o medo.</li>
+      <li><b>Afinidade:</b> pareça gente, chame pelo nome, ache o ponto em comum. A gente compra de quem gosta.</li>
+      <li><b>Escassez:</b> a mais poderosa e a mais perigosa. Só funciona (e só é permitida) quando é REAL.</li>
+    </ul>
+  </div>
+
+  <h2 class="sub">7. Escassez que fecha sem queimar a marca</h2>
+  <div class="block"><p>Escassez real é o que faz o cliente decidir agora em vez de "depois" (que quase sempre é "nunca"). O fechamento clássico funciona: <span class="say" style="display:inline;border:none;padding:0;color:var(--gold-soft)">"estamos com essa condição hoje, o que eu posso fazer pra a gente dar o próximo passo e já colocar no carrinho?"</span>. Mas ele SÓ pode ser usado em cima de uma escassez verdadeira:</p>
+    <ul style="margin-top:12px">
+      <li><b>Aulão em Turma:</b> são de fato só 10 vagas. Use.</li>
+      <li><b>Imersão SP:</b> o espaço físico limita mesmo. Use.</li>
+      <li><b>Condição/desconto com data real de fim de lote:</b> se existe prazo, avise. Se não existe, não invente.</li>
+    </ul>
+    <div class="redline" style="margin-top:14px"><b>Linha vermelha (nunca cruze):</b> não invente "só hoje" que não é só hoje, não finja vaga que não acabou, não crie prazo falso. Urgência mentirosa é infração do Código de Defesa do Consumidor (art. 39), mancha uma marca de educação financeira e destrói o LTV (o cliente pressionado é o que mais pede reembolso e mais vira detrator). A 9Pilla vende método e verdade, a sua venda tem que ser coerente com isso. Quanto maior o ticket, mais a decisão precisa ser consciente.</div>
+  </div>
+
+  <h2 class="sub">8. Estudo de caso: a proposta que converte de verdade</h2>
+  <div class="block"><p>Um exemplo real de proposta consultiva de alto ticket, bem montada e ética. Repare que cada elemento é honesto, e é isso que o consultor 9Pilla replica:</p>
+    <table class="tear">
+      <tr><th>Técnica</th><th>Por que funciona</th><th>Como o consultor 9Pilla usa</th></tr>
+      <tr><td>Proposta nominal</td><td>Personalização: o cliente é único, não é oferta de massa</td><td>Proposta com o nome do cliente, nunca genérica</td></tr>
+      <tr><td>Prazo de validade real</td><td>Escassez verdadeira faz decidir agora</td><td>Prazo de turma/lote real, nunca inventado</td></tr>
+      <tr><td>Ancoragem de preço</td><td>O desconto só tem força se existe o valor cheio ao lado</td><td>Mostrar sempre o valor cheio antes do valor final</td></tr>
+      <tr><td>Duas opções (A/B)</td><td>Escolha entre duas, não "sim ou não"</td><td>Oferecer 2 caminhos (à vista x parcelado, ou dois degraus)</td></tr>
+      <tr><td>Vantagem à vista (Pix)</td><td>Recompensa a decisão rápida sem mentir</td><td>Benefício real pra quem fecha na hora</td></tr>
+      <tr><td>Um único CTA</td><td>Uma ação clara, sem dispersão</td><td>Um só próximo passo por conversa</td></tr>
+      <tr><td>Vendedor com nome e rosto</td><td>Afinidade + autoridade humana</td><td>O consultor assina, vira gente, não robô</td></tr>
+    </table>
+    <p style="margin-top:10px;color:var(--muted)">Nada disso é pressão suja: é urgência <b style="color:var(--green-soft)">estruturada</b> em cima da verdade. Copie a estrutura, nunca a mentira.</p>
+  </div>
+
+  <h2 class="sub">📚 A biblioteca do consultor</h2>
+  <div class="lib">
+    <div class="bk"><b>A Bíblia de Vendas</b> — Jeffrey Gitomer · <span>as pessoas amam comprar e odeiam que vendam pra elas. Postura, atitude e humor na venda.</span></div>
+    <div class="bk"><b>Building a StoryBrand</b> — Donald Miller · <span>o cliente é o herói, a marca é o guia. Como clarear a mensagem pra vender.</span></div>
+    <div class="bk"><b>As Armas da Persuasão</b> — Robert Cialdini · <span>os 6 gatilhos: reciprocidade, compromisso, prova social, autoridade, afinidade, escassez.</span></div>
+    <div class="bk"><b>Alcançando Excelência em Vendas (SPIN Selling)</b> — Neil Rackham · <span>as perguntas que conduzem o cliente à própria conclusão, ideal pra ticket alto.</span></div>
+    <div class="bk"><b>Como Fazer Amigos e Influenciar Pessoas</b> — Dale Carnegie · <span>rapport, escuta e o interesse genuíno pelo outro como base de tudo.</span></div>
+  </div>
+  <p class="disc">⚠️ Uso interno do consultor. Todas as técnicas pressupõem verdade e conformidade legal (CDC e CVM Res. 20/2021). A 9Pilla não promete rentabilidade e não faz recomendação de investimento. Nunca invente escassez.</p>`;
+}
+
+function renderExperts(){ return `<div class="eyebrow">Sobre · Autoridade que fecha o ticket alto</div>
+  <h1>Quem está à frente da <span class="g">9Pilla</span></h1>
+  <p class="lead">No fechamento de mentoria e imersão, a objeção número 1 é silenciosa: "posso confiar? isso é sério?". É esta aba que responde. Lembre-se: os experts são o <b>guia</b>, não o herói. A autoridade deles existe pra tirar o medo do cliente.</p>
+
+  <div class="block">
+    <div class="expert">
+      <div class="av ra">RA</div>
+      <div>
+        <h3>Raquel Amorim</h3>
+        <div class="role">Fundadora da 9Pilla · Operadora de opções · Educadora financeira</div>
+        <p style="color:var(--muted);font-size:15px">Se o Milton é a profundidade, a Raquel é a ponte. Ela pega o mercado e traduz pra linguagem de quem tem medo de perder dinheiro e nunca se sentiu convidado pra essa mesa. A autoridade dela não vem de pedestal, vem de operar de verdade, estudar de verdade e falar a língua da pessoa comum.</p>
+        <div class="tl" style="margin-top:12px">
+          <div class="i"><b>Opera de verdade:</b> track record auditável na plataforma (maio/2026), com consistência de método e resultado positivo no período.</div>
+          <div class="i"><b>Estuda de verdade:</b> aluna da B7 Business School com dupla titulação (MBA Investments &amp; Asset Allocation + MBA Relationship Manager), programa reconhecido pelo MEC.</div>
+          <div class="i"><b>Decide por dado:</b> certificada como Analista de Dados pelo Google. Dado tratado virando decisão, não achismo.</div>
+          <div class="i"><b>Fundadora da 9Pilla:</b> criadora do método de educação financeira sem economês.</div>
+        </div>
+        <div class="fill">✍️ A completar com o seu roteiro (como fiz com o Milton): quantos anos você opera, a virada da sua história, a dor que virou a missão da 9Pilla, e conquistas que dá pra contar sem virar promessa. E confirmar o nome de exibição (Amorim / Silva / Silva Santos).</div>
+        <div class="usebox"><b>Como usar na venda:</b>
+          <p>Quando o cliente diz "isso não é pra mim": "A Raquel construiu a 9Pilla exatamente pra quem se sente assim. Você não precisa virar economista, precisa de alguém que fala a sua língua e te pega pela mão."</p>
+          <p>Quando desconfia ("é golpe?"): "Ela opera de verdade, com track record auditável na plataforma, e está fazendo dupla titulação de MBA reconhecido pelo MEC. Isso não é aventureiro de internet."</p>
+          <p><b>Fecha:</b> Desafio, Papo de Grana, Panelinha/VIP e toda a entrada da esteira.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="expert">
+      <div class="av mm">MM</div>
+      <div>
+        <h3>Milton Montanari</h3>
+        <div class="role">Operador há 40+ anos · Especialista em opções · Mentor e parceiro de estratégia</div>
+        <p style="color:var(--muted);font-size:15px">Milton não é influenciador de mercado, é um sobrevivente dele. Começou em 1985 como estagiário na corretora do tio, no chão do pregão viva-voz da BM&amp;F. Foram 21 anos nesse pregão físico, aprendendo o que planilha nenhuma ensina: ler a emoção do mercado e manter a mão firme quando todo mundo perde a cabeça.</p>
+        <div class="tl" style="margin-top:12px">
+          <div class="i"><b>Unibanco (~10 anos):</b> operador de mercado; chegou a movimentar 30% do mercado de DI num único dia, feito noticiado pela Gazeta Mercantil.</div>
+          <div class="i"><b>Banco Votorantim (~15 anos):</b> gestor do pregão e da tesouraria; operou de dentro a crise do Subprime (2008) e a dívida europeia.</div>
+          <div class="i"><b>Banco Fator (~3 anos):</b> renda variável e equities, aprofundando estruturas de opções.</div>
+          <div class="i"><b>L2 Investimentos (hoje):</b> opera só com capital próprio desde 2008 e forma novos operadores.</div>
+        </div>
+        <p style="color:var(--muted);font-size:15px;margin-top:10px">Operou com dinheiro real em <b style="color:var(--green-soft)">todas</b> as grandes crises desde 1987 (Crash de 87, Collor, Ásia, Rússia/LTCM, Nasdaq, Lehman 2008, COVID). Formação: Administração + pós em Finanças. Especialista em opções e derivativos na B3. Pilares: Resiliência, Disciplina, Perseverança. Frase-método: <i>"Eu não acho nada"</i> — não se opera por achismo, se opera por método.</p>
+        <div class="usebox"><b>Como usar na venda:</b>
+          <p>Quando o cliente tem medo ("e se eu perder tudo?"): "Quem vai te guiar operou com capital real em todas as crises desde 87. Ele não te ensina a arriscar no escuro, ele te ensina a controlar risco. É o oposto do que te dá medo."</p>
+          <p>Quando acha caro (mentoria/imersão): "Você está pagando por 40 anos de cicatriz de mercado destilados. Isso não tem atalho e não tem no YouTube."</p>
+          <p><b>Fecha:</b> Mentoria, Imersão presencial, Acompanhamento Avançado, VIP.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block" style="background:linear-gradient(160deg,rgba(25,195,125,.12),var(--card))">
+    <h3 style="color:var(--green-soft);font-size:17px;margin-bottom:8px">🤝 Por que a dupla fecha o que ninguém fecha sozinho</h3>
+    <p style="font-size:15px">O cliente de ticket alto tem duas perguntas caladas: "tem profundidade?" e "vão me abandonar?". A 9Pilla responde as duas: o Milton dá a profundidade de 40 anos e mil crises, a Raquel dá o acolhimento e a tradução. Frase de fechamento da dupla: <span class="say" style="display:block;margin-top:8px">"Você vai aprender com quem sobreviveu ao mercado por 40 anos e ser guiado por quem fala a sua língua. Profundidade e acolhimento na mesma mão. Por isso aqui não é sorte, é jornada."</span></p>
+  </div>
+
+  <div class="redline"><b>Compliance no track record:</b> use os resultados da Raquel como prova de <b>consistência de método</b>, jamais como projeção. O consultor NUNCA diz "você vai ganhar X%" nem repete percentual de acerto como promessa. Diz "ela opera de verdade, com método auditável", e para por aí.</div>
+  <p class="disc">⚠️ Uso interno. Apresente sempre a Raquel como operadora de opções (não consultora/assessora). Sem promessa de resultado. Resultados passados não garantem resultados futuros. CVM Res. 20/2021.</p>`;
+}
+
+function show(id){
+  const p=P.find(x=>x.id===id); if(!p)return;
+  panel.innerHTML=render(p);
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active',a.dataset.id===id));
+  document.querySelector('.side').classList.remove('open');
+  window.scrollTo(0,0);
+}
+show('home');
+</script>
+</body>
+</html>
