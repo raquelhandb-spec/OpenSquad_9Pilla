@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>9Pilla — Apresentação Comercial</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@400;500;700&display=swap');
+  :root{
+    --cream:#f4f1e8; --cream2:#eae5d6;
+    --green:#39473b; --green-deep:#2b352d; --green-soft:#7d8f7e;
+    --ink:#2b352d; --gold:#c8a24a; --line:rgba(43,53,45,.14); --line-l:rgba(244,241,232,.16);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:"DM Sans",-apple-system,Segoe UI,Roboto,sans-serif;background:var(--green-deep);color:var(--ink);overflow:hidden}
+  .serif{font-family:"Playfair Display",Georgia,"Times New Roman",serif}
+  .deck{position:relative;width:100vw;height:100vh;overflow:hidden}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+    padding:clamp(28px,6vw,90px);opacity:0;transform:translateX(40px);pointer-events:none;
+    transition:opacity .5s ease,transform .5s ease}
+  .slide.active{opacity:1;transform:none;pointer-events:auto}
+  .slide.cream{background:var(--cream);color:var(--ink)}
+  .slide.green{background:var(--green);color:var(--cream)}
+  .slide.deep{background:var(--green-deep);color:var(--cream)}
+  .eyebrow{font-size:clamp(11px,1.4vw,13px);letter-spacing:.32em;text-transform:uppercase;font-weight:700;margin-bottom:22px}
+  .cream .eyebrow{color:var(--green)} .green .eyebrow,.deep .eyebrow{color:var(--gold)}
+  h1.big{font-size:clamp(30px,6.4vw,72px);font-weight:700;line-height:1.04;letter-spacing:-.5px;max-width:16ch}
+  h2.mid{font-size:clamp(26px,4.6vw,52px);font-weight:700;line-height:1.08;letter-spacing:-.4px;max-width:20ch}
+  p.body{font-size:clamp(15px,2vw,21px);line-height:1.55;max-width:60ch;margin-top:22px;color:inherit;opacity:.92}
+  .green p.body,.deep p.body{opacity:.85}
+  .accent{color:var(--gold)}
+  .cream .accent{color:var(--green)}
+  .hair{width:64px;height:3px;background:var(--gold);border:none;margin:0 0 26px}
+  /* wordmark */
+  .wordmark{font-family:"DM Sans",sans-serif;font-weight:700;letter-spacing:-.02em;line-height:1}
+  .wordmark .n{font-weight:700}
+  .tagline{font-style:italic;font-size:clamp(16px,2.3vw,26px);opacity:.9;margin-top:22px}
+  /* $ pattern */
+  .dollarbg{position:absolute;inset:0;opacity:.55;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='130' height='130'%3E%3Ctext x='18' y='86' font-size='74' font-family='DM Sans,sans-serif' font-weight='700' fill='%23f4f1e8' fill-opacity='0.05'%3E%24%3C/text%3E%3C/svg%3E")}
+  .z{position:relative;z-index:2}
+  /* cover footer */
+  .coverfoot{position:absolute;left:clamp(28px,6vw,90px);right:clamp(28px,6vw,90px);bottom:clamp(28px,5vw,64px);
+    display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:14px;opacity:.8;border-top:1px solid var(--line-l);padding-top:16px}
+  .coverfoot b{font-weight:700;opacity:1}
+  /* columns / cards */
+  .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
+  .col{border:1px solid var(--line);border-radius:16px;padding:22px}
+  .green .col,.deep .col{border-color:var(--line-l);background:rgba(244,241,232,.04)}
+  .cream .col{background:rgba(43,53,45,.03)}
+  .col .k{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--gold);margin-bottom:8px}
+  .cream .col .k{color:var(--green)}
+  .col h3{font-size:19px;margin-bottom:6px}
+  .col p{font-size:14.5px;line-height:1.5;opacity:.85}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:34px}
+  .g4{border:1px solid var(--line);border-radius:16px;padding:20px}
+  .green .g4,.deep .g4{border-color:var(--line-l)}
+  .g4 .num{font-family:"Playfair Display",serif;font-size:34px;color:var(--gold);line-height:1}
+  .g4 h4{font-size:16px;margin:8px 0 4px}.g4 p{font-size:13px;opacity:.82;line-height:1.45}
+  .g4 .pr{font-size:12px;color:var(--gold);font-weight:700;margin-top:8px;letter-spacing:.02em}
+  .cream .g4 .num,.cream .g4 .pr{color:var(--green)}
+  /* expert */
+  .expert{display:grid;grid-template-columns:300px 1fr;gap:48px;align-items:center}
+  .photo{aspect-ratio:4/5;border-radius:20px;border:1px solid var(--line-l);
+    background:linear-gradient(160deg,rgba(244,241,232,.1),rgba(244,241,232,.02));
+    display:flex;align-items:center;justify-content:center;text-align:center;flex-direction:column;gap:10px;overflow:hidden}
+  .cream .photo{border-color:var(--line);background:linear-gradient(160deg,rgba(43,53,45,.07),rgba(43,53,45,.02))}
+  .photo .ph-init{font-family:"Playfair Display",serif;font-size:64px;opacity:.35}
+  .photo .ph-cap{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.5}
+  .expert .role{color:var(--gold);font-size:15px;font-weight:500;margin:6px 0 16px}
+  .cream .expert .role{color:var(--green)}
+  ul.ex{list-style:none;display:grid;gap:11px;margin-top:6px}
+  ul.ex li{padding-left:24px;position:relative;font-size:16px;line-height:1.4;opacity:.92}
+  ul.ex li::before{content:"";position:absolute;left:0;top:9px;width:9px;height:9px;border-radius:50%;background:var(--gold)}
+  .quote{font-family:"Playfair Display",serif;font-style:italic;font-size:18px;opacity:.8;margin-top:16px}
+  /* nav */
+  .nav{position:fixed;bottom:22px;right:26px;display:flex;align-items:center;gap:14px;z-index:50}
+  .nav button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line-l);background:rgba(244,241,232,.1);
+    color:var(--cream);font-size:18px;cursor:pointer;transition:.2s;backdrop-filter:blur(4px)}
+  .nav button:hover{background:var(--gold);color:var(--green-deep);border-color:var(--gold)}
+  .counter{position:fixed;bottom:30px;left:26px;z-index:50;font-size:13px;letter-spacing:.1em;color:var(--cream);opacity:.55;mix-blend-mode:difference}
+  .dots{position:fixed;top:50%;right:20px;transform:translateY(-50%);display:flex;flex-direction:column;gap:9px;z-index:50}
+  .dots i{width:8px;height:8px;border-radius:50%;background:var(--cream);opacity:.28;cursor:pointer;transition:.2s;display:block}
+  .dots i.on{opacity:1;background:var(--gold);transform:scale(1.3)}
+  .disc{position:absolute;left:clamp(28px,6vw,90px);right:clamp(28px,6vw,90px);bottom:22px;font-size:11px;opacity:.55;line-height:1.4;max-width:80ch}
+  .hint{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--cream);opacity:.4;z-index:40;letter-spacing:.08em}
+  @media (max-width:820px){
+    .cols,.grid4{grid-template-columns:1fr;gap:12px}
+    .expert{grid-template-columns:1fr;gap:22px}.photo{max-width:220px}
+    .dots{display:none}
+    h1.big{max-width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- 1 COVER -->
+  <section class="slide green active">
+    <div class="dollarbg"></div>
+    <div class="z">
+      <div class="eyebrow">Apresentação Comercial</div>
+      <div class="wordmark" style="font-size:clamp(56px,13vw,150px)">9<span class="n">Pilla</span></div>
+      <div class="tagline serif">Dinheiro não é destino. É a jornada para a liberdade.</div>
+    </div>
+    <div class="coverfoot z">
+      <span>Preparado para: <b>_______________________</b></span>
+      <span>Consultor(a): <b>_______________________</b></span>
+    </div>
+  </section>
+
+  <!-- 2 O PROBLEMA -->
+  <section class="slide cream">
+    <div class="eyebrow">O ponto de partida</div>
+    <hr class="hair">
+    <h1 class="big serif">No Brasil, quase ninguém investe na bolsa. Não por falta de dinheiro, por falta de <span class="accent">acesso</span>.</h1>
+    <p class="body">Enquanto lá fora investir é cultura de família, aqui só uma fração pequena da população chega ao mercado. Ninguém foi ensinado. O mercado foi construído pra parecer complicado e excludente. Não é você que é incapaz. É o sistema que te deixou de fora.</p>
+  </section>
+
+  <!-- 3 O PORQUE -->
+  <section class="slide green">
+    <div class="dollarbg"></div>
+    <div class="z">
+      <div class="eyebrow">Nossa crença</div>
+      <hr class="hair">
+      <h1 class="big serif">Ninguém deveria ficar refém do dinheiro nem depender de <span class="accent">sorte</span>.</h1>
+      <p class="body">A 9Pilla existe pra democratizar o mercado com verdade, dado e método, pra que qualquer pessoa comum consiga se libertar pelo próprio preparo. Essa é a razão de tudo o que a gente faz.</p>
+    </div>
+  </section>
+
+  <!-- 4 STORYBRAND -->
+  <section class="slide cream">
+    <div class="eyebrow">O seu lugar nessa história</div>
+    <hr class="hair">
+    <h2 class="mid serif">Você é o herói. A gente é o <span class="accent">guia</span>.</h2>
+    <p class="body">Você não precisa virar economista. Precisa de alguém que já trilhou o caminho, fala a sua língua e caminha do seu lado.</p>
+    <div class="cols">
+      <div class="col"><div class="k">O herói</div><h3>Você</h3><p>Com um objetivo real: fazer o dinheiro trabalhar e conquistar liberdade.</p></div>
+      <div class="col"><div class="k">O guia</div><h3>A 9Pilla</h3><p>Quem opera de verdade e já sentiu o mesmo medo. Autoridade com empatia.</p></div>
+      <div class="col"><div class="k">O plano</div><h3>A escada</h3><p>Um caminho em degraus, no seu ritmo, do primeiro conceito à autonomia.</p></div>
+    </div>
+  </section>
+
+  <!-- 5 RAQUEL -->
+  <section class="slide green">
+    <div class="expert z">
+      <div class="photo">
+        <div class="ph-init">RA</div>
+        <div class="ph-cap">[ foto Raquel ]</div>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:10px">Quem te guia</div>
+        <h2 class="mid serif" style="font-size:clamp(28px,4vw,46px)">Raquel Amorim</h2>
+        <div class="role">Fundadora da 9Pilla · Operadora de opções · Educadora financeira</div>
+        <ul class="ex">
+          <li>Opera opções com capital próprio, pele em jogo de verdade (PETR4, BOVA11, VALE3).</li>
+          <li>Certificada como Analista de Dados pelo Google: decisão por dado tratado, não por achismo.</li>
+          <li>MBA em Investments &amp; Asset Allocation pela B7 Business School, reconhecido pelo MEC.</li>
+          <li>Baiana, movida por liberdade, alegria, inconformismo e fé.</li>
+        </ul>
+        <div class="quote">"Eu não vendo teoria. Vivo o que ensino."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 MILTON -->
+  <section class="slide cream">
+    <div class="expert">
+      <div class="photo">
+        <div class="ph-init">MM</div>
+        <div class="ph-cap">[ foto Milton ]</div>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:10px">Ao lado dela</div>
+        <h2 class="mid serif" style="font-size:clamp(28px,4vw,46px)">Milton Montanari</h2>
+        <div class="role">Sócio e mentor · Especialista em opções · 40+ anos de mercado</div>
+        <ul class="ex">
+          <li>Ex-operador de Unibanco e Banco Votorantim, 21 anos no pregão viva-voz da BM&amp;F.</li>
+          <li>Operou com capital real em todas as grandes crises desde 1987, inclusive 2008.</li>
+          <li>Especialista em opções e derivativos na B3.</li>
+          <li>Três pilares: Resiliência, Disciplina, Perseverança.</li>
+        </ul>
+        <div class="quote">"Eu não acho nada. Não se opera por achismo, se opera por método."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 O METODO -->
+  <section class="slide green">
+    <div class="dollarbg"></div>
+    <div class="z">
+      <div class="eyebrow">Como a gente faz</div>
+      <hr class="hair">
+      <h2 class="mid serif">Método acima de adrenalina.</h2>
+      <div class="cols" style="grid-template-columns:repeat(4,1fr)">
+        <div class="col"><div class="k">01</div><h3>Dado vira decisão</h3><p>Leitura de mercado todo dia, número virando escolha consciente.</p></div>
+        <div class="col"><div class="k">02</div><h3>Risco no centro</h3><p>Antes de operar, você aprende quanto pode perder.</p></div>
+        <div class="col"><div class="k">03</div><h3>Educação em escada</h3><p>Cada degrau no seu tempo, sem pular etapa.</p></div>
+        <div class="col"><div class="k">04</div><h3>Operação ao vivo</h3><p>Aprender vendo quem faz, no calor do mercado.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 A ESCADA -->
+  <section class="slide cream">
+    <div class="eyebrow">A jornada</div>
+    <hr class="hair">
+    <h2 class="mid serif">Você entra onde faz sentido e sobe quando estiver <span class="accent">pronto</span>.</h2>
+    <div class="grid4">
+      <div class="g4"><div class="num">01</div><h4>Começar</h4><p>Ebook, checklist e ferramentas pra dar o primeiro passo.</p><div class="pr">a partir de R$29,90</div></div>
+      <div class="g4"><div class="num">02</div><h4>Aprender</h4><p>Do workshop gravado ao ao vivo, do grupo ao individual.</p><div class="pr">a partir de R$197</div></div>
+      <div class="g4"><div class="num">03</div><h4>Operar junto</h4><p>Winner VIP: operações da Raquel ao vivo, todo dia.</p><div class="pr">a partir de R$79/mês</div></div>
+      <div class="g4"><div class="num">04</div><h4>Acelerar</h4><p>Mentoria e imersão presencial com Raquel e Milton.</p><div class="pr">alto nível</div></div>
+    </div>
+  </section>
+
+  <!-- 9 MORNING CALL -->
+  <section class="slide deep">
+    <div class="dollarbg"></div>
+    <div class="z">
+      <div class="eyebrow">Todo dia útil, às 09h09</div>
+      <hr class="hair">
+      <h2 class="mid serif">O Morning Call que virou <span class="accent">ritual</span> da Turma 9Pilla.</h2>
+      <p class="body">Termômetro do mercado, as notícias que de fato mexem com o pregão e uma pílula de sabedoria com uma figura real do mercado. Consistência construída dia após dia, o hábito que deixa você mais preparado pra falar de dinheiro com qualquer pessoa.</p>
+    </div>
+  </section>
+
+  <!-- 10 CTA -->
+  <section class="slide cream">
+    <div class="eyebrow">Seu próximo degrau</div>
+    <hr class="hair">
+    <h1 class="big serif">Onde você está <span class="accent">hoje</span>?</h1>
+    <p class="body">A partir da nossa conversa, eu te mostro o degrau certo pra o seu momento, sem pular etapa e sem te empurrar nada. O primeiro passo a gente dá junto. Bora?</p>
+  </section>
+
+  <!-- 11 FECHAMENTO -->
+  <section class="slide green">
+    <div class="dollarbg"></div>
+    <div class="z">
+      <div class="wordmark" style="font-size:clamp(40px,9vw,96px)">9<span class="n">Pilla</span></div>
+      <div class="tagline serif" style="margin-top:16px">Dinheiro não é destino. É a jornada para a LIBERDADE.</div>
+      <p class="body" style="margin-top:30px">Consultor(a): <b>_______________________</b> · Contato: <b>_______________________</b></p>
+    </div>
+    <div class="disc z">⚠️ Conteúdo educativo e informativo. A 9Pilla não realiza recomendação de investimento nem promete rentabilidade. As operações têm caráter didático. Resultados passados não garantem resultados futuros. Investimentos envolvem riscos. Raquel Amorim atua como operadora de opções e educadora financeira. CVM Resolução 20/2021.</div>
+  </section>
+
+</div>
+
+<div class="counter"><span id="cur">01</span> / <span id="tot">11</span></div>
+<div class="dots" id="dots"></div>
+<div class="nav"><button id="prev" aria-label="anterior">‹</button><button id="next" aria-label="próximo">›</button></div>
+<div class="hint" id="hint">use as setas ← → para navegar</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsWrap=document.getElementById('dots');
+  const cur=document.getElementById('cur'), hint=document.getElementById('hint');
+  let i=0;
+  slides.forEach((_,n)=>{const d=document.createElement('i');d.onclick=()=>go(n);dotsWrap.appendChild(d)});
+  const dots=[...dotsWrap.children];
+  document.getElementById('tot').textContent=String(slides.length).padStart(2,'0');
+  function go(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    dots.forEach((d,k)=>d.classList.toggle('on',k===i));
+    cur.textContent=String(i+1).padStart(2,'0');
+    if(i>0&&hint) hint.style.opacity='0';
+  }
+  document.getElementById('next').onclick=()=>go(i+1);
+  document.getElementById('prev').onclick=()=>go(i-1);
+  document.addEventListener('keydown',e=>{
+    if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){e.preventDefault();go(i+1)}
+    if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();go(i-1)}
+    if(e.key==='Home')go(0); if(e.key==='End')go(slides.length-1);
+  });
+  let sx=null;
+  document.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+  document.addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>50)go(i+(dx<0?1:-1));sx=null},{passive:true});
+  go(0);
+</script>
+</body>
+</html>
