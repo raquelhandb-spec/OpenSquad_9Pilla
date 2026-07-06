@@ -22,6 +22,7 @@ jobs:
       BRAPI_TOKEN: ${{ secrets.BRAPI_TOKEN }}
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID_RAQUEL: ${{ secrets.TELEGRAM_CHAT_ID_RAQUEL }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       IS_DRY: ${{ inputs.dry_run == true }}
 
     steps:
@@ -46,9 +47,15 @@ jobs:
         run: node .claude/scripts/validate-fetch.js
 
       # ---------- Fluxo normal: gerar + commitar + enviar no Telegram ----------
-      - name: Gerar Morning Call do dia (dados + notícias reais)
+      # Tenta o EDITORIAL (Claude, na voz da Raquel). Se falhar por qualquer
+      # motivo, cai no ESQUELETO de dados — nunca fica sem Morning Call.
+      - name: Gerar Morning Call do dia (editorial via Claude; fallback esqueleto)
         if: ${{ env.IS_DRY != 'true' }}
-        run: node .claude/scripts/generate-morning-call.js
+        run: |
+          node .claude/scripts/generate-editorial.js || {
+            echo "⚠️ Editorial falhou — usando o esqueleto de dados como fallback."
+            node .claude/scripts/generate-morning-call.js
+          }
 
       - name: Commitar a Morning Call gerada
         if: ${{ env.IS_DRY != 'true' }}

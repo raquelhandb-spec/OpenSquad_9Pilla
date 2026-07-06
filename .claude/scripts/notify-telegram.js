@@ -65,13 +65,19 @@ async function main() {
 
   const { content: raw } = content.readForDate(new Date());
 
-  // Dados reais e frescos (brapi + fallback Yahoo). Aborta se faltar.
-  const data = await market.fetchMorningCallData({ token: process.env.BRAPI_TOKEN });
-  const block = market.formatMarketBlock(data);
-  const withData = content.injectMarketBlock(raw, block);
+  // Dois formatos possíveis:
+  //  - EDITORIAL (generate-editorial.js): já vem pronto do Claude, sem os
+  //    marcadores <!--MERCADO--> -> envia como está.
+  //  - ESQUELETO (generate-morning-call.js): tem os marcadores -> reinjeta os
+  //    números frescos do brapi antes de enviar.
+  let finalMd = raw;
+  if (raw.includes(content.MARKER_START)) {
+    const data = await market.fetchMorningCallData({ token: process.env.BRAPI_TOKEN });
+    finalMd = content.injectMarketBlock(raw, market.formatMarketBlock(data));
+  }
 
   // Texto já no formato do WhatsApp (negrito com * simples), pronto para copiar.
-  const morningCall = content.toWhatsApp(withData);
+  const morningCall = content.toWhatsApp(finalMd);
 
   const header =
     '🌅 *Morning Call de hoje — pronta para copiar*\n' +

@@ -27,9 +27,11 @@ acumular sem propósito — ensina presença, método e liberdade que começa HO
    café na mão, lugar confortável, ~3 minutos, e você sai mais preparado pro que
    mexe com seu dinheiro. Pode ancorar no clima, feriado, ou na notícia principal.
    **Nunca igual à véspera. Nunca abertura genérica fria.**
-3. **🌡️ Termômetro do Mercado** — TABELA `| Ativo | Valor | Variação |` com:
-   Ibovespa, S&P 500, Nasdaq, (Dow opcional), Brent, WTI, Dólar, PETR4, VALE3,
-   BOVA11. Fechar com a referência: "Referência: fechamento de [dia], [data]."
+3. **🌡️ Termômetro do Mercado** — em **linhas limpas** (NÃO tabela markdown,
+   que não aparece no WhatsApp): uma linha por ativo, com emoji 🟢 (alta) ou 🔴
+   (queda), nome, valor e variação. Ex: `🟢 Ibovespa: 174.070 pts (+0,74%)`.
+   Inclua: Ibovespa, S&P 500, Nasdaq, (Dow opcional), Brent, WTI, Dólar, PETR4,
+   VALE3, BOVA11. Fechar com: "Referência: fechamento de [dia], [data]."
    **Dado real ou nada** (brapi Pro p/ B3 e câmbio; Yahoo p/ índices US e petróleo).
 4. **📰 O que mexeu o mercado** — 3 notícias **numeradas**, cada uma com título
    curto em negrito + parágrafo de **análise na sua voz**: o que aconteceu e,
