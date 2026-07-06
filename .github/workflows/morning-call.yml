@@ -2,9 +2,9 @@ name: Morning Call 9Pilla
 
 on:
   schedule:
-    # 07:45 BRT (UTC-3) = 10:45 UTC -> gerar Morning Call + enviar pronta no Telegram da Raquel.
+    # 08:15 BRT (UTC-3) = 11:15 UTC -> gerar Morning Call + enviar pronta no Telegram da Raquel.
     # A Raquel confere e cola manualmente na Turma 9Pilla às 09:09. Sem publicação automática.
-    - cron: '45 10 * * 1-5'
+    - cron: '15 11 * * 1-5'
   workflow_dispatch:
     inputs:
       dry_run:
