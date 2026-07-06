@@ -3,7 +3,7 @@
 /**
  * content.js — Helpers de conteúdo do Morning Call (ler arquivo, injetar
  * dados frescos no bloco MERCADO e converter para texto de WhatsApp).
- * Compartilhado entre notify-personal.js e publish-if-approved.js.
+ * Usado por notify-telegram.js e generate-morning-call.js.
  */
 
 const fs = require('fs');

@@ -2,7 +2,7 @@
 
 **Dados Confirmados:**
 - Email: `raquel.handb@gmail.com` ✅
-- Bot Token: `8820497175:AAGiJq3Xg9V_72RKyhqlNPPJKKK4uRho6Hk` ✅
+- Bot Token: `<TOKEN REVOGADO — agora vive no GitHub Secret TELEGRAM_BOT_TOKEN>` ✅
 - Chat ID Raquel: `7686120986` ✅
 - Grupo Turma 9Pilla: `Turma-9Pilla` ✅
 
@@ -61,7 +61,7 @@
 4. Configure:
 
 ```
-Bot Token: 8820497175:AAGiJq3Xg9V_72RKyhqlNPPJKKK4uRho6Hk
+Bot Token: <TOKEN REVOGADO — agora vive no GitHub Secret TELEGRAM_BOT_TOKEN>
 Chat ID: 7686120986
 Text: 📱 **MORNING CALL 9PILLA** (Aguardando Aprovação)
 
@@ -86,7 +86,7 @@ Disable Web Page Preview: YES
 4. Configure:
 
 ```
-Bot Token: 8820497175:AAGiJq3Xg9V_72RKyhqlNPPJKKK4uRho6Hk
+Bot Token: <TOKEN REVOGADO — agora vive no GitHub Secret TELEGRAM_BOT_TOKEN>
 Chat ID: 7686120986
 Reaction: 👍 (thumbs up)
 Timeout: 3 hours (Raquel tem até 09h09 para aprovar)
@@ -131,7 +131,7 @@ Cron: 0 9 * * 1-5
 4. Configure:
 
 ```
-Bot Token: 8820497175:AAGiJq3Xg9V_72RKyhqlNPPJKKK4uRho6Hk
+Bot Token: <TOKEN REVOGADO — agora vive no GitHub Secret TELEGRAM_BOT_TOKEN>
 Chat ID: -100 + ID numérico do grupo (se tiver)
    OU Username: @turma_9pilla (procurar formato exato)
 Text: {Morning Call aprovado - mesmo conteúdo da Ação 1}
