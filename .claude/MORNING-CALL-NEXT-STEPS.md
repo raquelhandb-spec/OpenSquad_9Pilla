@@ -64,7 +64,7 @@ Para **automático de verdade** a partir de amanhã:
 ### **Pré-requisitos:**
 
 1. **Email:** ✅ raquel.handb@gmail.com
-2. **Bot Token:** ✅ 8820497175:AAGiJq3Xg9V_72RKyhqlNPPJKKK4uRho6Hk
+2. **Bot Token:** ✅ <TOKEN REVOGADO — agora vive no GitHub Secret TELEGRAM_BOT_TOKEN>
 3. **Chat ID Raquel:** ✅ 7686120986
 4. **ID/Username Grupo Turma 9Pilla:** ❓ FALTA
 
@@ -119,7 +119,7 @@ New Scenario → Telegram (módulo)
 **Module 2: Telegram Bot**
 ```
 - Action: Send Message
-- Bot Token: 8820497175:AAGiJq3Xg9V_72RKyhqlNPPJKKK4uRho6Hk
+- Bot Token: <TOKEN REVOGADO — agora vive no GitHub Secret TELEGRAM_BOT_TOKEN>
 - Chat ID: 7686120986
 - Message: {conteúdo do arquivo .md}
 - Parse Mode: Markdown
