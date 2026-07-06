@@ -144,6 +144,143 @@ async function fetchTopMovers({ baseUrl = DEFAULT_BASE_URL, token, n = 3 } = {})
   }
 }
 
+/* ---------------- Enriquecimento (brapi Pro): Termômetro macro ---------------- */
+
+/**
+ * Busca Selic, CDI e IPCA (12m acumulado) no módulo macro do brapi (V2, pago).
+ * Best-effort: retorna null se falhar ou sem token. NUNCA derruba o Morning Call.
+ * Docs: docs/brapi/02-macro.md
+ */
+async function fetchMacro({ baseUrl = DEFAULT_BASE_URL, token } = {}) {
+  if (!token) return null;
+  const auth = { Authorization: `Bearer ${token}` };
+  try {
+    // 1) Valores atuais numa chamada só
+    const latest = await getJson(
+      `${baseUrl}/v2/macro/latest?symbols=selic,cdi,ipca&token=${token}`,
+      auth
+    );
+    const bySlug = {};
+    (latest.results || []).forEach((r) => {
+      const slug = r.series && r.series.slug;
+      const obs = r.observations && r.observations[0];
+      const v = obs ? Number(obs.value) : NaN;
+      if (slug && isFiniteNumber(v)) bySlug[slug] = v;
+    });
+    const selic = bySlug.selic;
+    if (!isFiniteNumber(selic)) return null; // sem Selic não monta o termômetro
+    const cdi = isFiniteNumber(bySlug.cdi) ? bySlug.cdi : null;
+
+    // 2) IPCA acumulado 12 meses (composto, não somado): histórico mensal
+    let ipca12m = null;
+    try {
+      const hist = await getJson(
+        `${baseUrl}/v2/macro?symbols=ipca&sortOrder=desc&limit=13&token=${token}`,
+        auth
+      );
+      const serie = (hist.results || []).find(
+        (r) => r.series && r.series.slug === 'ipca'
+      );
+      const monthly = ((serie && serie.observations) || [])
+        .map((o) => Number(o.value))
+        .filter(isFiniteNumber)
+        .slice(0, 12);
+      if (monthly.length === 12) {
+        ipca12m = (monthly.reduce((acc, v) => acc * (1 + v / 100), 1) - 1) * 100;
+      }
+    } catch (e) {
+      console.warn('⚠️  IPCA 12m indisponível:', e.message);
+    }
+
+    const juroReal = isFiniteNumber(ipca12m)
+      ? ((1 + selic / 100) / (1 + ipca12m / 100) - 1) * 100
+      : null;
+
+    return { selic, cdi, ipca12m, juroReal };
+  } catch (e) {
+    console.warn('⚠️  Termômetro macro indisponível (brapi):', e.message);
+    return null;
+  }
+}
+
+/* ---------------- Enriquecimento (brapi Pro): Ativo do dia ---------------- */
+
+// Pagadoras conhecidas, boas pra educação. Rotaciona por dia do ano.
+const ATIVO_ROTATION = [
+  'PETR4', 'VALE3', 'ITUB4', 'BBAS3', 'BBDC4',
+  'ITSA4', 'TAEE11', 'BBSE3', 'CMIG4', 'VIVT3',
+];
+
+function dayOfYear(date) {
+  const start = Date.UTC(date.getFullYear(), 0, 0);
+  const cur = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+  return Math.floor((cur - start) / 86400000);
+}
+
+function pickAtivoDoDia(date = new Date()) {
+  return ATIVO_ROTATION[dayOfYear(date) % ATIVO_ROTATION.length];
+}
+
+/**
+ * FUNÇÃO PURA (testável sem rede): dado o array cashDividends e o "agora",
+ * retorna o último provento REALMENTE PAGO (paymentDate <= agora), ou null.
+ * Ignora proventos futuros (anunciados mas não pagos). Ver docs/brapi/04.
+ */
+function pickLastPaidDividend(cashDividends, now = new Date()) {
+  const nowMs = now.getTime();
+  const pagos = (cashDividends || [])
+    .filter((d) => {
+      const t = d && d.paymentDate ? new Date(d.paymentDate).getTime() : NaN;
+      return isFiniteNumber(t) && t <= nowMs && isFiniteNumber(Number(d.rate));
+    })
+    .sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate));
+  if (!pagos.length) return null;
+  const d = pagos[0];
+  return { value: Number(d.rate), date: d.paymentDate, label: d.label || 'Provento' };
+}
+
+/**
+ * Busca indicadores do "Ativo do dia" (DY, P/L) + último provento pago.
+ * Best-effort: retorna null se falhar ou sem token. Docs/brapi/03 e 04.
+ */
+async function fetchAtivoDoDia({ baseUrl = DEFAULT_BASE_URL, token, date = new Date() } = {}) {
+  if (!token) return null;
+  const ticker = pickAtivoDoDia(date);
+  const auth = { Authorization: `Bearer ${token}` };
+  try {
+    const stats = await getJson(
+      `${baseUrl}/v2/stocks/statistics?symbols=${ticker}&token=${token}`,
+      auth
+    );
+    const sdata = stats.results && stats.results[0] && stats.results[0].data;
+    if (!sdata) return null;
+
+    // dividendYield vem em decimal (0.0542 = 5,42%). Guarda contra valor absurdo.
+    let dy = Number(sdata.dividendYield);
+    dy = isFiniteNumber(dy) ? dy * 100 : null;
+    if (dy != null && (dy < 0 || dy > 100)) dy = null; // implausível -> não mostra
+    const pl = isFiniteNumber(Number(sdata.trailingPE)) ? Number(sdata.trailingPE) : null;
+
+    let lastDiv = null;
+    try {
+      const div = await getJson(
+        `${baseUrl}/v2/stocks/dividends?symbols=${ticker}&token=${token}`,
+        auth
+      );
+      const ddata = div.results && div.results[0] && div.results[0].data;
+      lastDiv = pickLastPaidDividend(ddata && ddata.cashDividends, date);
+    } catch (e) {
+      console.warn('⚠️  Dividendos do ativo do dia indisponíveis:', e.message);
+    }
+
+    if (dy == null && pl == null && !lastDiv) return null;
+    return { ticker, dy, pl, lastDiv };
+  } catch (e) {
+    console.warn('⚠️  Ativo do dia indisponível (brapi):', e.message);
+    return null;
+  }
+}
+
 /* ---------------- Orquestração com fallback ---------------- */
 
 async function withFallback(label, primary, fallback) {
@@ -241,6 +378,37 @@ function formatTopMovers(tm) {
   return `📈 Maiores altas: ${altas}\n📉 Maiores baixas: ${baixas}`;
 }
 
+/** Formata o Termômetro macro (Selic/CDI/IPCA/juro real). Vazio se null. */
+function formatTermometro(m) {
+  if (!m || !isFiniteNumber(m.selic)) return '';
+  const lines = [`🌡️ Selic: ${brNumber(m.selic, 2)}% ao ano`];
+  if (isFiniteNumber(m.cdi)) lines.push(`💵 CDI: ${brNumber(m.cdi, 2)}% ao ano`);
+  if (isFiniteNumber(m.ipca12m)) lines.push(`📈 IPCA (12 meses): ${brNumber(m.ipca12m, 2)}%`);
+  if (isFiniteNumber(m.juroReal)) {
+    lines.push(`✨ Juro real: ~${brNumber(m.juroReal, 2)}% ao ano (o que sobra depois da inflação)`);
+  }
+  return lines.join('\n');
+}
+
+/** Formata o "Ativo do dia" (DY, P/L, último provento pago). Vazio se null. */
+function formatAtivoDoDia(a) {
+  if (!a) return '';
+  const lines = [`📚 ATIVO DO DIA: ${a.ticker}`];
+  const ind = [];
+  if (isFiniteNumber(a.dy)) ind.push(`Dividend Yield ${brNumber(a.dy, 2)}%`);
+  if (isFiniteNumber(a.pl)) ind.push(`P/L ${brNumber(a.pl, 2)}`);
+  if (ind.length) lines.push(ind.join('  •  '));
+  if (a.lastDiv && isFiniteNumber(a.lastDiv.value)) {
+    const d = new Date(a.lastDiv.date);
+    const dt = isNaN(d) ? '' : d.toLocaleDateString('pt-BR');
+    const dec = a.lastDiv.value >= 0.1 ? 2 : 4;
+    lines.push(
+      `💰 Último provento: R$ ${brNumber(a.lastDiv.value, dec)} (${a.lastDiv.label}${dt ? ', ' + dt : ''})`
+    );
+  }
+  return lines.join('\n');
+}
+
 /** Monta o bloco "MERCADO AGORA" com os 8 ativos, na ordem da Raquel. */
 function formatMarketBlock(data) {
   return [
@@ -260,9 +428,15 @@ module.exports = {
   fetchMorningCallData,
   fetchSelic,
   fetchTopMovers,
+  fetchMacro,
+  fetchAtivoDoDia,
+  pickAtivoDoDia,
+  pickLastPaidDividend,
   fetchQuoteYahoo,
   formatMarketBlock,
   formatTopMovers,
+  formatTermometro,
+  formatAtivoDoDia,
   formatIndexLine,
   formatPriceLine,
   formatUsdLine,

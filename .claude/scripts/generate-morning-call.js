@@ -71,13 +71,12 @@ async function main() {
 
   const config = loadConfig();
   const brapi = config.brapi || {};
+  const baseUrl = brapi.baseUrl || market.DEFAULT_BASE_URL;
+  const token = brapi.token;
 
   // 1) Dados reais (correto-ou-nada)
   console.log('1️⃣  Buscando dados reais no brapi...');
-  const data = await market.fetchMorningCallData({
-    baseUrl: brapi.baseUrl || market.DEFAULT_BASE_URL,
-    token: brapi.token,
-  });
+  const data = await market.fetchMorningCallData({ baseUrl, token });
   const marketBlock = market.formatMarketBlock(data);
   console.log(marketBlock + '\n');
 
@@ -87,15 +86,26 @@ async function main() {
   headlines.forEach((h) => console.log(`   • ${h.title} (${h.source || 's/ fonte'})`));
   console.log('');
 
-  // 2.5) Enriquecimento (brapi pago): destaques do pregão. Best-effort.
-  const topMovers = await market.fetchTopMovers({
-    baseUrl: brapi.baseUrl || market.DEFAULT_BASE_URL,
-    token: brapi.token,
-  });
+  // 2.5) Enriquecimento (brapi pago). Todos best-effort: nunca derrubam o Morning Call.
+  const topMovers = await market.fetchTopMovers({ baseUrl, token });
   const destaquesBlock = market.formatTopMovers(topMovers);
   const destaquesSection = destaquesBlock
     ? `\n📊 DESTAQUES DO PREGÃO\n${destaquesBlock}\n`
     : '';
+
+  // Termômetro macro (Selic/CDI/IPCA -> juro real)
+  const macro = await market.fetchMacro({ baseUrl, token });
+  const termometroBlock = market.formatTermometro(macro);
+  const termometroSection = termometroBlock
+    ? `\n🌡️ TERMÔMETRO\n${termometroBlock}\n`
+    : '';
+  if (termometroBlock) console.log('🌡️  Termômetro macro OK\n' + termometroBlock + '\n');
+
+  // Ativo do dia (DY, P/L, último provento pago) — educativo, rotaciona por dia
+  const ativo = await market.fetchAtivoDoDia({ baseUrl, token, date: now });
+  const ativoBlock = market.formatAtivoDoDia(ativo);
+  const ativoSection = ativoBlock ? `\n${ativoBlock}\n` : '';
+  if (ativoBlock) console.log(ativoBlock + '\n');
 
   // 3) Monta o conteúdo (bloco de mercado delimitado para reinjeção)
   const body = `Bom dia, Turma! 🌅
@@ -107,11 +117,11 @@ async function main() {
 ${marketBlock}
 <!--MERCADO:END-->
 ━━━━━━━━━━━━━━━━━━━━
-${destaquesSection}
+${destaquesSection}${termometroSection}
 🌎 O QUE ACONTECEU
 
 ${formatNews(headlines)}
-
+${ativoSection}
 🎯 SUA AÇÃO DE HOJE
 
 Revise sua carteira com calma. Quem constrói patrimônio não corre atrás de barulho: lê o cenário, respira e age com método.
