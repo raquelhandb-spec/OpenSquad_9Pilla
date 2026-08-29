@@ -1,0 +1,35 @@
+{
+  "date": "2026-06-12",
+  "ticker": "PETR4",
+  "analysis_text": "# 📊 ANÁLISE PETR4 | 12/06/2026\n\n---\n\n## 1. 🌐 LEITURA MACRO\n\nO dólar a R$ 4,96 com leve alta de 0,40% sinaliza pressão cambial moderada, o que historicamente pesa sobre empresas com receita em dólar mas custos em real, como a Petrobras. O Ibovespa em alta de 0,71% mostra que o mercado amplo está em modo de apetite a risco, o que torna a queda isolada da PETR4 ainda mais relevante para análise. O Brent disparando 3,92%, chegando a US$ 103,45, é o dado mais intrigante do dia: petróleo subindo forte enquanto PETR4 cai sugere um descolamento que merece atenção.\n\n---\n\n## 2. ⚠️ LEITURA GEOPOLÍTICA\n\nA alta expressiva do Brent acima de US$ 103 possivelmente reflete tensões no Oriente Médio ou sinalizações da OPEP sobre cortes de produção. Esse tipo de movimento no petróleo costuma ser de dupla face: beneficia receitas da Petrobras no médio prazo, mas também acende alertas sobre intervenção política em preços de combustíveis no Brasil. O risco de interferência na política de preços da estatal é um fator que o mercado pode estar precificando negativamente hoje.\n\n---\n\n## 3. 📉 LEITURA DE FLUXO E TÉCNICA\n\nOs dados técnicos detalhados estão indisponíveis hoje, mas o comportamento do pregão já oferece pistas. PETR4 cai 1,76% num dia em que o Ibov sobe e o petróleo dispara, o que sugere possível rotação setorial saindo de Petrobras, ou pressão vendedora específica no papel. VALE3 subindo 1,32% reforça a hipótese de que o fluxo estrangeiro pode estar migrando para commodities metálicas neste momento.\n\n---\n\n## 4. 🔀 POSSIBILIDADES\n\n- **Cenário de pressão continuada:** o descolamento entre Brent e PETR4 pode indicar que o mercado antecipa risco político ou de dividendos, com possibilidade de continuidade da correção no curto prazo.\n- **Cenário de reversão:** se o Brent sustentar os US$ 103 nos próximos pregões, existe a possibilidade de que o mercado reprecifique PETR4 para cima, dado o impacto positivo nas margens.\n- **Cenário neutro:** o papel pode oscilar lateralmente enquanto o mercado aguarda comunicados oficiais da empresa ou do governo.\n\n---\n\n## 🚨 ALERTA DO DIA\n\nFique de olho no **descolamento entre Brent e PETR4**. Historicamente, quando o petróleo sobe forte e a ação não acompanha, ou há um catalisador negativo específico ainda não divulgado, ou uma oportunidade de realinhamento à frente. Nada é garantido. Acompan",
+  "technical_stats": {},
+  "market_snapshot": {
+    "ibov": {
+      "value": 176200,
+      "change": 1250,
+      "change_pct": 0.71
+    },
+    "dolar": {
+      "value": 4.96,
+      "change": 0.02,
+      "change_pct": 0.4
+    },
+    "petr4": {
+      "value": 47.5,
+      "change": -0.85,
+      "change_pct": -1.76
+    },
+    "vale3": {
+      "value": 84.3,
+      "change": 1.1,
+      "change_pct": 1.32
+    },
+    "brent": {
+      "value": 103.45,
+      "change": 3.9,
+      "change_pct": 3.92
+    }
+  },
+  "saved_at": "2026-06-12T06:27:16.441030",
+  "reviewed": false
+}

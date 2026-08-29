@@ -37,3 +37,8 @@ Thumbs.db
 # Sensitive
 .claude/config-morning-call.json
 .claude/.env.paperclip
+
+# Generated content (scripts, videos, audio)
+squads/shorts-maestro/output/
+squads/shorts-maestro/cache/
+
