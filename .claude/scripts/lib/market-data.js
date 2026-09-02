@@ -228,27 +228,12 @@ async function fetchMacro({ baseUrl = DEFAULT_BASE_URL, token } = {}) {
  * Docs: /api/v2/futures/{list|quote|term-structure} (IND, WIN, DI1, ...)
  */
 
-/** Extrai {price, changePercent} de um payload de ativo (V2 ou legado). */
-function pickPriceChange(node) {
-  if (!node || typeof node !== 'object') return null;
-  const d = node.data && typeof node.data === 'object' ? node.data : node;
-  const price = Number(
-    d.regularMarketPrice != null ? d.regularMarketPrice
-      : d.price != null ? d.price
-      : d.close != null ? d.close
-      : d.lastPrice
-  );
-  if (!isFiniteNumber(price)) return null;
-  const chgRaw = d.regularMarketChangePercent != null ? d.regularMarketChangePercent
-    : d.changePercent != null ? d.changePercent
-    : d.change;
-  const changePercent = Number(chgRaw);
-  return { price, changePercent: isFiniteNumber(changePercent) ? changePercent : NaN };
-}
+const DIA_MS = 86400000;
 
-/** Pega o array de itens de um payload de futuros (quotes | results | data). */
-function futuresRows(json) {
+/** Contratos de um payload de term-structure/list de futuros (brapi: contracts[]). */
+function futuresContracts(json) {
   if (!json || typeof json !== 'object') return [];
+  if (Array.isArray(json.contracts)) return json.contracts;
   if (Array.isArray(json.quotes)) return json.quotes;
   if (Array.isArray(json.results)) return json.results;
   if (Array.isArray(json.data)) return json.data;
@@ -256,92 +241,72 @@ function futuresRows(json) {
   return [];
 }
 
-/** Descobre o contrato-front (vencimento mais próximo no futuro) de um ativo. */
-function pickFrontContract(rows, now = new Date()) {
-  const nowMs = now.getTime();
-  let best = null;
-  let bestT = Infinity;
-  for (const r of rows) {
-    const code = r.symbol || r.contract || r.code || r.ticker;
-    const dateRaw = r.maturityDate || r.maturity || r.expiration || r.expirationDate || r.dueDate || r.date;
-    const t = dateRaw ? new Date(dateRaw).getTime() : NaN;
-    if (!code) continue;
-    // front = menor vencimento que ainda não passou; se sem data, primeiro válido
-    if (isFiniteNumber(t)) {
-      if (t >= nowMs && t < bestT) { bestT = t; best = code; }
-    } else if (!best) {
-      best = code;
-    }
-  }
-  return best;
+/** Vencimento (ms) de um contrato de futuros; NaN se ausente. */
+function contractExpMs(c) {
+  const raw = c.expirationDate || c.maturityDate || c.maturity || c.expiration || c.dueDate;
+  const t = raw ? new Date(raw).getTime() : NaN;
+  return isFiniteNumber(t) ? t : NaN;
 }
 
+/**
+ * Ibovespa futuro = contrato-front do IND na curva de futuros do brapi.
+ * price = close (pontos do índice), changePercent = oscillationPct.
+ * Faixa de sanidade (50k–500k pts) evita mostrar valor em escala errada.
+ */
 async function fetchIbovFuturo({ baseUrl = DEFAULT_BASE_URL, token } = {}) {
   if (!token) return null;
   const auth = { Authorization: `Bearer ${token}` };
   try {
-    // 1) Tenta cotar direto pelo ativo (alguns endpoints aceitam asset=IND).
-    let json = await getJson(`${baseUrl}/v2/futures/quote?asset=IND&token=${token}`, auth);
-    console.log('DEBUG futures/quote asset=IND (cru):', JSON.stringify(json).slice(0, 500));
-    let pc = pickPriceChange(futuresRows(json)[0]);
-    if (pc) return pc;
-
-    // 2) Descobre o contrato-front via list e cota por ele.
-    const list = await getJson(`${baseUrl}/v2/futures/list?asset=IND&token=${token}`, auth);
-    console.log('DEBUG futures/list asset=IND (cru):', JSON.stringify(list).slice(0, 700));
-    const front = pickFrontContract(futuresRows(list));
-    if (front) {
-      json = await getJson(`${baseUrl}/v2/futures/quote?symbols=${encodeURIComponent(front)}&token=${token}`, auth);
-      console.log(`DEBUG futures/quote ${front} (cru):`, JSON.stringify(json).slice(0, 500));
-      pc = pickPriceChange(futuresRows(json)[0]);
-      if (pc) return pc;
+    const json = await getJson(`${baseUrl}/v2/futures/term-structure?asset=IND&token=${token}`, auth);
+    console.log('DEBUG term-structure asset=IND (cru):', JSON.stringify(json).slice(0, 700));
+    const contracts = futuresContracts(json);
+    const now = Date.now();
+    let front = null;
+    let frontT = Infinity;
+    for (const c of contracts) {
+      const t = contractExpMs(c);
+      if (isFiniteNumber(t) && t >= now && t < frontT) { frontT = t; front = c; }
     }
+    if (!front) return null;
+    const price = Number(
+      front.close != null ? front.close : front.settlement != null ? front.settlement : front.average
+    );
+    if (!isFiniteNumber(price) || price < 50000 || price > 500000) return null;
+    const changePercent = Number(front.oscillationPct);
+    return { price, changePercent: isFiniteNumber(changePercent) ? changePercent : NaN };
   } catch (e) {
     console.warn('⚠️  Ibov futuro indisponível:', e.message);
+    return null;
   }
-  return null;
 }
 
-/** Acha recursivamente arrays de pontos de curva {data/vencimento, taxa}. */
-function coletarPontosCurva(node, out = []) {
-  if (!node || typeof node !== 'object') return out;
-  if (Array.isArray(node)) {
-    for (const it of node) {
-      if (it && typeof it === 'object') {
-        const dateRaw = it.maturityDate || it.maturity || it.expiration || it.expirationDate || it.date;
-        const rateRaw = it.rate != null ? it.rate : it.yield != null ? it.yield : it.value != null ? it.value : it.price;
-        const t = dateRaw ? new Date(dateRaw).getTime() : NaN;
-        const r = Number(rateRaw);
-        if (isFiniteNumber(t) && isFiniteNumber(r)) out.push({ t, rate: r, date: dateRaw });
-      }
-      coletarPontosCurva(it, out);
-    }
-  } else {
-    for (const k of Object.keys(node)) coletarPontosCurva(node[k], out);
-  }
-  return out;
-}
-
+/**
+ * DI 10 anos = ponto da curva DI1 com vencimento mais perto de hoje+10 anos.
+ * taxa = settlementRate/close (% a.a.). Faixa de sanidade (5–25%) evita pegar
+ * o PU por engano (settlement ~98929, que não é a taxa).
+ */
 async function fetchDI10y({ baseUrl = DEFAULT_BASE_URL, token, date = new Date() } = {}) {
   if (!token) return null;
   const auth = { Authorization: `Bearer ${token}` };
   try {
     const json = await getJson(`${baseUrl}/v2/futures/term-structure?asset=DI1&token=${token}`, auth);
-    console.log('DEBUG futures/term-structure asset=DI1 (cru):', JSON.stringify(json).slice(0, 1100));
-    const pontos = coletarPontosCurva(json);
-    if (!pontos.length) return null;
-    const alvo = date.getTime() + 10 * 365.25 * 86400000; // ~10 anos à frente
+    console.log('DEBUG term-structure asset=DI1 (cru):', JSON.stringify(json).slice(0, 400));
+    const contracts = futuresContracts(json);
+    const alvo = date.getTime() + 10 * 365.25 * DIA_MS;
     let best = null;
     let bestDiff = Infinity;
-    for (const p of pontos) {
-      const diff = Math.abs(p.t - alvo);
-      if (diff < bestDiff) { bestDiff = diff; best = p; }
+    for (const c of contracts) {
+      const t = contractExpMs(c);
+      if (!isFiniteNumber(t)) continue;
+      const diff = Math.abs(t - alvo);
+      if (diff < bestDiff) { bestDiff = diff; best = c; }
     }
-    // Só aceita se o ponto estiver razoavelmente perto de 10 anos (± 2 anos).
-    if (best && bestDiff <= 2 * 365.25 * 86400000) {
-      return { rate: best.rate, date: best.date };
-    }
-    return null;
+    if (!best || bestDiff > 2 * 365.25 * DIA_MS) return null; // precisa estar perto de 10a
+    const rate = Number(
+      best.settlementRate != null ? best.settlementRate : best.close != null ? best.close : best.average
+    );
+    if (!isFiniteNumber(rate) || rate < 5 || rate > 25) return null;
+    return { rate, date: best.expirationDate || best.maturityDate };
   } catch (e) {
     console.warn('⚠️  DI 10y indisponível:', e.message);
     return null;
