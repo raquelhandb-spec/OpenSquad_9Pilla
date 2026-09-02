@@ -45,8 +45,10 @@ jobs:
       - name: Config brapi (para geração/validação)
         run: |
           mkdir -p .claude
+          # Remove espaços/newline que o copiar-colar do secret pode deixar.
+          TOKEN_LIMPO=$(printf '%s' "$BRAPI_TOKEN" | tr -d '[:space:]')
           cat > .claude/config-morning-call.json << EOF
-          { "brapi": { "baseUrl": "https://brapi.dev/api", "token": "${BRAPI_TOKEN}" } }
+          { "brapi": { "baseUrl": "https://brapi.dev/api", "token": "${TOKEN_LIMPO}" } }
           EOF
 
       # ---------- DRY-RUN: só valida, não envia ----------
