@@ -187,6 +187,23 @@ async function buildDigest({ baseUrl, token }) {
     out.push(`- Futuros de NY (prévia, só a direção): ${futPartes.join(', ')}`);
   }
 
+  // Ibovespa futuro (IND) e DI 10 anos (curva DI1) direto do brapi Pro —
+  // SINCRONIZADOS com o mercado. Best-effort: o que não vier é omitido.
+  const [ibovFut, di10] = await Promise.all([
+    market.fetchIbovFuturo({ baseUrl, token }).catch(() => null),
+    market.fetchDI10y({ baseUrl, token }).catch(() => null),
+  ]);
+  if (ibovFut && Number.isFinite(ibovFut.price)) {
+    const sinal = ibovFut.changePercent >= 0 ? '+' : '';
+    const varTxt = Number.isFinite(ibovFut.changePercent)
+      ? ` (${sinal}${market.brNumber(ibovFut.changePercent, 2)}%)`
+      : '';
+    out.push(`- Ibovespa futuro: ${market.brNumber(ibovFut.price, 0)} pts${varTxt}`);
+  }
+  if (di10 && Number.isFinite(di10.rate)) {
+    out.push(`- DI Brasil 10 anos: ${market.brNumber(di10.rate, 2)}% ao ano`);
+  }
+
   out.push(
     '',
     'REGRA DO TERMÔMETRO: mostre os índices dos EUA em NÍVEL de fechamento (o ' +
@@ -194,9 +211,13 @@ async function buildDigest({ baseUrl, token }) {
       'NY" acima (direção em %). NUNCA escreva algo como "Nasdaq 26.214 | futuro ' +
       '29.172" — isso compara índices diferentes e é dado errado.',
     '',
-    'AINDA FALTA (pesquise nas fontes certas e confirme): Ibovespa futuro, ' +
-      'DI Brasil 10 anos, e qualquer item acima que não veio. Calendário econômico ' +
-      'de hoje e as notícias do dia também são dever de casa.'
+    'IBOV FUTURO E DI 10 ANOS: use SOMENTE se aparecerem como linha acima (vêm do ' +
+      'brapi, sincronizados). Se NÃO estiverem acima, OMITA essas linhas — é ' +
+      'PROIBIDO buscá-los na web ou estimar, porque número solto não bate com o ' +
+      'à vista (dado errado). Melhor a linha não existir.',
+    '',
+    'DEVER DE CASA (pesquise nas fontes certas): apenas o Calendário econômico de ' +
+      'hoje e as notícias do dia. Os números do termômetro já estão todos acima.'
   );
   return out.join('\n');
 }
@@ -231,10 +252,10 @@ async function main() {
     `"não veio".\n` +
     `2) Notícias que movem o mercado HOJE — Brasil (Investing/InfoMoney) e global ` +
     `(Bloomberg). Fatos, nomes e números reais e atuais.\n` +
-    `3) Complete o Termômetro que faltou (Ibovespa futuro, DI 10 anos) com o ` +
-    `NÚMERO real. Se não achar o número, OMITA a linha — é PROIBIDO escrever ` +
-    `descrição sem número (ex: "Ibovespa futuro: em alta", "DI 10 anos: a confirmar"). ` +
-    `Toda linha do termômetro tem que ter um número, ou não existe.\n\n` +
+    `3) NÃO pesquise Ibovespa futuro nem DI 10 anos na web: use SÓ os números ` +
+    `abaixo (vêm do brapi, sincronizados). Se não estiverem abaixo, OMITA essas ` +
+    `linhas. Toda linha do termômetro tem número real, ou não existe — nunca ` +
+    `descrição sem número ("em alta", "a confirmar").\n\n` +
     `NÚMEROS JÁ BUSCADOS (use exatamente, não invente):\n${digest || '(nenhum — pesquise tudo)'}\n\n` +
     `REGRAS DE SAÍDA (críticas):\n` +
     `- Responda APENAS com o Morning Call final. NADA antes, NADA depois.\n` +
