@@ -64,6 +64,23 @@ const META_MARKERS = [
   /omit(ir|o|indo)\b[^.\n]*\b(linha|seção|item|agenda)/i,
 ];
 
+// Palavras que denunciam um DADO-FANTASMA: uma linha de termômetro ("Rótulo:
+// valor") que descreve a direção em vez de trazer o número real. Regra da casa:
+// dado real (com número) ou nada. Nunca "em alta, acompanhando o à vista".
+const FILLER_VALOR = /(em alta|em baixa|acompanhando|est[aá]ve(l|is)|sem varia|no (positivo|negativo)|misto|levemente|de leve|para (cima|baixo)|firme|pressionad|indispon[ií]vel|a confirmar|sob revis)/i;
+
+/** É uma linha de termômetro "Rótulo: <descrição sem número>" (dado-fantasma)? */
+function isFillerDataLine(line) {
+  const t = line.trim();
+  if (t.length === 0 || t.length > 70) return false;
+  // "Rótulo curto: valor" — o rótulo pode ter número (DI 10 anos, S&P 500).
+  const m = t.match(/^[*_]*[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ0-9 ()/.&-]{0,30}:\s*(.+)$/);
+  if (!m) return false;
+  const valor = m[1];
+  if (/\d/.test(valor)) return false; // valor tem número -> dado real, mantém
+  return FILLER_VALOR.test(valor);
+}
+
 /** Um bloco é "só cabeçalho de seção" (título sem corpo)? */
 function isHeaderOnly(block) {
   if (block.includes('\n')) return false;
@@ -95,7 +112,15 @@ function stripMeta(text) {
     }
     return true;
   });
-  return blocks.filter((_, idx) => keep[idx]).join('\n\n').trim();
+  // Passo final, linha a linha: remove dados-fantasma (linha de termômetro que
+  // descreve direção sem número — "Ibovespa futuro: em alta, acompanhando...").
+  const limpo = blocks
+    .filter((_, idx) => keep[idx])
+    .join('\n\n')
+    .split('\n')
+    .filter((ln) => !isFillerDataLine(ln))
+    .join('\n');
+  return limpo.replace(/\n{3,}/g, '\n\n').trim();
 }
 
 /** Limpa markdown/chrome para a mensagem do WhatsApp. */
