@@ -246,19 +246,58 @@ function pickPriceChange(node) {
   return { price, changePercent: isFiniteNumber(changePercent) ? changePercent : NaN };
 }
 
+/** Pega o array de itens de um payload de futuros (quotes | results | data). */
+function futuresRows(json) {
+  if (!json || typeof json !== 'object') return [];
+  if (Array.isArray(json.quotes)) return json.quotes;
+  if (Array.isArray(json.results)) return json.results;
+  if (Array.isArray(json.data)) return json.data;
+  if (Array.isArray(json)) return json;
+  return [];
+}
+
+/** Descobre o contrato-front (vencimento mais próximo no futuro) de um ativo. */
+function pickFrontContract(rows, now = new Date()) {
+  const nowMs = now.getTime();
+  let best = null;
+  let bestT = Infinity;
+  for (const r of rows) {
+    const code = r.symbol || r.contract || r.code || r.ticker;
+    const dateRaw = r.maturityDate || r.maturity || r.expiration || r.expirationDate || r.dueDate || r.date;
+    const t = dateRaw ? new Date(dateRaw).getTime() : NaN;
+    if (!code) continue;
+    // front = menor vencimento que ainda não passou; se sem data, primeiro válido
+    if (isFiniteNumber(t)) {
+      if (t >= nowMs && t < bestT) { bestT = t; best = code; }
+    } else if (!best) {
+      best = code;
+    }
+  }
+  return best;
+}
+
 async function fetchIbovFuturo({ baseUrl = DEFAULT_BASE_URL, token } = {}) {
   if (!token) return null;
   const auth = { Authorization: `Bearer ${token}` };
-  for (const sym of ['IND', 'WIN']) {
-    try {
-      const json = await getJson(`${baseUrl}/v2/futures/quote?symbols=${sym}&token=${token}`, auth);
-      console.log(`DEBUG futures/quote ${sym} (cru):`, JSON.stringify(json).slice(0, 600));
-      const first = json && Array.isArray(json.results) ? json.results[0] : null;
-      const pc = pickPriceChange(first);
+  try {
+    // 1) Tenta cotar direto pelo ativo (alguns endpoints aceitam asset=IND).
+    let json = await getJson(`${baseUrl}/v2/futures/quote?asset=IND&token=${token}`, auth);
+    console.log('DEBUG futures/quote asset=IND (cru):', JSON.stringify(json).slice(0, 500));
+    let pc = pickPriceChange(futuresRows(json)[0]);
+    if (pc) return pc;
+
+    // 2) Descobre o contrato-front via list e cota por ele.
+    const list = await getJson(`${baseUrl}/v2/futures/list?asset=IND&token=${token}`, auth);
+    console.log('DEBUG futures/list asset=IND (cru):', JSON.stringify(list).slice(0, 700));
+    const front = pickFrontContract(futuresRows(list));
+    if (front) {
+      json = await getJson(`${baseUrl}/v2/futures/quote?symbols=${encodeURIComponent(front)}&token=${token}`, auth);
+      console.log(`DEBUG futures/quote ${front} (cru):`, JSON.stringify(json).slice(0, 500));
+      pc = pickPriceChange(futuresRows(json)[0]);
       if (pc) return pc;
-    } catch (e) {
-      console.warn(`⚠️  Ibov futuro (${sym}) indisponível:`, e.message);
     }
+  } catch (e) {
+    console.warn('⚠️  Ibov futuro indisponível:', e.message);
   }
   return null;
 }
@@ -287,8 +326,8 @@ async function fetchDI10y({ baseUrl = DEFAULT_BASE_URL, token, date = new Date()
   if (!token) return null;
   const auth = { Authorization: `Bearer ${token}` };
   try {
-    const json = await getJson(`${baseUrl}/v2/futures/term-structure?symbols=DI1&token=${token}`, auth);
-    console.log('DEBUG futures/term-structure DI1 (cru):', JSON.stringify(json).slice(0, 900));
+    const json = await getJson(`${baseUrl}/v2/futures/term-structure?asset=DI1&token=${token}`, auth);
+    console.log('DEBUG futures/term-structure asset=DI1 (cru):', JSON.stringify(json).slice(0, 1100));
     const pontos = coletarPontosCurva(json);
     if (!pontos.length) return null;
     const alvo = date.getTime() + 10 * 365.25 * 86400000; // ~10 anos à frente
