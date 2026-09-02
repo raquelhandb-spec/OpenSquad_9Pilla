@@ -54,14 +54,28 @@ function getDayName(date) {
   return days[date.getDay()];
 }
 
-/** Formata as manchetes reais em bullets com a fonte citada. */
+/** Formata as manchetes reais em bullets. Fonte é DEVER DE CASA: nunca citada. */
 function formatNews(headlines) {
-  return headlines
-    .map((h) => {
-      const src = h.source ? ` _(${h.source})_` : '';
-      return `• ${h.title}${src}`;
-    })
-    .join('\n');
+  return headlines.map((h) => `• ${h.title}`).join('\n');
+}
+
+// Fechamentos que rotacionam por dia — nunca o mesmo texto dois dias seguidos,
+// pra o Morning Call de backup não parecer copiar-colar. Todos na voz da Raquel.
+const FECHAMENTOS = [
+  'Revise sua carteira com calma. Quem constrói patrimônio não corre atrás de barulho: lê o cenário, respira e age com método.',
+  'Antes de reagir a qualquer manchete, respira. O mercado é maratona, não corrida de 100 metros. Um passo de cada vez constrói LIBERDADE.',
+  'Hoje o exercício é olhar um ativo da sua carteira e responder: por que ele está aí? Se não souber, achou o que estudar.',
+  'Dia de mercado agitado pede cabeça fria. A gente não investe no susto nem na euforia, investe com método e no seu tempo.',
+  'Que tal separar 10 minutos hoje pra olhar suas metas, não o gráfico? Investir bem começa por saber pra onde você quer ir.',
+  'Lembre: rentabilidade passada não promete futuro. O que constrói riqueza de verdade é constância, não adivinhação.',
+  'Antes de comprar ou vender qualquer coisa hoje, pergunte se a decisão é sua ou do medo. As melhores escolhas vêm da calma.',
+];
+
+/** Escolhe um fechamento do dia (rotaciona pelo dia do ano). */
+function fechamentoDoDia(date) {
+  const inicioAno = new Date(date.getFullYear(), 0, 0);
+  const diaDoAno = Math.floor((date - inicioAno) / 86400000);
+  return FECHAMENTOS[diaDoAno % FECHAMENTOS.length];
 }
 
 async function main() {
@@ -124,7 +138,7 @@ ${formatNews(headlines)}
 ${ativoSection}
 🎯 SUA AÇÃO DE HOJE
 
-Revise sua carteira com calma. Quem constrói patrimônio não corre atrás de barulho: lê o cenário, respira e age com método.
+${fechamentoDoDia(now)}
 
 Dinheiro não é destino. É a jornada para a LIBERDADE. 🌱
 
