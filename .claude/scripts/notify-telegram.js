@@ -79,18 +79,13 @@ async function main() {
   // Texto já no formato do WhatsApp (negrito com * simples), pronto para copiar.
   const morningCall = content.toWhatsApp(finalMd);
 
-  const header =
-    '🌅 *Morning Call de hoje — pronta para copiar*\n' +
-    'Confira e cole na Turma 9Pilla às 09:09 👇\n' +
-    '━━━━━━━━━━━━━━━━━━━━\n\n';
-
-  // Telegram limita cada mensagem a 4096 caracteres. O editorial completo passa
-  // disso, então quebramos em pedaços (em quebras de parágrafo) e enviamos em
-  // sequência. O cabeçalho vai só no primeiro.
-  const partes = splitForTelegram(header + morningCall);
-  for (let i = 0; i < partes.length; i++) {
-    const sufixo = partes.length > 1 ? `\n\n( parte ${i + 1}/${partes.length} )` : '';
-    await sendTelegram(botToken, chatId, partes[i] + sufixo);
+  // A Raquel recebe EXATAMENTE o que vai pro WhatsApp: sem cabeçalho, sem
+  // comentário, sem marcador de parte. Só o Morning Call, pronto pra colar.
+  // Telegram limita a 4096 caracteres/mensagem, então quebramos em pedaços
+  // limpos (em quebras de parágrafo) quando necessário.
+  const partes = splitForTelegram(morningCall);
+  for (const parte of partes) {
+    await sendTelegram(botToken, chatId, parte);
   }
 
   console.log(`✅ Morning Call enviada ao seu Telegram em ${partes.length} parte(s).`);
