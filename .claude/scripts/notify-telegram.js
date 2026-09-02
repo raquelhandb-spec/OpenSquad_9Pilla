@@ -84,11 +84,46 @@ async function main() {
     'Confira e cole na Turma 9Pilla às 09:09 👇\n' +
     '━━━━━━━━━━━━━━━━━━━━\n\n';
 
-  // Envia numa mensagem só o cabeçalho + o conteúdo, para copiar tudo de uma vez.
-  await sendTelegram(botToken, chatId, header + morningCall);
+  // Telegram limita cada mensagem a 4096 caracteres. O editorial completo passa
+  // disso, então quebramos em pedaços (em quebras de parágrafo) e enviamos em
+  // sequência. O cabeçalho vai só no primeiro.
+  const partes = splitForTelegram(header + morningCall);
+  for (let i = 0; i < partes.length; i++) {
+    const sufixo = partes.length > 1 ? `\n\n( parte ${i + 1}/${partes.length} )` : '';
+    await sendTelegram(botToken, chatId, partes[i] + sufixo);
+  }
 
-  console.log('✅ Morning Call enviada ao seu Telegram, pronta para copiar.');
+  console.log(`✅ Morning Call enviada ao seu Telegram em ${partes.length} parte(s).`);
   process.exit(0);
+}
+
+/** Quebra o texto em pedaços <= limite, preferindo cortar em parágrafos. */
+function splitForTelegram(text, limit = 3900) {
+  const parts = [];
+  let cur = '';
+  for (const para of text.split('\n\n')) {
+    const bloco = cur ? cur + '\n\n' + para : para;
+    if (bloco.length <= limit) {
+      cur = bloco;
+      continue;
+    }
+    if (cur) parts.push(cur);
+    if (para.length <= limit) {
+      cur = para;
+    } else {
+      // Parágrafo gigante: corta em linhas/caracteres.
+      let resto = para;
+      while (resto.length > limit) {
+        let corte = resto.lastIndexOf('\n', limit);
+        if (corte < limit * 0.5) corte = limit;
+        parts.push(resto.slice(0, corte).trimEnd());
+        resto = resto.slice(corte).replace(/^\n+/, '');
+      }
+      cur = resto;
+    }
+  }
+  if (cur) parts.push(cur);
+  return parts;
 }
 
 main().catch(async (err) => {
