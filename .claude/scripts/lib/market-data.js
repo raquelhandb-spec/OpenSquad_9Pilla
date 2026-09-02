@@ -220,6 +220,95 @@ async function fetchMacro({ baseUrl = DEFAULT_BASE_URL, token } = {}) {
   }
 }
 
+/* ------------- Enriquecimento (brapi Pro): Futuros IND e DI1 -------------
+ * Ibovespa futuro (IND/WIN) e DI 10 anos (curva DI1). Puxados do brapi para
+ * virem SINCRONIZADOS com o mercado (a busca livre trazia número solto).
+ * TUDO defensivo: se o formato não bater, retorna null e a linha é OMITIDA —
+ * jamais dado errado. Loga o cru pra calibrar o parsing.
+ * Docs: /api/v2/futures/{list|quote|term-structure} (IND, WIN, DI1, ...)
+ */
+
+/** Extrai {price, changePercent} de um payload de ativo (V2 ou legado). */
+function pickPriceChange(node) {
+  if (!node || typeof node !== 'object') return null;
+  const d = node.data && typeof node.data === 'object' ? node.data : node;
+  const price = Number(
+    d.regularMarketPrice != null ? d.regularMarketPrice
+      : d.price != null ? d.price
+      : d.close != null ? d.close
+      : d.lastPrice
+  );
+  if (!isFiniteNumber(price)) return null;
+  const chgRaw = d.regularMarketChangePercent != null ? d.regularMarketChangePercent
+    : d.changePercent != null ? d.changePercent
+    : d.change;
+  const changePercent = Number(chgRaw);
+  return { price, changePercent: isFiniteNumber(changePercent) ? changePercent : NaN };
+}
+
+async function fetchIbovFuturo({ baseUrl = DEFAULT_BASE_URL, token } = {}) {
+  if (!token) return null;
+  const auth = { Authorization: `Bearer ${token}` };
+  for (const sym of ['IND', 'WIN']) {
+    try {
+      const json = await getJson(`${baseUrl}/v2/futures/quote?symbols=${sym}&token=${token}`, auth);
+      console.log(`DEBUG futures/quote ${sym} (cru):`, JSON.stringify(json).slice(0, 600));
+      const first = json && Array.isArray(json.results) ? json.results[0] : null;
+      const pc = pickPriceChange(first);
+      if (pc) return pc;
+    } catch (e) {
+      console.warn(`⚠️  Ibov futuro (${sym}) indisponível:`, e.message);
+    }
+  }
+  return null;
+}
+
+/** Acha recursivamente arrays de pontos de curva {data/vencimento, taxa}. */
+function coletarPontosCurva(node, out = []) {
+  if (!node || typeof node !== 'object') return out;
+  if (Array.isArray(node)) {
+    for (const it of node) {
+      if (it && typeof it === 'object') {
+        const dateRaw = it.maturityDate || it.maturity || it.expiration || it.expirationDate || it.date;
+        const rateRaw = it.rate != null ? it.rate : it.yield != null ? it.yield : it.value != null ? it.value : it.price;
+        const t = dateRaw ? new Date(dateRaw).getTime() : NaN;
+        const r = Number(rateRaw);
+        if (isFiniteNumber(t) && isFiniteNumber(r)) out.push({ t, rate: r, date: dateRaw });
+      }
+      coletarPontosCurva(it, out);
+    }
+  } else {
+    for (const k of Object.keys(node)) coletarPontosCurva(node[k], out);
+  }
+  return out;
+}
+
+async function fetchDI10y({ baseUrl = DEFAULT_BASE_URL, token, date = new Date() } = {}) {
+  if (!token) return null;
+  const auth = { Authorization: `Bearer ${token}` };
+  try {
+    const json = await getJson(`${baseUrl}/v2/futures/term-structure?symbols=DI1&token=${token}`, auth);
+    console.log('DEBUG futures/term-structure DI1 (cru):', JSON.stringify(json).slice(0, 900));
+    const pontos = coletarPontosCurva(json);
+    if (!pontos.length) return null;
+    const alvo = date.getTime() + 10 * 365.25 * 86400000; // ~10 anos à frente
+    let best = null;
+    let bestDiff = Infinity;
+    for (const p of pontos) {
+      const diff = Math.abs(p.t - alvo);
+      if (diff < bestDiff) { bestDiff = diff; best = p; }
+    }
+    // Só aceita se o ponto estiver razoavelmente perto de 10 anos (± 2 anos).
+    if (best && bestDiff <= 2 * 365.25 * 86400000) {
+      return { rate: best.rate, date: best.date };
+    }
+    return null;
+  } catch (e) {
+    console.warn('⚠️  DI 10y indisponível:', e.message);
+    return null;
+  }
+}
+
 /* ---------------- Enriquecimento (brapi Pro): Ativo do dia ---------------- */
 
 // Pagadoras conhecidas, boas pra educação. Rotaciona por dia do ano.
@@ -446,6 +535,8 @@ module.exports = {
   fetchSelic,
   fetchTopMovers,
   fetchMacro,
+  fetchIbovFuturo,
+  fetchDI10y,
   fetchAtivoDoDia,
   pickAtivoDoDia,
   pickLastPaidDividend,
