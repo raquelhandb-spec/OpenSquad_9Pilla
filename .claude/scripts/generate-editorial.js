@@ -58,7 +58,7 @@ function anthropicRequest(apiKey, payload) {
           'content-type': 'application/json',
           'content-length': Buffer.byteLength(body),
         },
-        timeout: 240000,
+        timeout: 300000,
       },
       (res) => {
         let data = '';
@@ -306,7 +306,15 @@ async function main() {
     `*negrito* com asterisco simples.`;
 
   console.log('2️⃣  Fazendo o dever de casa e escrevendo (Claude + pesquisa web)...');
-  let texto = await callClaudeResearch({ apiKey, system, user });
+  // Uma nova tentativa se a API do Claude der timeout/erro transitório — pra não
+  // cair no esqueleto de backup por lentidão passageira.
+  let texto;
+  try {
+    texto = await callClaudeResearch({ apiKey, system, user });
+  } catch (e) {
+    console.warn(`⚠️  1ª tentativa falhou (${e.message}). Tentando de novo...`);
+    texto = await callClaudeResearch({ apiKey, system, user });
+  }
 
   // Cinto de segurança: corta qualquer preâmbulo antes do ☕ e remove parágrafos
   // de bastidor/desculpa (ex: "as buscas vieram vazias", "a data é futura"). Se
