@@ -11,6 +11,14 @@ on:
         description: 'Dry-run: só valida a busca real (dados + notícias), não envia nada'
         type: boolean
         default: false
+  # Gatilho de teste: roda ao publicar melhorias no código do Morning Call.
+  # NÃO inclui content/** de propósito, para o commit diário do bot não criar loop.
+  push:
+    branches: [main]
+    paths:
+      - '.claude/scripts/**'
+      - '.claude/morning-call/**'
+      - '.github/workflows/morning-call.yml'
 
 jobs:
   morning-call:
