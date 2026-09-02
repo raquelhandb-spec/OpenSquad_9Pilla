@@ -123,19 +123,36 @@ async function fetchSelic() {
  * Maiores altas e baixas do dia via /quote/list (requer brapi pago).
  * Best-effort: se falhar, retorna null (NUNCA derruba o Morning Call).
  */
+// Ticker "de gente grande": 4 letras + 1-2 dígitos (PETR4, VALE3, BBAS3, SANB11).
+// Exclui fracionário (sufixo F: CASN4F), BDR/indexado e outros formatos estranhos.
+const TICKER_LIQUIDO = /^[A-Z]{4}\d{1,2}$/;
+
 async function fetchTopMovers({ baseUrl = DEFAULT_BASE_URL, token, n = 3 } = {}) {
   if (!token) return null; // recurso do brapi pago
-  async function side(order) {
-    const url = `${baseUrl}/quote/list?type=stock&sortBy=change&sortOrder=${order}&limit=${n}&token=${token}`;
+  try {
+    // Pega as ações MAIS LÍQUIDAS (maior volume ~ as que a Turma acompanha) e
+    // calcula as maiores altas/baixas DENTRO desse grupo. Assim não aparece
+    // penny stock/fracionário manipulado (ex: CASN4F +86%), que não diz nada.
+    const url = `${baseUrl}/quote/list?type=stock&sortBy=volume&sortOrder=desc&limit=80&token=${token}`;
     const json = await getJson(url, { Authorization: `Bearer ${token}` });
     const list = (json && json.stocks) || [];
-    return list
-      .slice(0, n)
+    const liquidos = list
       .map((s) => ({ ticker: s.stock, change: Number(s.change), close: Number(s.close) }))
-      .filter((x) => isFiniteNumber(x.change));
-  }
-  try {
-    const [altas, baixas] = await Promise.all([side('desc'), side('asc')]);
+      .filter(
+        (x) =>
+          TICKER_LIQUIDO.test(x.ticker) &&
+          isFiniteNumber(x.change) &&
+          isFiniteNumber(x.close) &&
+          x.close >= 3 && // fora as penny stocks
+          Math.abs(x.change) <= 25 // fora os saltos absurdos de micro-cap
+      );
+    if (!liquidos.length) return null;
+    const porVar = [...liquidos].sort((a, b) => b.change - a.change);
+    const altas = porVar.filter((x) => x.change > 0).slice(0, n);
+    const baixas = porVar
+      .filter((x) => x.change < 0)
+      .slice(-n)
+      .reverse(); // mais negativa primeiro
     if (!altas.length && !baixas.length) return null;
     return { altas, baixas };
   } catch (e) {
