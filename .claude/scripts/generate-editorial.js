@@ -130,7 +130,7 @@ async function yh(symbol) {
   try { return await market.fetchQuoteYahoo(symbol); } catch (_) { return null; }
 }
 
-async function buildDigest({ baseUrl, token }) {
+async function buildDigest({ baseUrl, token, isGiro = false }) {
   const out = [];
 
   // Núcleo B3 + câmbio + commodities (brapi principal, Yahoo backup) — correto-ou-nada
@@ -187,10 +187,12 @@ async function buildDigest({ baseUrl, token }) {
     out.push(`- Futuros de NY (prévia, só a direção): ${futPartes.join(', ')}`);
   }
 
-  // Ibovespa futuro (IND) e DI 10 anos (curva DI1) direto do brapi Pro —
-  // SINCRONIZADOS com o mercado. Best-effort: o que não vier é omitido.
+  // DI 10 anos (curva DI1) direto do brapi Pro — taxa de referência.
+  // Ibovespa futuro (IND) SÓ no Morning Call da manhã: o brapi entrega o ajuste
+  // do dia anterior, que é o contexto certo de manhã, mas fica desatualizado num
+  // Giro "pregão em andamento" (apareceria abaixo do à vista). No Giro, omite.
   const [ibovFut, di10] = await Promise.all([
-    market.fetchIbovFuturo({ baseUrl, token }).catch(() => null),
+    isGiro ? Promise.resolve(null) : market.fetchIbovFuturo({ baseUrl, token }).catch(() => null),
     market.fetchDI10y({ baseUrl, token }).catch(() => null),
   ]);
   if (ibovFut && Number.isFinite(ibovFut.price)) {
@@ -265,7 +267,7 @@ async function main() {
 
   console.log('1️⃣  Buscando números precisos (brapi + Yahoo)...');
   let digest = '';
-  try { digest = await buildDigest({ baseUrl, token }); }
+  try { digest = await buildDigest({ baseUrl, token, isGiro }); }
   catch (e) { console.warn('⚠️  Digest parcial:', e.message); }
   console.log(digest + '\n');
 
