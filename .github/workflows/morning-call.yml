@@ -75,6 +75,7 @@ jobs:
           git config user.email "bot@9pilla.link"
           git add "content/morning-call/${DATE}.md" || true
           git commit -m "chore: Morning Call ${DATE} (gerada automaticamente)" || echo "nada a commitar"
+          git pull --rebase --autostash origin main || true
           git push || echo "push falhou (sem mudanças?)"
 
       - name: Enviar Morning Call pronta no Telegram da Raquel
