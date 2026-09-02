@@ -148,15 +148,15 @@ async function buildDigest({ baseUrl, token }) {
   out.push('NÚMEROS PRECISOS (use exatamente estes):', ...b3);
 
   // Extras via Yahoo (best-effort). O modelo pesquisa os que faltarem.
+  // ATENÇÃO: índices À VISTA em NÍVEL de fechamento. Nasdaq à vista é o
+  // Composite (^IXIC, ~26 mil). Os FUTUROS vêm numa linha separada, só como
+  // DIREÇÃO (%), pra NUNCA misturar o nível do Composite com o do Nasdaq-100.
   const extras = [
     ['Banco do Brasil (BBAS3)', 'BBAS3.SA', 'R$'],
     ['Bradesco (BBDC4)', 'BBDC4.SA', 'R$'],
     ['S&P 500', '^GSPC', 'pts'],
-    ['S&P 500 futuro', 'ES=F', 'pts'],
     ['Dow Jones', '^DJI', 'pts'],
-    ['Dow Jones futuro', 'YM=F', 'pts'],
-    ['Nasdaq', '^IXIC', 'pts'],
-    ['Nasdaq futuro', 'NQ=F', 'pts'],
+    ['Nasdaq (Composite)', '^IXIC', 'pts'],
     ['VIX', '^VIX', ''],
     ['Ouro', 'GC=F', 'US$'],
     ['Bitcoin', 'BTC-USD', 'US$'],
@@ -167,7 +167,32 @@ async function buildDigest({ baseUrl, token }) {
     if (l) out.push(l);
   });
 
+  // Futuros de Nova York: SÓ a direção (variação %), numa linha única. Assim a
+  // gente dá a prévia do pré-mercado sem comparar nível de índices diferentes.
+  const futuros = [
+    ['S&P 500', 'ES=F'],
+    ['Dow Jones', 'YM=F'],
+    ['Nasdaq', 'NQ=F'],
+  ];
+  const futResults = await Promise.all(futuros.map(([, sym]) => yh(sym)));
+  const futPartes = futuros
+    .map(([nome], i) => {
+      const a = futResults[i];
+      if (!a || !Number.isFinite(a.changePercent)) return null;
+      const sinal = a.changePercent >= 0 ? '+' : '';
+      return `${nome} ${sinal}${market.brNumber(a.changePercent, 2)}%`;
+    })
+    .filter(Boolean);
+  if (futPartes.length) {
+    out.push(`- Futuros de NY (prévia, só a direção): ${futPartes.join(', ')}`);
+  }
+
   out.push(
+    '',
+    'REGRA DO TERMÔMETRO: mostre os índices dos EUA em NÍVEL de fechamento (o ' +
+      'Nasdaq é o Composite, ~26 mil). Para os futuros, use SÓ a linha "Futuros de ' +
+      'NY" acima (direção em %). NUNCA escreva algo como "Nasdaq 26.214 | futuro ' +
+      '29.172" — isso compara índices diferentes e é dado errado.',
     '',
     'AINDA FALTA (pesquise nas fontes certas e confirme): Ibovespa futuro, ' +
       'DI Brasil 10 anos, e qualquer item acima que não veio. Calendário econômico ' +

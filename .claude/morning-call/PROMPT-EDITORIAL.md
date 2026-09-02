@@ -50,7 +50,11 @@ manhã)". Formato de cada linha: `Nome: valor (±variação%)`. Inclua, nesta or
 - Ibovespa (pts) e **Ibovespa futuro**
 - Dólar (USD/BRL)
 - VALE3, PETR4, Itaú (ITUB4), Banco do Brasil (BBAS3), Bradesco (BBDC4)
-- S&P 500 (+ futuro), Dow Jones (+ futuro), Nasdaq (+ futuro)
+- S&P 500, Dow Jones, Nasdaq (Composite) — em **nível de fechamento**
+- Futuros de NY: **uma linha só, apenas a direção em %** (ex: "Futuros de NY:
+  S&P +0,5%, Dow +0,5%, Nasdaq +0,2%"). ⚠️ NUNCA compare o nível de um índice à
+  vista com o futuro de outro (ex: "Nasdaq 26.214 | futuro 29.172" é ERRADO — o
+  Composite à vista tem nível diferente do Nasdaq-100 futuro).
 - VIX
 - Brent, WTI
 - Ouro, Bitcoin
