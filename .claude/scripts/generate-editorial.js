@@ -176,7 +176,9 @@ async function buildDigest({ baseUrl, token }) {
 }
 
 async function main() {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  // Remove QUALQUER espaço em branco (inclui \n/\r/espaço que o copiar-colar do
+  // secret pode deixar) — senão o header x-api-key é recusado pelo Node.
+  const apiKey = (process.env.ANTHROPIC_API_KEY || '').replace(/\s/g, '');
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY não definido (editorial requer o Claude).');
 
   const now = new Date();
