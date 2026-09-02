@@ -24,6 +24,7 @@ const path = require('path');
 const https = require('https');
 
 const market = require('./lib/market-data');
+const content = require('./lib/content');
 
 const MODEL = 'claude-opus-4-8';
 const PROMPT_PATH = path.join(__dirname, '../morning-call/PROMPT-EDITORIAL.md');
@@ -197,12 +198,16 @@ async function main() {
     `A data de HOJE é ${dateExtenso(now)}. Essa data é REAL e ATUAL — NÃO é futura. ` +
     `As ferramentas web_search/web_fetch retornam informação atual: USE-AS e ` +
     `CONFIE nos resultados.\n\n` +
-    `DEVER DE CASA (obrigatório, faça ANTES de escrever):\n` +
+    `DEVER DE CASA (faça ANTES de escrever, pesquisando de verdade):\n` +
     `1) Calendário econômico de HOJE, por horário — pesquise em Investing Brasil ` +
-    `(calendário econômico) e InfoMoney. É seção obrigatória com horários reais.\n` +
+    `(calendário econômico) e InfoMoney. Se conseguir confirmar os horários, inclua ` +
+    `a seção 📅. Se NÃO conseguir confirmar, OMITA a seção 📅 inteira em silêncio ` +
+    `(sem título, sem parágrafo, SEM pedir desculpa) — nunca escreva que a agenda ` +
+    `"não veio".\n` +
     `2) Notícias que movem o mercado HOJE — Brasil (Investing/InfoMoney) e global ` +
     `(Bloomberg). Fatos, nomes e números reais e atuais.\n` +
-    `3) Complete o Termômetro que faltou (Ibovespa futuro, DI 10 anos) com dado real.\n\n` +
+    `3) Complete o Termômetro que faltou (Ibovespa futuro, DI 10 anos) com dado real; ` +
+    `o que não confirmar, apenas omita a linha.\n\n` +
     `NÚMEROS JÁ BUSCADOS (use exatamente, não invente):\n${digest || '(nenhum — pesquise tudo)'}\n\n` +
     `REGRAS DE SAÍDA (críticas):\n` +
     `- Responda APENAS com o Morning Call final. NADA antes, NADA depois.\n` +
@@ -218,10 +223,10 @@ async function main() {
   console.log('2️⃣  Fazendo o dever de casa e escrevendo (Claude + pesquisa web)...');
   let texto = await callClaudeResearch({ apiKey, system, user });
 
-  // Segurança: o Morning Call começa no cabeçalho ☕. Corta qualquer preâmbulo
-  // que o modelo tenha escrito antes (comentário de processo, etc.).
-  const inicio = texto.indexOf('☕');
-  if (inicio > 0) texto = texto.slice(inicio);
+  // Cinto de segurança: corta qualquer preâmbulo antes do ☕ e remove parágrafos
+  // de bastidor/desculpa (ex: "as buscas vieram vazias", "a data é futura"). Se
+  // uma seção ficar só com o título, o título também sai. A Turma recebe limpo.
+  texto = content.stripMeta(texto);
 
   const outPath = path.join(__dirname, '../../content/morning-call', `${formatDateISO(now)}.md`);
   fs.mkdirSync(path.dirname(outPath), { recursive: true });

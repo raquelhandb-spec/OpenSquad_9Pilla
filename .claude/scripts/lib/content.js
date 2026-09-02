@@ -44,6 +44,60 @@ function injectMarketBlock(content, marketBlock) {
   return `${content.slice(0, s + MARKER_START.length)}\n${marketBlock}\n${content.slice(e)}`;
 }
 
+// Frases de BASTIDOR/DESCULPA que NUNCA podem chegar à Turma. Se um parágrafo
+// contém qualquer uma, ele é removido inteiro. É o cinto de segurança contra o
+// modelo vazar o "pensamento" ou pedir desculpa por dado que não veio.
+const META_MARKERS = [
+  /dever de casa/i,
+  /\bé futura\b/i,
+  /buscas?\b[^.\n]*\b(retorn|volt|vier|vazi|não)/i,
+  /pesquisa web|ferramentas? web|web[_ ]?search/i,
+  /não (consigo|pude|vou|consegui|posso)\s+(confirmar|inventar|fabricar|chutar)/i,
+  /não me trouxe/i,
+  /dado real ou nada/i,
+  /(regra inegociável|fiel à regra|seguindo a regra)/i,
+  /vou (pesquisar|usar exatamente|construir o morning|fazer o dever|tratar)/i,
+  /nesta sess(ã|a)o/i,
+  /(não chuta|inventa indicador|inventar (um )?(evento|indicador|número|manchete|fato))/i,
+  /prefiro te dizer com honestidade/i,
+  /horário errado/i,
+  /omit(ir|o|indo)\b[^.\n]*\b(linha|seção|item|agenda)/i,
+];
+
+/** Um bloco é "só cabeçalho de seção" (título sem corpo)? */
+function isHeaderOnly(block) {
+  if (block.includes('\n')) return false;
+  const t = block.trim();
+  if (t.length === 0 || t.length > 80) return false;
+  if (/^\*{1,2}[^*]+\*{1,2}$/.test(t)) return true; // ex: **Notícias do dia**
+  if (/^[🌡️📅📰💊🗓️📊]/u.test(t)) return true; // ex: 📅 **Calendário...**
+  return false;
+}
+
+/**
+ * Remove qualquer preâmbulo/meta-comentário do editorial: corta tudo antes do
+ * cabeçalho ☕ e descarta parágrafos de bastidor/desculpa. Se uma seção (ex:
+ * 📅 Calendário) ficar só com o título porque o corpo era desculpa, o título
+ * também sai. A Turma recebe só o Morning Call, limpo.
+ */
+function stripMeta(text) {
+  let t = String(text || '');
+  const i = t.indexOf('☕');
+  if (i > 0) t = t.slice(i);
+  const blocks = t.split(/\n{2,}/).map((b) => b.replace(/\s+$/g, '')).filter((b) => b.trim() !== '');
+  const meta = blocks.map((b) => META_MARKERS.some((re) => re.test(b)));
+  const keep = blocks.map((b, idx) => {
+    if (meta[idx]) return false;
+    if (isHeaderOnly(b)) {
+      let j = idx + 1;
+      while (j < blocks.length && meta[j]) j++;
+      if (j >= blocks.length || isHeaderOnly(blocks[j])) return false; // título órfão
+    }
+    return true;
+  });
+  return blocks.filter((_, idx) => keep[idx]).join('\n\n').trim();
+}
+
 /** Limpa markdown/chrome para a mensagem do WhatsApp. */
 function toWhatsApp(content) {
   return content
@@ -63,4 +117,5 @@ module.exports = {
   readForDate,
   injectMarketBlock,
   toWhatsApp,
+  stripMeta,
 };

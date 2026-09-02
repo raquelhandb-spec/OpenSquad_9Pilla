@@ -77,7 +77,9 @@ async function main() {
   }
 
   // Texto já no formato do WhatsApp (negrito com * simples), pronto para copiar.
-  const morningCall = content.toWhatsApp(finalMd);
+  // stripMeta é o último cinto de segurança: mesmo que um arquivo antigo/ruim
+  // esteja no disco, nenhum preâmbulo ou desculpa de bastidor chega à Turma.
+  const morningCall = content.stripMeta(content.toWhatsApp(finalMd));
 
   // A Raquel recebe EXATAMENTE o que vai pro WhatsApp: sem cabeçalho, sem
   // comentário, sem marcador de parte. Só o Morning Call, pronto pra colar.
