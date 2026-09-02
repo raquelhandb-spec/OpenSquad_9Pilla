@@ -194,20 +194,34 @@ async function main() {
 
   const system = fs.readFileSync(PROMPT_PATH, 'utf8');
   const user =
-    `Hoje é ${dateExtenso(now)}. Escreva o Morning Call 9Pilla de HOJE.\n\n` +
-    `DEVER DE CASA (faça de verdade com as ferramentas de pesquisa):\n` +
-    `- Cenário Brasil: pesquise em Investing Brasil e InfoMoney o que move o ` +
-    `mercado hoje e o CALENDÁRIO ECONÔMICO do dia (por horário).\n` +
-    `- Cenário Global: pesquise na Bloomberg o que move os mercados lá fora hoje.\n` +
-    `- Confirme/complete o Termômetro (Ibovespa futuro, DI 10 anos, VIX, ouro, ` +
-    `bitcoin, futuros dos índices) com dados reais.\n\n` +
-    `NÚMEROS JÁ BUSCADOS (fontes de dados; use exatamente, não invente):\n${digest || '(nenhum — pesquise tudo)'}\n\n` +
-    `Escreva seguindo EXATAMENTE a estrutura e a voz do system prompt. LEMBRE: ` +
-    `NUNCA cite fontes no texto. Responda APENAS com o Morning Call final, pronto ` +
-    `para copiar e colar.`;
+    `A data de HOJE é ${dateExtenso(now)}. Essa data é REAL e ATUAL — NÃO é futura. ` +
+    `As ferramentas web_search/web_fetch retornam informação atual: USE-AS e ` +
+    `CONFIE nos resultados.\n\n` +
+    `DEVER DE CASA (obrigatório, faça ANTES de escrever):\n` +
+    `1) Calendário econômico de HOJE, por horário — pesquise em Investing Brasil ` +
+    `(calendário econômico) e InfoMoney. É seção obrigatória com horários reais.\n` +
+    `2) Notícias que movem o mercado HOJE — Brasil (Investing/InfoMoney) e global ` +
+    `(Bloomberg). Fatos, nomes e números reais e atuais.\n` +
+    `3) Complete o Termômetro que faltou (Ibovespa futuro, DI 10 anos) com dado real.\n\n` +
+    `NÚMEROS JÁ BUSCADOS (use exatamente, não invente):\n${digest || '(nenhum — pesquise tudo)'}\n\n` +
+    `REGRAS DE SAÍDA (críticas):\n` +
+    `- Responda APENAS com o Morning Call final. NADA antes, NADA depois.\n` +
+    `- NUNCA escreva comentários sobre o seu processo, sobre a busca, sobre a data ` +
+    `ser futura, sobre o que você "vai fazer" ou "fez". Isso é PROIBIDO no texto.\n` +
+    `- O texto começa DIRETO no cabeçalho "☕ *Morning Call 9Pilla*".\n` +
+    `- Se depois de pesquisar de verdade um item não vier, OMITA a linha/seção em ` +
+    `silêncio (sem explicar). NUNCA escreva um parágrafo pedindo desculpa por dado ` +
+    `que faltou.\n` +
+    `- NUNCA cite fontes no texto. Formate para WhatsApp: títulos e destaques em ` +
+    `*negrito* com asterisco simples.`;
 
   console.log('2️⃣  Fazendo o dever de casa e escrevendo (Claude + pesquisa web)...');
-  const texto = await callClaudeResearch({ apiKey, system, user });
+  let texto = await callClaudeResearch({ apiKey, system, user });
+
+  // Segurança: o Morning Call começa no cabeçalho ☕. Corta qualquer preâmbulo
+  // que o modelo tenha escrito antes (comentário de processo, etc.).
+  const inicio = texto.indexOf('☕');
+  if (inicio > 0) texto = texto.slice(inicio);
 
   const outPath = path.join(__dirname, '../../content/morning-call', `${formatDateISO(now)}.md`);
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
