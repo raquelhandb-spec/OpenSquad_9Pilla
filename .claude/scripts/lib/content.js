@@ -99,8 +99,9 @@ function isHeaderOnly(block) {
  */
 function stripMeta(text) {
   let t = String(text || '');
-  const i = t.indexOf('☕');
-  if (i > 0) t = t.slice(i);
+  // Corta o preâmbulo antes do cabeçalho da edição (Morning Call ☕ ou Giro 🔄).
+  const idxs = ['☕', '🔄'].map((e) => t.indexOf(e)).filter((n) => n > 0);
+  if (idxs.length) t = t.slice(Math.min(...idxs));
   const blocks = t.split(/\n{2,}/).map((b) => b.replace(/\s+$/g, '')).filter((b) => b.trim() !== '');
   const meta = blocks.map((b) => META_MARKERS.some((re) => re.test(b)));
   const keep = blocks.map((b, idx) => {
