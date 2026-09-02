@@ -71,6 +71,9 @@ quem investe. Verificado, nunca inventado.
 - Assinatura EXATA:
   `Raquel Amorim | 9Pilla · dinheiro não é destino. É a jornada para a LIBERDADE.`
 
+**8. Disclaimer CVM (FIXO — copie EXATAMENTE, sempre, como última linha):**
+> Este conteúdo tem caráter exclusivamente educacional e informativo, elaborado em conformidade com a Resolução CVM nº 20/2021, e não constitui relatório de análise, oferta, recomendação ou solicitação de compra ou venda de qualquer ativo financeiro. As informações aqui apresentadas não consideram objetivos específicos, situação financeira ou necessidades individuais de cada pessoa. Toda decisão de investimento é de responsabilidade exclusiva do investidor, que deve avaliar seu próprio perfil, seus objetivos e sua tolerância a risco antes de investir, podendo, se necessário, buscar orientação de um profissional habilitado. Rentabilidade passada não representa garantia de resultados futuros.
+
 ## Voz da Raquel
 Calorosa, próxima, de amiga que entende de dinheiro. "Turma", "a gente", "bora".
 Empodera, nunca julga, nunca promete ganho fácil, nunca assusta à toa. Parágrafos
