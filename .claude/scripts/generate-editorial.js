@@ -229,6 +229,36 @@ async function main() {
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY não definido (editorial requer o Claude).');
 
   const now = new Date();
+  // Horário de Brasília (UTC-3): decide a EDIÇÃO. Manhã = Morning Call (☕, 09h09);
+  // meio-dia em diante = Giro 9Pilla (🔄, hora atual), um resumo intraday/tarde.
+  const brt = new Date(now.getTime() - 3 * 3600 * 1000);
+  const brtHour = brt.getUTCHours();
+  const brtMin = brt.getUTCMinutes();
+  const isGiro = brtHour >= 12;
+  const horaAtual = `${String(brtHour).padStart(2, '0')}h${String(brtMin).padStart(2, '0')}`;
+  const edicao = isGiro
+    ? {
+        emoji: '🔄',
+        cabecalho: `🔄 *Giro 9Pilla*`,
+        hora: horaAtual,
+        aberturaGuia:
+          'Abertura de TARDE, sem "bom dia" nem café da manhã. Algo como "Oi, ' +
+          'Turma 9Pilla, passando pro giro da tarde" — o pregão ainda está aberto ' +
+          '(a B3 fecha por volta das 17h/18h), então fale de mercado EM ANDAMENTO ' +
+          'nesta tarde, ancorando no que o dia teve de mais forte.',
+        termometroNota: `(cotações desta tarde, ${horaAtual}, pregão em andamento)`,
+      }
+    : {
+        emoji: '☕',
+        cabecalho: `☕ *Morning Call 9Pilla*`,
+        hora: '09h09',
+        aberturaGuia:
+          'Abertura calorosa de manhã: "Bom dia, Turma 9Pilla" + o ritual do café, ' +
+          'lugar tranquilo, ancorada no que o dia tem de real.',
+        termometroNota:
+          '(fechamento do pregão anterior e cotações em andamento nesta manhã)',
+      };
+
   const cfg = loadConfig();
   const baseUrl = (cfg.brapi && cfg.brapi.baseUrl) || market.DEFAULT_BASE_URL;
   const token = cfg.brapi && cfg.brapi.token;
@@ -241,9 +271,16 @@ async function main() {
 
   const system = fs.readFileSync(PROMPT_PATH, 'utf8');
   const user =
-    `A data de HOJE é ${dateExtenso(now)}. Essa data é REAL e ATUAL — NÃO é futura. ` +
+    `A data de HOJE é ${dateExtenso(brt)}. Essa data é REAL e ATUAL — NÃO é futura. ` +
     `As ferramentas web_search/web_fetch retornam informação atual: USE-AS e ` +
     `CONFIE nos resultados.\n\n` +
+    `EDIÇÃO DE HOJE (siga à risca):\n` +
+    `- Cabeçalho EXATO (primeira linha): "${edicao.cabecalho}"\n` +
+    `- Segunda linha: "${dateExtenso(brt)} | ${edicao.hora}"\n` +
+    `- Abertura: ${edicao.aberturaGuia}\n` +
+    `- Nota do Termômetro: use "${edicao.termometroNota}".\n` +
+    `- O RESTO (Termômetro, notícias, Píllula, fechamento, assinatura, disclaimer ` +
+    `CVM) é IGUAL ao padrão. Só o cabeçalho, a hora e a abertura mudam.\n\n` +
     `DEVER DE CASA (faça ANTES de escrever, pesquisando de verdade):\n` +
     `1) Calendário econômico de HOJE, por horário — pesquise em Investing Brasil ` +
     `(calendário econômico) e InfoMoney. Se conseguir confirmar os horários, inclua ` +
@@ -258,10 +295,10 @@ async function main() {
     `descrição sem número ("em alta", "a confirmar").\n\n` +
     `NÚMEROS JÁ BUSCADOS (use exatamente, não invente):\n${digest || '(nenhum — pesquise tudo)'}\n\n` +
     `REGRAS DE SAÍDA (críticas):\n` +
-    `- Responda APENAS com o Morning Call final. NADA antes, NADA depois.\n` +
+    `- Responda APENAS com o texto final da edição. NADA antes, NADA depois.\n` +
     `- NUNCA escreva comentários sobre o seu processo, sobre a busca, sobre a data ` +
     `ser futura, sobre o que você "vai fazer" ou "fez". Isso é PROIBIDO no texto.\n` +
-    `- O texto começa DIRETO no cabeçalho "☕ *Morning Call 9Pilla*".\n` +
+    `- O texto começa DIRETO no cabeçalho "${edicao.cabecalho}".\n` +
     `- Se depois de pesquisar de verdade um item não vier, OMITA a linha/seção em ` +
     `silêncio (sem explicar). NUNCA escreva um parágrafo pedindo desculpa por dado ` +
     `que faltou.\n` +
