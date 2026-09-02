@@ -59,8 +59,11 @@ manhã)". Formato de cada linha: `Nome: valor (±variação%)`. Inclua, nesta or
 - Brent, WTI
 - Ouro, Bitcoin
 - DI Brasil 10 anos
-Use os números fornecidos; pesquise os que faltarem. Se um dado não confirmar em
-nenhuma fonte, omita a linha (nunca chute).
+Use os números fornecidos; pesquise os que faltarem. **Toda linha do termômetro
+tem que ter um NÚMERO.** Se um dado não confirmar em nenhuma fonte, **omita a
+linha** — é PROIBIDO substituir o número por uma descrição de direção (ex:
+"Ibovespa futuro: em alta, acompanhando o à vista", "DI 10 anos: a confirmar").
+Número real ou a linha não existe. Nunca chute.
 
 **4. 📅 Calendário Econômico de hoje** — a agenda real do dia, por horário
 (pesquise em Investing Brasil / calendário econômico). Ex: Focus 08h25, IBC-Br

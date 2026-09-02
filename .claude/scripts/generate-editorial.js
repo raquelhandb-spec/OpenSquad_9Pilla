@@ -231,8 +231,10 @@ async function main() {
     `"não veio".\n` +
     `2) Notícias que movem o mercado HOJE — Brasil (Investing/InfoMoney) e global ` +
     `(Bloomberg). Fatos, nomes e números reais e atuais.\n` +
-    `3) Complete o Termômetro que faltou (Ibovespa futuro, DI 10 anos) com dado real; ` +
-    `o que não confirmar, apenas omita a linha.\n\n` +
+    `3) Complete o Termômetro que faltou (Ibovespa futuro, DI 10 anos) com o ` +
+    `NÚMERO real. Se não achar o número, OMITA a linha — é PROIBIDO escrever ` +
+    `descrição sem número (ex: "Ibovespa futuro: em alta", "DI 10 anos: a confirmar"). ` +
+    `Toda linha do termômetro tem que ter um número, ou não existe.\n\n` +
     `NÚMEROS JÁ BUSCADOS (use exatamente, não invente):\n${digest || '(nenhum — pesquise tudo)'}\n\n` +
     `REGRAS DE SAÍDA (críticas):\n` +
     `- Responda APENAS com o Morning Call final. NADA antes, NADA depois.\n` +
