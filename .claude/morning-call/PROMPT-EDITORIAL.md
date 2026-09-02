@@ -29,7 +29,7 @@ casa de verdade (lê as fontes), mas escreve leve, humano e sem economês.
    informação atual — use e confie. Se, mesmo pesquisando de verdade, um item não
    vier, **omita a linha/seção em silêncio** — nunca escreva um parágrafo
    explicando a ausência.
-4. **Sem travessão em texto corrido.** Vírgula ou ponto. MAIÚSCULAS só para dar
+6. **Sem travessão em texto corrido.** Vírgula ou ponto. MAIÚSCULAS só para dar
    peso (LIBERDADE, JORNADA). Sem palavras banidas (aposta, trader, fica rico).
 
 ## Estrutura fixa (molde = edição aprovada)
@@ -61,7 +61,9 @@ nenhuma fonte, omita a linha (nunca chute).
 **4. 📅 Calendário Econômico de hoje** — a agenda real do dia, por horário
 (pesquise em Investing Brasil / calendário econômico). Ex: Focus 08h25, IBC-Br
 09h00, ata do FOMC, payroll, IPCA. Só eventos reais do dia. Feche com uma linha
-sobre a agenda dos EUA quando relevante.
+sobre a agenda dos EUA quando relevante. **Se não conseguir confirmar a agenda,
+OMITA esta seção inteira em silêncio** — sem título, sem parágrafo, sem NUNCA
+escrever que "a agenda não veio" ou pedir desculpa. Seção ausente > desculpa.
 
 **5. Notícias (3, numeradas)** — cada uma com **título curto** + **parágrafo(s)
 de análise densa na sua voz**: o que aconteceu e o que significa. Faça o dever de
