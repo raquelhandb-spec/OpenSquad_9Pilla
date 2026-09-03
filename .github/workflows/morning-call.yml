@@ -14,7 +14,8 @@ on:
         type: boolean
         default: false
   # Gatilho de teste/execução: roda ao publicar melhorias no código do Morning Call
-  # (também usado para re-disparar a edição do dia com dados frescos quando preciso).
+  # (também usado para re-disparar a edição do dia com dados frescos quando preciso,
+  # ex: disparo do Giro das 15h de 03/09).
   # NÃO inclui content/** de propósito, para o commit diário do bot não criar loop.
   push:
     branches: [main]
