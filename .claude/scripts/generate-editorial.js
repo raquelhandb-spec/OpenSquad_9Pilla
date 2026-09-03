@@ -238,6 +238,14 @@ async function main() {
   const brtMin = brt.getUTCMinutes();
   const isGiro = brtHour >= 12;
   const horaAtual = `${String(brtHour).padStart(2, '0')}h${String(brtMin).padStart(2, '0')}`;
+
+  // A B3 abre 10h. Nos primeiros ~45min o brapi ainda reflete o FECHAMENTO DE
+  // ONTEM pra boa parte dos ativos (variação zerada ou parcial) — foi o que
+  // causou o Morning Call de 03/09 narrar o fechamento de ontem como se fosse
+  // "hoje". Antes desse horário, o pregão de hoje "ainda não andou de verdade".
+  const minutosDoDia = brtHour * 60 + brtMin;
+  const pregaoAndouDeVerdade = minutosDoDia >= 10 * 60 + 45; // 10h45 BRT em diante
+
   const edicao = isGiro
     ? {
         emoji: '🔄',
@@ -254,11 +262,19 @@ async function main() {
         emoji: '☕',
         cabecalho: `☕ *Morning Call 9Pilla*`,
         hora: '09h09',
-        aberturaGuia:
-          'Abertura calorosa de manhã: "Bom dia, Turma 9Pilla" + o ritual do café, ' +
-          'lugar tranquilo, ancorada no que o dia tem de real.',
-        termometroNota:
-          '(fechamento do pregão anterior e cotações em andamento nesta manhã)',
+        aberturaGuia: pregaoAndouDeVerdade
+          ? 'Abertura calorosa de manhã: "Bom dia, Turma 9Pilla" + o ritual do café, ' +
+            'lugar tranquilo, ancorada no que o dia tem de real. O pregão de hoje já ' +
+            'andou o suficiente pra comentar o movimento EM ANDAMENTO nesta manhã.'
+          : 'Abertura calorosa de manhã: "Bom dia, Turma 9Pilla" + o ritual do café, ' +
+            'lugar tranquilo. ⚠️ A B3 ainda não andou o suficiente hoje (pregão recém ' +
+            'aberto ou nem abriu): ancore a abertura no que ACONTECEU ONTEM (recapitule ' +
+            'o pregão anterior) e no que HOJE tem de real (calendário, notícias). Nunca ' +
+            'descreva o fechamento de ontem como se fosse o movimento de hoje.',
+        termometroNota: pregaoAndouDeVerdade
+          ? '(fechamento do pregão anterior e cotações em andamento nesta manhã)'
+          : '(fechamento do pregão de ONTEM — o pregão de hoje ainda não teve ' +
+            'movimento próprio pra reportar)',
       };
 
   const cfg = loadConfig();
@@ -272,7 +288,23 @@ async function main() {
   console.log(digest + '\n');
 
   const system = fs.readFileSync(PROMPT_PATH, 'utf8');
+  const regraTemporal = isGiro
+    ? ''
+    : pregaoAndouDeVerdade
+    ? ''
+    : `⛔ REGRA TEMPORAL CRÍTICA (leia antes de escrever qualquer coisa):\n` +
+      `Os números da B3 no termômetro (Ibovespa, BOVA11, PETR4, VALE3, ITUB4, ` +
+      `BBAS3, BBDC4, Dólar) são do FECHAMENTO DE ONTEM — o pregão de hoje acabou ` +
+      `de abrir e ainda não tem movimento próprio confiável. É PROIBIDO narrar ` +
+      `esses números como se fossem "hoje", "nesta manhã" ou "o pregão está ` +
+      `subindo agora". Escreva-os no PASSADO, como recapitulação de ontem (ex: ` +
+      `"ontem o Ibovespa subiu X%, puxado por..."). O texto de HOJE (abertura, ` +
+      `notícias, calendário) deve olhar pra FRENTE: o que se espera do pregão que ` +
+      `está começando, não o que já aconteceu. Índices dos EUA e commodities (que ` +
+      `fecharam de vez ontem à noite, horário de NY) podem ser narrados normalmente ` +
+      `como "ontem à noite/madrugada", também no passado.\n\n`;
   const user =
+    regraTemporal +
     `A data de HOJE é ${dateExtenso(brt)}. Essa data é REAL e ATUAL — NÃO é futura. ` +
     `As ferramentas web_search/web_fetch retornam informação atual: USE-AS e ` +
     `CONFIE nos resultados.\n\n` +
