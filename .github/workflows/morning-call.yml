@@ -13,7 +13,8 @@ on:
         description: 'Dry-run: só valida a busca real (dados + notícias), não envia nada'
         type: boolean
         default: false
-  # Gatilho de teste: roda ao publicar melhorias no código do Morning Call.
+  # Gatilho de teste/execução: roda ao publicar melhorias no código do Morning Call
+  # (também usado para re-disparar a edição do dia com dados frescos quando preciso).
   # NÃO inclui content/** de propósito, para o commit diário do bot não criar loop.
   push:
     branches: [main]
