@@ -377,7 +377,7 @@ async function main() {
   // Cinto de segurança: corta qualquer preâmbulo antes do ☕ e remove parágrafos
   // de bastidor/desculpa (ex: "as buscas vieram vazias", "a data é futura"). Se
   // uma seção ficar só com o título, o título também sai. A Turma recebe limpo.
-  texto = content.stripMeta(texto);
+  texto = content.stripMeta(texto, edicao.emoji);
   // Giro não tem Píllula de Sabedoria (só o Morning Call). Se o modelo incluir
   // por engano, remove — determinístico, não depende só da instrução no prompt.
   texto = content.stripPillulaSeAusente(texto, edicao.incluiPillula);

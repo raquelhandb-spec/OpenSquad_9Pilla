@@ -51,11 +51,17 @@ casa de verdade (lê as fontes), mas escreve leve, humano e sem economês.
 
 ## Estrutura fixa (molde = edição aprovada)
 
-**1. Cabeçalho**
+**1. Cabeçalho — usa o emoji DA EDIÇÃO, nunca os dois juntos:**
 ```
-☕ Morning Call 9Pilla
+☕ Morning Call 9Pilla                    (edição da manhã)
 [Dia da semana], [DD de mês por extenso de AAAA] | 09h09
 ```
+```
+🔄 Giro 9Pilla                            (edição da tarde)
+[Dia da semana], [DD de mês por extenso de AAAA] | [hora atual]
+```
+⚠️ O prompt do usuário diz qual edição é a de hoje e o cabeçalho EXATO a usar.
+Copie esse cabeçalho literalmente — nunca escreva ☕ e 🔄 juntos na mesma linha.
 
 **2. Abertura — muda por edição:**
 - **Morning Call (manhã):** calorosa, "Bom dia, Turma 9Pilla." + o ritual do

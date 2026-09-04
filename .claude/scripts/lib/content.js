@@ -149,15 +149,32 @@ function isHeaderOnly(block) {
 
 /**
  * Remove qualquer preâmbulo/meta-comentário do editorial: corta tudo antes do
- * cabeçalho ☕ e descarta parágrafos de bastidor/desculpa. Se uma seção (ex:
+ * cabeçalho e descarta parágrafos de bastidor/desculpa. Se uma seção (ex:
  * 📅 Calendário) ficar só com o título porque o corpo era desculpa, o título
  * também sai. A Turma recebe só o Morning Call, limpo.
+ *
+ * @param {string} expectedEmoji — '☕' (Morning Call) ou '🔄' (Giro). Se dado,
+ * corta EXATAMENTE nesse emoji e ignora o outro — evita o bug onde o modelo
+ * escreve os dois emoji juntos ("☕ 🔄 *Giro 9Pilla*") e o corte errado escolhe
+ * o emoji da edição ERRADA por aparecer primeiro. Sem o parâmetro, mantém o
+ * comportamento antigo (corta no que aparecer primeiro, dos dois).
  */
-function stripMeta(text) {
+function stripMeta(text, expectedEmoji) {
   let t = String(text || '');
   // Corta o preâmbulo antes do cabeçalho da edição (Morning Call ☕ ou Giro 🔄).
-  const idxs = ['☕', '🔄'].map((e) => t.indexOf(e)).filter((n) => n > 0);
+  const emojisParaChecar = expectedEmoji ? [expectedEmoji] : ['☕', '🔄'];
+  const idxs = emojisParaChecar.map((e) => t.indexOf(e)).filter((n) => n > 0);
   if (idxs.length) t = t.slice(Math.min(...idxs));
+  // Se sobrar o emoji da OUTRA edição colado na linha do cabeçalho (ex: "🔄
+  // *Giro 9Pilla* ☕"), remove — a linha do cabeçalho é só da edição de hoje.
+  if (expectedEmoji) {
+    const outroEmoji = expectedEmoji === '☕' ? '🔄' : '☕';
+    const linhas = t.split('\n');
+    if (linhas[0] && linhas[0].includes(outroEmoji)) {
+      linhas[0] = linhas[0].split(outroEmoji).join('').replace(/\s{2,}/g, ' ').trim();
+      t = linhas.join('\n');
+    }
+  }
   const blocks = t.split(/\n{2,}/).map((b) => b.replace(/\s+$/g, '')).filter((b) => b.trim() !== '');
   const meta = blocks.map((b) => META_MARKERS.some((re) => re.test(b)));
   const keep = blocks.map((b, idx) => {
