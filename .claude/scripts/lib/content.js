@@ -19,14 +19,45 @@ function formatDateISO(date = new Date()) {
   return `${y}-${m}-${d}`;
 }
 
-function contentPathFor(date = new Date()) {
-  return path.join(__dirname, '../../../content/morning-call', `${formatDateISO(date)}.md`);
+function contentPathFor(date = new Date(), suffix = '') {
+  return path.join(__dirname, '../../../content/morning-call', `${formatDateISO(date)}${suffix}.md`);
+}
+
+/**
+ * Decide a EDIÇÃO (Morning Call de manhã x Giro de tarde) e o caminho do
+ * arquivo, a partir do horário de Brasília — MESMA regra usada por
+ * generate-editorial.js. Fonte única de verdade: o Morning Call (manhã)
+ * sempre grava no arquivo "puro" da data (arquivo histórico do dia); o Giro
+ * grava num arquivo com sufixo "-giro-HHhMM", pra NUNCA sobrescrever o
+ * Morning Call do mesmo dia (foi o que aconteceu em 03/09, antes deste fix).
+ */
+function resolveEdicao(now = new Date()) {
+  const brt = new Date(now.getTime() - 3 * 3600 * 1000);
+  const brtHour = brt.getUTCHours();
+  const brtMin = brt.getUTCMinutes();
+  const isGiro = brtHour >= 12;
+  const horaAtual = `${String(brtHour).padStart(2, '0')}h${String(brtMin).padStart(2, '0')}`;
+  const suffix = isGiro ? `-giro-${horaAtual}` : '';
+  return { isGiro, brt, brtHour, brtMin, horaAtual, suffix, path: contentPathFor(now, suffix) };
 }
 
 function readForDate(date = new Date()) {
   const p = contentPathFor(date);
   if (!fs.existsSync(p)) {
     throw new Error(`Morning Call do dia não encontrado: ${p}`);
+  }
+  return { content: fs.readFileSync(p, 'utf8'), contentPath: p };
+}
+
+/**
+ * Lê o arquivo da EDIÇÃO ATUAL (Morning Call ou Giro, conforme o horário de
+ * agora). Usado pelo notify-telegram.js pra sempre enviar o que acabou de
+ * ser gerado no mesmo job — nunca um arquivo de outra edição do mesmo dia.
+ */
+function readForNow(now = new Date()) {
+  const { path: p } = resolveEdicao(now);
+  if (!fs.existsSync(p)) {
+    throw new Error(`Morning Call/Giro de agora não encontrado: ${p}`);
   }
   return { content: fs.readFileSync(p, 'utf8'), contentPath: p };
 }
@@ -140,7 +171,9 @@ module.exports = {
   MARKER_END,
   formatDateISO,
   contentPathFor,
+  resolveEdicao,
   readForDate,
+  readForNow,
   injectMarketBlock,
   toWhatsApp,
   stripMeta,

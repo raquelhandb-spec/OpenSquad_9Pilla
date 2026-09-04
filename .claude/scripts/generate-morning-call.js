@@ -24,6 +24,7 @@ const path = require('path');
 
 const market = require('./lib/market-data');
 const news = require('./lib/news');
+const content = require('./lib/content');
 
 function loadConfig() {
   const configPath = path.join(__dirname, '../config-morning-call.json');
@@ -34,13 +35,6 @@ function loadConfig() {
     );
   }
   return JSON.parse(fs.readFileSync(configPath, 'utf8'));
-}
-
-function formatDateISO(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
 }
 
 function formatDateBR(date) {
@@ -80,7 +74,6 @@ function fechamentoDoDia(date) {
 
 async function main() {
   const now = new Date();
-  const dateStr = formatDateISO(now);
   console.log(`🌅 Gerando Morning Call de ${formatDateBR(now)}...\n`);
 
   const config = loadConfig();
@@ -148,11 +141,10 @@ Dinheiro não é destino. É a jornada para a LIBERDADE. 🌱
 ${body}
 `;
 
-  const contentPath = path.join(
-    __dirname,
-    '../../content/morning-call',
-    `${dateStr}.md`
-  );
+  // Mesma resolução de edição do generate-editorial.js e notify-telegram.js:
+  // se este fallback rodar durante o Giro, grava no arquivo -giro-HHhMM, NUNCA
+  // no arquivo puro do Morning Call do dia.
+  const { path: contentPath } = content.resolveEdicao(now);
   fs.mkdirSync(path.dirname(contentPath), { recursive: true });
   fs.writeFileSync(contentPath, fullContent, 'utf8');
 

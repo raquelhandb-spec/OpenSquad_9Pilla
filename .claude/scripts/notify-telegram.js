@@ -63,7 +63,10 @@ async function main() {
   if (!botToken) throw new Error('TELEGRAM_BOT_TOKEN não definido.');
   if (!chatId) throw new Error('TELEGRAM_CHAT_ID_RAQUEL não definido.');
 
-  const { content: raw } = content.readForDate(new Date());
+  // readForNow lê o arquivo da EDIÇÃO ATUAL (Morning Call ou Giro, conforme o
+  // horário) — a mesma resolução usada por generate-editorial.js ao escrever,
+  // então sempre envia exatamente o que acabou de ser gerado neste job.
+  const { content: raw } = content.readForNow(new Date());
 
   // Dois formatos possíveis:
   //  - EDITORIAL (generate-editorial.js): já vem pronto do Claude, sem os

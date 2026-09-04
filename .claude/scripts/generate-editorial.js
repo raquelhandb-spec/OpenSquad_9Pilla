@@ -34,9 +34,6 @@ function loadConfig() {
   const p = path.join(__dirname, '../config-morning-call.json');
   return fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf8')) : {};
 }
-function formatDateISO(d) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
 function dateExtenso(d) {
   const dias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
   const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
@@ -233,11 +230,10 @@ async function main() {
   const now = new Date();
   // Horário de Brasília (UTC-3): decide a EDIÇÃO. Manhã = Morning Call (☕, 09h09);
   // meio-dia em diante = Giro 9Pilla (🔄, hora atual), um resumo intraday/tarde.
-  const brt = new Date(now.getTime() - 3 * 3600 * 1000);
-  const brtHour = brt.getUTCHours();
-  const brtMin = brt.getUTCMinutes();
-  const isGiro = brtHour >= 12;
-  const horaAtual = `${String(brtHour).padStart(2, '0')}h${String(brtMin).padStart(2, '0')}`;
+  // resolveEdicao() é a FONTE ÚNICA de verdade (content.js), usada também pelo
+  // notify-telegram.js — garante que o que é gerado é exatamente o que é
+  // enviado, e que Giro nunca sobrescreve o arquivo do Morning Call do dia.
+  const { isGiro, brt, brtHour, brtMin, horaAtual, path: outPath } = content.resolveEdicao(now);
 
   // A B3 abre 10h. Nos primeiros ~45min o brapi ainda reflete o FECHAMENTO DE
   // ONTEM pra boa parte dos ativos (variação zerada ou parcial) — foi o que
@@ -355,7 +351,6 @@ async function main() {
   // uma seção ficar só com o título, o título também sai. A Turma recebe limpo.
   texto = content.stripMeta(texto);
 
-  const outPath = path.join(__dirname, '../../content/morning-call', `${formatDateISO(now)}.md`);
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, texto + '\n', 'utf8');
   console.log(`3️⃣  ✅ Editorial salvo: ${outPath}`);
