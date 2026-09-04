@@ -50,14 +50,39 @@ function readForDate(date = new Date()) {
 }
 
 /**
+ * Acha o arquivo de hoje escrito MAIS RECENTEMENTE (maior mtime). Usado no
+ * lugar de recalcular resolveEdicao(now) pra LER: o Giro grava o HHhMM exato
+ * no nome do arquivo, mas generate-editorial.js e notify-telegram.js rodam
+ * como processos SEPARADOS no mesmo job — a chamada ao Claude leva minutos,
+ * então o minuto pode mudar entre "gerar" e "notificar", e o nome recalculado
+ * não bate mais com o arquivo real no disco (foi o que quebrou o Giro das
+ * 14h36: notify calculou 14h38). Por mtime nunca erra, porque o checkout é
+ * sempre fresco no início do job — só o arquivo recém-escrito é mais novo.
+ */
+function findLatestEditionFile(now = new Date()) {
+  const dateStr = formatDateISO(now);
+  const dir = path.join(__dirname, '../../../content/morning-call');
+  if (!fs.existsSync(dir)) return null;
+  const candidatos = fs
+    .readdirSync(dir)
+    .filter((f) => f.startsWith(dateStr) && f.endsWith('.md'))
+    .map((f) => {
+      const p = path.join(dir, f);
+      return { path: p, mtime: fs.statSync(p).mtimeMs };
+    })
+    .sort((a, b) => b.mtime - a.mtime);
+  return candidatos.length ? candidatos[0].path : null;
+}
+
+/**
  * Lê o arquivo da EDIÇÃO ATUAL (Morning Call ou Giro, conforme o horário de
  * agora). Usado pelo notify-telegram.js pra sempre enviar o que acabou de
  * ser gerado no mesmo job — nunca um arquivo de outra edição do mesmo dia.
  */
 function readForNow(now = new Date()) {
-  const { path: p } = resolveEdicao(now);
-  if (!fs.existsSync(p)) {
-    throw new Error(`Morning Call/Giro de agora não encontrado: ${p}`);
+  const p = findLatestEditionFile(now);
+  if (!p || !fs.existsSync(p)) {
+    throw new Error(`Morning Call/Giro de agora não encontrado (nenhum arquivo de hoje no disco).`);
   }
   return { content: fs.readFileSync(p, 'utf8'), contentPath: p };
 }
