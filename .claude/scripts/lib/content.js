@@ -155,6 +155,28 @@ function stripMeta(text) {
   return limpo.replace(/\n{3,}/g, '\n\n').trim();
 }
 
+/**
+ * Cinto de segurança: o Giro NÃO tem Píllula de Sabedoria (só o Morning Call
+ * de manhã). Se o modelo incluir por engano, remove o bloco 💊 e tudo até o
+ * CTA de fechamento ("chegou até aqui" / "Grande beijo"), preservando o
+ * fechamento e a assinatura. Sem efeito se incluiPillula=true ou se a seção
+ * já não existir.
+ */
+function stripPillulaSeAusente(text, incluiPillula) {
+  if (incluiPillula) return text;
+  const blocks = text.split(/\n{2,}/);
+  const startIdx = blocks.findIndex((b) => /^💊/u.test(b.trim()));
+  if (startIdx === -1) return text;
+  let endIdx = blocks.length;
+  for (let i = startIdx + 1; i < blocks.length; i++) {
+    if (/chegou até aqui|^Grande beijo/i.test(blocks[i])) { endIdx = i; break; }
+  }
+  return blocks
+    .filter((_, i) => i < startIdx || i >= endIdx)
+    .join('\n\n')
+    .trim();
+}
+
 /** Limpa markdown/chrome para a mensagem do WhatsApp. */
 function toWhatsApp(content) {
   return content
@@ -174,6 +196,7 @@ module.exports = {
   resolveEdicao,
   readForDate,
   readForNow,
+  stripPillulaSeAusente,
   injectMarketBlock,
   toWhatsApp,
   stripMeta,

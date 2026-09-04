@@ -247,17 +247,29 @@ async function main() {
         emoji: '🔄',
         cabecalho: `🔄 *Giro 9Pilla*`,
         hora: horaAtual,
+        incluiPillula: false,
         aberturaGuia:
-          'Abertura de TARDE, sem "bom dia" nem café da manhã. Algo como "Oi, ' +
-          'Turma 9Pilla, passando pro giro da tarde" — o pregão ainda está aberto ' +
-          '(a B3 fecha por volta das 17h/18h), então fale de mercado EM ANDAMENTO ' +
-          'nesta tarde, ancorando no que o dia teve de mais forte.',
+          'SEM "bom dia" nem café da manhã, e SEM recapitulação genérica do dia. ' +
+          'Escreva um SPOILER de 2-3 frases que antecipa (sem entregar os ' +
+          'detalhes) as 3 notícias que vêm a seguir — Brasil e Global — pra gerar ' +
+          'vontade de continuar lendo. Ex: "Hoje o giro é sobre pesquisa eleitoral ' +
+          'mexendo com o dólar, um sinal importante que saiu do Fed, e um setor ' +
+          'sofrendo aqui dentro. Bora entender." O Giro existe pra MANTER A TURMA ' +
+          'INFORMADA sobre o que importou HOJE, com foco nas notícias da TARDE — ' +
+          'direto ao ponto, sem enrolação.',
         termometroNota: `(cotações desta tarde, ${horaAtual}, pregão em andamento)`,
+        focoNoticiasGuia:
+          'Foco em notícias IMPORTANTES de HOJE, principalmente do período da ' +
+          'TARDE, Brasil e Global. Curadoria: o que o mercado financeiro está DE ' +
+          'FATO olhando agora, não qualquer manchete. O Brasil está às vésperas de ' +
+          'eleição — dê atenção à política interna sempre que ela for o que está ' +
+          'movendo o pregão.',
       }
     : {
         emoji: '☕',
         cabecalho: `☕ *Morning Call 9Pilla*`,
         hora: '09h09',
+        incluiPillula: true,
         aberturaGuia: pregaoAndouDeVerdade
           ? 'Abertura calorosa de manhã: "Bom dia, Turma 9Pilla" + o ritual do café, ' +
             'lugar tranquilo, ancorada no que o dia tem de real. O pregão de hoje já ' +
@@ -271,6 +283,11 @@ async function main() {
           ? '(fechamento do pregão anterior e cotações em andamento nesta manhã)'
           : '(fechamento do pregão de ONTEM — o pregão de hoje ainda não teve ' +
             'movimento próprio pra reportar)',
+        focoNoticiasGuia:
+          'Curadoria: o que o mercado financeiro está DE FATO olhando, 1–2 de ' +
+          'Brasil e 1 Global (ou o mix que o dia pedir). O Brasil está às ' +
+          'vésperas de eleição — dê atenção à política interna sempre que ela ' +
+          'for o que está movendo o pregão.',
       };
 
   const cfg = loadConfig();
@@ -309,16 +326,23 @@ async function main() {
     `- Segunda linha: "${dateExtenso(brt)} | ${edicao.hora}"\n` +
     `- Abertura: ${edicao.aberturaGuia}\n` +
     `- Nota do Termômetro: use "${edicao.termometroNota}".\n` +
-    `- O RESTO (Termômetro, notícias, Píllula, fechamento, assinatura, disclaimer ` +
-    `CVM) é IGUAL ao padrão. Só o cabeçalho, a hora e a abertura mudam.\n\n` +
+    `- Notícias: ${edicao.focoNoticiasGuia}\n` +
+    `- Píllula de Sabedoria: ${edicao.incluiPillula
+        ? 'inclua normalmente, como manda a estrutura padrão.'
+        : 'NÃO INCLUA esta seção — o Giro não tem Píllula. Pule direto das ' +
+          'notícias para o Fechamento (CTA do emoji, assinatura, CVM).'}\n` +
+    `- O RESTO (Termômetro, fechamento, assinatura, disclaimer CVM) é IGUAL ao ` +
+    `padrão.\n\n` +
     `DEVER DE CASA (faça ANTES de escrever, pesquisando de verdade):\n` +
     `1) Calendário econômico de HOJE, por horário — pesquise em Investing Brasil ` +
     `(calendário econômico) e InfoMoney. Se conseguir confirmar os horários, inclua ` +
     `a seção 📅. Se NÃO conseguir confirmar, OMITA a seção 📅 inteira em silêncio ` +
     `(sem título, sem parágrafo, SEM pedir desculpa) — nunca escreva que a agenda ` +
     `"não veio".\n` +
-    `2) Notícias que movem o mercado HOJE — Brasil (Investing/InfoMoney) e global ` +
-    `(Bloomberg). Fatos, nomes e números reais e atuais.\n` +
+    `2) Notícias que movem o mercado HOJE — Brasil (Investing/InfoMoney/Valor ` +
+    `Econômico) e global (Bloomberg/CNN). Fatos, nomes e números reais e atuais. ` +
+    `Curadoria: o que o mercado está DE FATO olhando, e fique atenta ao cenário ` +
+    `eleitoral brasileiro sempre que ele for o que está movendo o pregão.\n` +
     `3) NÃO pesquise Ibovespa futuro nem DI 10 anos na web: use SÓ os números ` +
     `abaixo (vêm do brapi, sincronizados). Se não estiverem abaixo, OMITA essas ` +
     `linhas. Toda linha do termômetro tem número real, ou não existe — nunca ` +
@@ -350,6 +374,9 @@ async function main() {
   // de bastidor/desculpa (ex: "as buscas vieram vazias", "a data é futura"). Se
   // uma seção ficar só com o título, o título também sai. A Turma recebe limpo.
   texto = content.stripMeta(texto);
+  // Giro não tem Píllula de Sabedoria (só o Morning Call). Se o modelo incluir
+  // por engano, remove — determinístico, não depende só da instrução no prompt.
+  texto = content.stripPillulaSeAusente(texto, edicao.incluiPillula);
 
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, texto + '\n', 'utf8');
