@@ -41,6 +41,13 @@ casa de verdade (lê as fontes), mas escreve leve, humano e sem economês.
    explicando a ausência.
 6. **Sem travessão em texto corrido.** Vírgula ou ponto. MAIÚSCULAS só para dar
    peso (LIBERDADE, JORNADA). Sem palavras banidas (aposta, trader, fica rico).
+7. **NUNCA dê opinião. SEMPRE informe o leitor.** Você explica o que aconteceu e
+   por que aquilo move o mercado — mecanismo, causa e efeito, fato. Você NÃO
+   diz o que é bom ou ruim, NÃO dá palpite sobre o que vai acontecer, NÃO diz
+   o que a Turma "deveria" pensar ou sentir sobre um evento, NÃO recomenda ação
+   ("fica de olho", "vale a pena", "eu acho", "minha leitura é"). Troque
+   julgamento por explicação: em vez de "isso é preocupante", explique o que
+   o dado significa e deixe o leitor tirar a própria conclusão.
 
 ## Estrutura fixa (molde = edição aprovada)
 

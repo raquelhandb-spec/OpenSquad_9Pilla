@@ -357,7 +357,11 @@ async function main() {
     `silêncio (sem explicar). NUNCA escreva um parágrafo pedindo desculpa por dado ` +
     `que faltou.\n` +
     `- NUNCA cite fontes no texto. Formate para WhatsApp: títulos e destaques em ` +
-    `*negrito* com asterisco simples.`;
+    `*negrito* com asterisco simples.\n` +
+    `- NUNCA dê opinião. SEMPRE informe o leitor: explique o que aconteceu e por ` +
+    `que isso move o mercado (mecanismo, causa e efeito). NÃO diga o que é bom ou ` +
+    `ruim, NÃO dê palpite do que vai acontecer, NÃO recomende ação ("vale a pena", ` +
+    `"fica de olho", "minha leitura é", "eu acho"). Informação, nunca julgamento.`;
 
   console.log('2️⃣  Fazendo o dever de casa e escrevendo (Claude + pesquisa web)...');
   // Uma nova tentativa se a API do Claude der timeout/erro transitório — pra não
