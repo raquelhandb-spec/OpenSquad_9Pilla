@@ -77,7 +77,10 @@ jobs:
           DATE=$(TZ="America/Sao_Paulo" date +%Y-%m-%d)
           git config user.name "9Pilla Bot"
           git config user.email "bot@9pilla.link"
-          git add "content/morning-call/${DATE}.md" || true
+          # Glob (não nome exato): o Morning Call grava em "${DATE}.md", o Giro
+          # em "${DATE}-giro-HHhMM.md" (resolveEdicao em content.js). O glob
+          # pega qualquer edição do dia, senão o Giro nunca seria commitado.
+          git add content/morning-call/"${DATE}"*.md || true
           git commit -m "chore: Morning Call ${DATE} (gerada automaticamente)" || echo "nada a commitar"
           git pull --rebase --autostash origin main || true
           git push || echo "push falhou (sem mudanças?)"
