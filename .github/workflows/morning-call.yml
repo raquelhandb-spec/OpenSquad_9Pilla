@@ -2,7 +2,7 @@ name: Morning Call 9Pilla
 
 on:
   schedule:
-    # 07:00 BRT (UTC-3) = 10:00 UTC. Antecipado de propósito: a fila de cron do
+    # 07:00 BRT (UTC-3) = 10:00 UTC. Antecipado de propósito: a fila de cron do (disparo forçado 2026-09-08 08:43:35 -0300)
     # GitHub costuma atrasar (de 20 min a algumas horas), então saímos mais cedo
     # pra a Morning Call chegar com folga antes das 09:09, quando a Raquel cola na
     # Turma. Ela confere e posta manualmente. Sem publicação automática no grupo.
