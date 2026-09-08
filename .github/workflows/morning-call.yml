@@ -60,11 +60,40 @@ jobs:
         if: ${{ env.IS_DRY == 'true' }}
         run: node .claude/scripts/validate-fetch.js
 
+      # Trava contra ENVIO DUPLICADO: o cron nativo do GitHub atrasa de forma
+      # imprevisível (já observado de ~1h30 a mais de 11h de atraso), então
+      # também forçamos disparos externos (push-commit trick) em horários fixos
+      # como rede de segurança. Se os dois disparam pro MESMO dia/edição, só o
+      # primeiro deve gerar e enviar — o segundo tem que ser um no-op silencioso.
+      - name: Verifica se a edição de hoje já foi gerada
+        id: check
+        if: ${{ env.IS_DRY != 'true' }}
+        run: |
+          DATE=$(TZ="America/Sao_Paulo" date +%Y-%m-%d)
+          HOUR=$(TZ="America/Sao_Paulo" date +%H)
+          if [ "$HOUR" -ge 12 ]; then
+            # Giro (tarde): já existe ALGUM giro de hoje (qualquer HHhMM)?
+            if ls content/morning-call/"${DATE}"-giro-*.md >/dev/null 2>&1; then
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              echo "ℹ️ Giro de ${DATE} já existe — pulando (evita reenvio duplicado)."
+            else
+              echo "skip=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            # Morning Call (manhã): já existe o arquivo exato de hoje?
+            if [ -f "content/morning-call/${DATE}.md" ]; then
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              echo "ℹ️ Morning Call de ${DATE} já existe — pulando (evita reenvio duplicado)."
+            else
+              echo "skip=false" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
       # ---------- Fluxo normal: gerar + commitar + enviar no Telegram ----------
       # Tenta o EDITORIAL (Claude, na voz da Raquel). Se falhar por qualquer
       # motivo, cai no ESQUELETO de dados — nunca fica sem Morning Call.
       - name: Gerar Morning Call do dia (editorial via Claude; fallback esqueleto)
-        if: ${{ env.IS_DRY != 'true' }}
+        if: ${{ env.IS_DRY != 'true' && steps.check.outputs.skip != 'true' }}
         run: |
           node .claude/scripts/generate-editorial.js || {
             echo "⚠️ Editorial falhou — usando o esqueleto de dados como fallback."
@@ -72,7 +101,7 @@ jobs:
           }
 
       - name: Commitar a Morning Call gerada
-        if: ${{ env.IS_DRY != 'true' }}
+        if: ${{ env.IS_DRY != 'true' && steps.check.outputs.skip != 'true' }}
         run: |
           DATE=$(TZ="America/Sao_Paulo" date +%Y-%m-%d)
           git config user.name "9Pilla Bot"
@@ -86,5 +115,5 @@ jobs:
           git push || echo "push falhou (sem mudanças?)"
 
       - name: Enviar Morning Call pronta no Telegram da Raquel
-        if: ${{ env.IS_DRY != 'true' }}
+        if: ${{ env.IS_DRY != 'true' && steps.check.outputs.skip != 'true' }}
         run: node .claude/scripts/notify-telegram.js
