@@ -98,4 +98,41 @@ A Barsi pode atuar como "o CFO da vida financeira" do cliente porque é um escri
 4. Fechar a decisão regulatória da seção 5.
 5. Criar a página "Entre na Turma" com chamada única e passo a passo.
 
-*Aguardando o texto da Raquel para incorporar ao estudo.*
+
+---
+
+## 7. O plano da Raquel (texto de 07/11/2026), organizado
+
+**Essência:** a 9Pilla é educacional e nasceu para EMPREENDEDORES. A missão é abrir a cabeça do povo brasileiro em relação às suas finanças.
+**Fio condutor:** planejar *"como ter uma renda extra e, através dela, como ter liberdade financeira"*. *"Juros compostos: aqui a mágica acontece."*
+
+### Quem fala o quê (roteiro de apresentação)
+| Pergunta | Quem fala |
+|---|---|
+| De que forma? | Thiago |
+| O que fazemos? | Victor Montoro |
+| Como faremos? | Murilo (Barsi Investimentos) |
+| O que fazemos para o público jovem? | João (a confirmar) |
+
+### As quatro frentes novas
+| Frente | Público | Responsáveis | Produtos |
+|---|---|---|---|
+| **Network 9Pilla Empreendedores** | Quem quer empreender (PJ) | Raquel | Grupo de WhatsApp com identificação de cada membro |
+| **9Pilla Club + 9Pilla Editorial** | Jovens de 23 a 40 anos | Raquel e Thiago | Caixa surpresa de livros físicos por assinatura; editora com títulos originais |
+| **9Pilla Empresários** | Empresários (PJ) | Victor Montoro | Ebook "De gastador a investidor"; curso gravado DRE x Fluxo de Caixa (recorrência, o "pão francês"); workshop presencial ou online em São Paulo |
+| **A Bolsa é Delas** | Mulheres que querem trabalhar no mercado financeiro | João (a confirmar) | Encontros e network. Captação na Turma 9Pilla e no mercado de trabalho |
+
+O nome do workshop fica com o time de marketing (Barsi, Victor, João e Thiago).
+
+### Workshop em São Paulo: formato descrito
+- Turmas de **9 pessoas** (grupo seleto), **1 dia, 6 horas** de trabalho em conjunto.
+- Inclusos: passeio pelos pontos ligados a finanças, gastronomia, música e cultura.
+- Não inclusos: passagens, hospedagem, transporte e acomodações. Almoço: cada um paga o seu prato.
+
+### Pontos para resolver antes de divulgar
+1. **Almoço e gastronomia.** O texto diz que o almoço é pago por cada um e que a gastronomia está inclusa. É preciso deixar claro o que a gastronomia inclui (por exemplo, um café ou uma degustação), para não gerar reclamação.
+2. **Roteiro do passeio.** Confirmar se cada ponto existe e está aberto à visitação na data. A escultura do touro que ficou em frente à B3 em 2021 foi retirada pouco depois de instalada. A visita à B3 depende de agendamento com a própria bolsa.
+3. **Marca Barsi no ebook.** O título "De gastador a investidor com a Barsi Trader's Investimentos" usa a marca de outra empresa. Precisa de autorização por escrito da Barsi. Como a Barsi é assessoria vinculada à XP, o material também pode precisar passar pela aprovação deles. O nome correto da plataforma é "Barsi Trader", e a empresa é a "Barsi Investimentos". A palavra "trader" é proibida no padrão 9Pilla: definir a exceção para nome de produto de parceiro.
+4. **Identificação no grupo (LGPD).** Pedir LinkedIn e status é ótimo para o network, mas o envio deve ser opcional. Também convém avisar que os dados ficam visíveis a todos do grupo.
+5. **9Pilla Editorial.** Uma editora própria exige ISBN, contratos de direitos autorais, gráfica e logística de entrega da caixa. Sinergia natural: a lista de livros das Píllulas de Sabedoria já é uma curadoria pronta para o Club.
+6. **Confirmações pendentes:** João (público jovem e A Bolsa é Delas) e a participação formal do Murilo e da Barsi.
