@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Ações sem Mistério · 9Pilla</title>
+<style>
+@page { size: 148mm 210mm; }
+:root{
+  --ink:#1d2433; --muted:#5b6475; --navy:#13294b; --gold:#c9972b; --gold-soft:#f6eedb;
+  --line:#e3e6ec; --soft:#f4f6f9; --green:#1f7a4d; --red:#b23b3b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Inter",sans-serif;font-size:9.7pt;line-height:1.5;color:var(--ink);
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;hyphens:auto}
+h1,h2,h3{font-family:"Caladea","Liberation Serif",serif;color:var(--navy);line-height:1.2;margin:0}
+h2{font-size:14.5pt;margin:13pt 0 5pt}
+h3{font-size:12pt;margin:12pt 0 4pt}
+p{margin:0 0 7pt;text-align:justify}
+ul,ol{margin:0 0 8pt;padding-left:16pt}
+li{margin-bottom:3pt}
+strong{color:var(--navy)}
+.page-break{break-before:page}
+/* capa */
+.cover{height:175mm;display:flex;flex-direction:column;justify-content:space-between;
+  background:var(--navy);color:#fff;margin:-17mm -15mm 0;padding:22mm 16mm 16mm;min-height:210mm}
+.cover .brand{font-family:"Inter";font-weight:600;letter-spacing:3pt;font-size:9pt;color:var(--gold)}
+.cover h1{color:#fff;font-size:34pt;line-height:1.05;margin-top:30mm}
+.cover .sub{font-size:12pt;color:#d9dfeb;margin-top:8mm;max-width:105mm;line-height:1.45}
+.cover .bar{width:22mm;height:3pt;background:var(--gold);margin-top:10mm}
+.cover .author{font-size:10pt;color:#fff}
+.cover .author span{display:block;color:var(--gold);font-size:8.5pt;margin-top:2pt}
+/* abertura de capítulo */
+.chap{break-before:page;padding-top:6mm}
+.chap .num{font-family:"Inter";font-weight:600;font-size:9pt;letter-spacing:2.5pt;color:var(--gold);text-transform:uppercase}
+.chap h1{font-size:23pt;margin:4pt 0 6pt}
+.chap .lead{font-size:11pt;color:var(--muted);font-style:italic;margin-bottom:12pt;border-left:3pt solid var(--gold);padding-left:8pt;text-align:left}
+/* caixas */
+.box{background:var(--gold-soft);border-left:3pt solid var(--gold);padding:7pt 9pt;margin:9pt 0;break-inside:avoid;border-radius:0 4pt 4pt 0}
+.box p:last-child,.ex p:last-child{margin-bottom:0}
+.box .t{font-weight:600;color:var(--navy);font-size:9pt;letter-spacing:1pt;text-transform:uppercase;margin-bottom:3pt;display:block}
+.ex{background:var(--soft);border:1px solid var(--line);padding:7pt 9pt;margin:9pt 0;break-inside:avoid;border-radius:4pt}
+.ex .t{font-weight:600;color:var(--green);font-size:8.5pt;letter-spacing:1pt;text-transform:uppercase;display:block;margin-bottom:3pt}
+.pill{border:1px solid var(--navy);border-radius:6pt;padding:8pt 10pt;margin:10pt 0;break-inside:avoid}
+.pill .t{color:var(--gold);font-weight:600;font-size:9pt;letter-spacing:1pt;text-transform:uppercase;display:block;margin-bottom:3pt}
+table{width:100%;border-collapse:collapse;margin:8pt 0 10pt;font-size:9pt;break-inside:avoid}
+th{background:var(--navy);color:#fff;text-align:left;padding:4pt 6pt;font-weight:600}
+td{border-bottom:1px solid var(--line);padding:4pt 6pt;vertical-align:top}
+tr:nth-child(even) td{background:var(--soft)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.toc{list-style:none;padding:0;margin-top:8pt}
+.toc li{display:flex;justify-content:space-between;border-bottom:1px dotted #c6ccd6;padding:4pt 0;margin:0}
+.toc li span:first-child{font-weight:500}
+.toc li .c{color:var(--gold);font-weight:600;width:20pt;display:inline-block}
+.small{font-size:8.3pt;color:var(--muted);line-height:1.45}
+.center{text-align:center}
+.sign{margin-top:14pt;font-family:"Caladea",serif;font-size:12pt;color:var(--navy)}
+.gl p{font-size:8.9pt;line-height:1.42;margin:0 0 3.5pt;text-align:left}
+.check li{list-style:none;position:relative;padding-left:2pt}
+.check li::before{content:"☐";position:absolute;left:-14pt;color:var(--gold)}
+</style>
+</head>
+<body>
