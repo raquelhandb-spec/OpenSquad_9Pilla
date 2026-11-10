@@ -182,7 +182,7 @@ footer .wrap{padding-block:12px 28px;display:flex;flex-direction:column;gap:10px
       </details>
       <details>
         <summary>Por que a renda fixa mostra dois valores</summary>
-        <p>O primeiro valor é o capital cujos juros, já descontado o imposto, pagam a renda escolhida. O segundo considera a inflação: você retira só o ganho acima dela e deixa o restante rendendo, para que a renda mantenha o poder de compra ao longo dos anos.</p>
+        <p>O primeiro valor é o capital cujos juros, já descontado o imposto, pagam a renda escolhida. O segundo considera a inflação: você retira só o ganho acima dela e deixa o restante rendendo, para que a renda mantenha o poder de compra ao longo dos anos. A mesma lógica vale para a poupança, que tem o menor ganho real dos três caminhos e, quando a inflação sobe, pode render abaixo dela.</p>
       </details>
     </div>
 
@@ -232,6 +232,9 @@ footer .wrap{padding-block:12px 28px;display:flex;flex-direction:column;gap:10px
   var liqM = Math.pow(1 + liqAa, 1/12) - 1;
   var realM = Math.pow((1 + liqAa) / (1 + T.ipca12/100), 1/12) - 1;
   var poupM = T.poupMes/100;
+  var poupRealM = Math.pow((1 + poupM) / Math.pow(1 + T.ipca12/100, 1/12), 1) - 1;
+  var poupAa = Math.pow(1 + poupM, 12) - 1;
+  var poupRealAa = (1 + poupAa) / (1 + T.ipca12/100) - 1;
 
   var $ = function(id){ return document.getElementById(id); };
 
@@ -243,7 +246,7 @@ footer .wrap{padding-block:12px 28px;display:flex;flex-direction:column;gap:10px
       { nome:'Fundos imobiliários', taxa: pct(state.dy,1) + ' ao mês, isento', cap: r/dyM, cor:'var(--bar-fii)',
         nota: 'Simulação com o rendimento escolhido acima, que não é garantido. As cotas podem se valorizar ou desvalorizar, e os aluguéis costumam ser corrigidos pela inflação.' },
       { nome:'Poupança', taxa: pct(T.poupMes,2) + ' ao mês, isenta', cap: r/poupM, cor:'var(--bar-poup)',
-        nota: 'Com a Selic em ' + pct(T.selic,2) + ' ao ano, a poupança rende 0,5% ao mês mais a TR e exige mais dinheiro para pagar a mesma renda.' }
+        nota: 'Hoje a poupança rende cerca de ' + pct(poupAa*100,1) + ' ao ano, com ganho real de apenas ' + pct(poupRealAa*100,1) + ' acima da inflação. Para a renda manter o poder de compra, seriam <b>' + brl0(r/poupRealM) + '</b>. Atenção: em anos de inflação alta, a poupança perde para a inflação, como em 2015 e 2021, e o dinheiro encolhe em termos reais.' }
     ];
     var max = Math.max.apply(null, rows.map(function(x){ return x.cap; }));
     $('results').innerHTML = rows.map(function(x){
